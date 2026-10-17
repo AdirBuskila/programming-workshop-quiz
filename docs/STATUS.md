@@ -1,6 +1,6 @@
 # STATUS - programming-workshop
 
-Resume here: phase 0 - not started
+Resume here: phase 2 - flagship 25B-B transcribed (7 items, clang-verified); next: step-author, then refuter
 Opus sessions: 0 of 2
 Engine: open   Format: unknown   Cutoff: unknown
 
@@ -18,7 +18,7 @@ Gates 1, 2 and 7 always stop for Adir.
   - [ ] config.overlay.json written, app repo scaffolded (triage stays in the factory)
 - [ ] Phase 2 - flagship  (GATE 2: Adir tries it in the browser)
   - [ ] topic taxonomy chosen
-  - [ ] flagship sitting transcribed + validated
+  - [x] flagship sitting transcribed + validated (25B-B: 5 code, 2 mcq; validate/build/verify_dom green)
   - [ ] steps (if open questions) + refuter pass
   - [ ] smoke / verify_dom green, running locally
   - [ ] Adir tried it
