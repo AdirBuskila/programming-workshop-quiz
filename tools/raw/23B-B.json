@@ -1,0 +1,121 @@
+{
+ "examCode": "23B-B",
+ "examLabel": "סדנה מתקדמת בתכנות 61108, סמסטר ב' תשפ\"ג, מועד ב'",
+ "year": 2023,
+ "examDate": "29.06.2023",
+ "sourceFile": "23B-B exam",
+ "solutionFile": "23B-B official solution",
+ "contexts": {},
+ "questions": [
+  {
+   "num": 1,
+   "kind": "code",
+   "topic": "list_manipulation",
+   "question": "נגדיר מבנה המייצג איבר ברשימה מקושרת:\n```c\ntypedef struct node {\n    int value;\n    struct node* next;\n} node;\n```\nכתבו את הפונקציה `node* JosephusPermutation(node* lst, int m)` אשר מממשת את **בעיית יוספוס** המתוארת להלן.\nהפונקציה מקבלת פוינטר `lst` שמצביע על אחד מהאיברים מטיפוס `node` ברשימה מקושרת חד-כיוונית **מעגלית**, ואת הערך `m > 1`.\nעל הפונקציה לנתק כל איבר שבמקום `m` (`lst` מצביע על האיבר הראשון שממנו מתחילה הספירה) מתוך הרשימה המעגלית ולחבר אותו לרשימה חדשה חד-כיוונית **לא מעגלית**. ההעברה מסתיימת כאשר כל האיברים מרשימת המקור עוברים לרשימת היעד. סדר האיברים ברשימה החדשה יהיה לפי סדר ההוצאה.\nהפונקציה תחזיר את הכתובת של הרשימה החדשה, או `NULL` אם הרשימה המקורית הייתה ריקה.\n\n**לדוגמא:**\nעבור הרשימה המעגלית `lst` הבאה (באיור) ו-`m = 3` הפונקציה תחזיר את הרשימה הבאה:\n```\n3 -> 6 -> 1 -> 5 -> 2 -> 8 -> 4 -> 7 -> NULL\n```\n**ההסבר:** יש לנתק ולהעביר לרשימה החדשה כל איבר שלישי. בהתאם, קודם עוברים האיברים 3, 6 ו-1. בשלב זה, האיברים שנשארים ברשימה המעגלית הם 2,4,5,7,8 (משמאל לימין). לכן, האיברים שעוברים אחר כך הם 5, 2 ו-8 והאיברים שנותרו הם 4,7 (משמאל לימין). לאחר מכן, מבקרים באיברים 4, 7 ושוב 4, ואיבר 4 עובר לרשימה החדשה. בשלב האחרון מבקרים באיבר 7 שלוש פעמים ברצף והוא גם מצטרף לרשימה החדשה.\n\n**שימו לב:** הפונקציה אינה מקצה איברים חדשים, היא מנתקת את האיברים הקיימים ומעבירה אותם לרשימה החדשה.",
+   "solution": "```c\nnode* JosephusPermutation(node* lst, int m)\n{\n    int i;\n    node* head = NULL;\n    node* tail = NULL;\n    node* tmp;\n    while (lst != NULL)\n    {\n        for (i = 0; i < m - 2; i++)\n            lst = lst->next;\n        tmp = lst->next;\n        lst->next = tmp->next;\n        tmp->next = NULL;\n        if (head == NULL)\n            head = tail = tmp;\n        else\n        {\n            tail->next = tmp;\n            tail = tail->next;\n        }\n        lst = lst->next;\n    }\n    return head;\n}\n```",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "high",
+   "points": 40,
+   "image": "images/exams/23B-B-Q1.png"
+  },
+  {
+   "num": 2,
+   "kind": "code",
+   "topic": "files",
+   "question": "נתונה הגדרת המבנה הבאה:\n```c\ntypedef struct {\n    char film_code[10];\n    int copies;\n    int year;\n} film;\n```\nהמתארת מידע על סרט במאגר, כאשר:\n- `film_code` - קוד הסרט,\n- `copies` - מספר העותקים של סרט מסוים,\n- `year` - שנת הפקת הסרט.\n\nכתבו פונקציה עם החתימה\n```c\nfilm * appropriateFilm(char * fileName, int copies_limit,\n                       int last_year, int * size)\n```\nאשר מקבלת מחרוזת המהווה שם של **קובץ בינארי**. הקובץ מורכב מרשומות הנתונים שהפורמט של כל אחת מהן מתאים למבנה `film`.\nעל הפונקציה ליצור מערך דינאמי של מבני `film`. המערך יכיל את נתוני כל הסרטים הנדירים הישנים של הקובץ כך שמספר העותקים של כל אחד מהם אינו עולה על `copies_limit` ושנת ההפקה לא אחרי `last_year`. הפונקציה תחזיר את כתובת תחילת המערך ותעביר (`by reference`) את גודלו.\nאם אף סרט בקובץ לא מתאים לתנאים לעיל או הקובץ לא נפתח, הפונקציה תחזיר `NULL` ותעביר 0.\n\nלדוגמא, עבור הקובץ הבא (הרשומות משמאל לימין):\n```\nfilm_code   A346-f   D8120-fx   S516-t   R11-v   G555-xx\ncopies      2        4          1        2       3\nyear        1967     1960       1970     1972    2010\n```\nו-`copies_limit=2`, `last_year=1970` הפונקציה תיצור את המערך\n```\nfilm_code   A346-f   S516-t\ncopies      2        1\nyear        1967     1970\n```\nותעביר 2.\n\nניתן להניח שיש בזיכרון מספיק מקום להקצאת המערך.\n\n*בחלק זה יש לענות על שאלה אחת מתוך שתיים (שאלה 2 או שאלה 3).*",
+   "solution": "```c\nfilm* appropriateFilm(char* fileName, int copies_limit, int last_year, int* size)\n{\n    int i = 0;\n    FILE* fptr = fopen(fileName, \"rb\");\n    film* approp_film_units, unit;\n    *size = 0;\n    if (!fptr)\n        return NULL;\n\n    /* Estimation of array size */\n    fread(&unit, sizeof(film), 1, fptr);\n    while (!feof(fptr))\n    {\n        if (unit.copies <= copies_limit && unit.year <= last_year)\n            (*size)++;\n        fread(&unit, sizeof(film), 1, fptr);\n    }\n\n    if (*size == 0)\n    {\n        fclose(fptr);\n        return NULL;\n    }\n\n    approp_film_units = (film*)calloc(*size, sizeof(film)); //array allocation\n\n    /* Filling of array */\n    rewind(fptr);\n    fread(&unit, sizeof(film), 1, fptr);\n    while (!feof(fptr))\n    {\n        if (unit.copies <= copies_limit && unit.year <= last_year)\n            approp_film_units[i++] = unit;\n        fread(&unit, sizeof(film), 1, fptr);\n    }\n\n    fclose(fptr);\n    return approp_film_units;\n}\n```",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "high",
+   "points": 40
+  },
+  {
+   "num": 3,
+   "kind": "code",
+   "topic": "strings",
+   "question": "נגדיר כמה תווים מסוימים כ**מפרידים**. במיוחד, תווי פסיק, נקודה, רווח, סימן קריאה, סימן שאלה, נקודתיים וכו' ניתן להגדיר כמפרידים.\n**מילה** היא רצף של תווים שאינם מפרידים.\n**משפט** הוא מחרוזת המכילה שרשור של מילים ומפרידים. המילים יכולות להיות מופרדות ע\"י מפריד אחד או יותר. מפרידים יכולים להופיע גם בתחילת משפט ובסופו. משפט יכול להיות ריק.\n\nכתבו פונקציה עם החתימה\n```c\nchar * my_strtok(char * sentence, char * separators)\n```\nאשר מקבלת מחרוזת `sentence` המהווה את המשפט ומחרוזת `separators` המורכבת מכל המפרידים שעשויים להופיע במשפט.\nהפונקציה תבחר ברצף מילים ממשפט באופן הבא.\nהקריאה הראשונה מכילה את המשפט כארגומנט הראשון. הפונקציה תיצור מחרוזת דינאמית חדשה עם התוכן זהה למילה הראשונה (השמאלית) של המשפט ותחזיר אותה.\nקריאות עוקבות מכילות `NULL` כארגומנט הראשון. הפונקציה תיצור ותחזיר מחרוזות זהות למילים הבאות של המשפט בהתאמה.\nאם אין יותר מילים, כאשר הפונקציה נקראת היא תחזיר `NULL`.\nהפונקציה לא תשנה את תוכן המשפט המקורי!\n\n**אסור להשתמש** בפונקציה סטנדרטית `strtok` אשר מממשת את האלגוריתם הדומה להנ\"ל!\n\n**דוגמא:**\n`sentence = “   Why?! That’s why.”` ו-`separators = “? !.”`.\nהקריאה הראשונה תהיה `my_strtok(sentence, separators)`. הפונקציה תחזיר “Why”.\nהקריאה השנייה תהיה `my_strtok(NULL, separators)`. הפונקציה תחזיר “That’s”.\nהקריאה השלישית תהיה `my_strtok(NULL, separators)`. הפונקציה תחזיר “why”.\nהקריאה הרביעית תהיה `my_strtok(NULL, separators)`. הפונקציה תחזיר `NULL`.\n\n**רמז:**\nיש להשתמש במשתנה `static`.\n\nניתן להניח שיש בזיכרון מספיק מקום להקצאה.\n\n*בחלק זה יש לענות על שאלה אחת מתוך שתיים (שאלה 2 או שאלה 3).*",
+   "solution": "```c\nchar* my_strtok(char* sentence, char* separators)\n{\n    int i = 0;\n    char* word;\n    static char* start;\n    if (sentence != NULL)\n        start = sentence;\n    word = (char*)malloc(strlen(start) + 1);\n    while (*start && strchr(separators, *start)) // scan separators\n        start++;\n    while (*start && !strchr(separators, *start)) // scan word\n    {\n        word[i++] = *start;\n        start++;\n    }\n    if (i > 0) // word was found\n    {\n        word[i] = '\\0';\n        word = (char*)realloc(word, i + 1);\n        return word;\n    }\n    free(word);\n    return NULL;\n}\n```",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "high",
+   "points": 40
+  },
+  {
+   "num": 4,
+   "kind": "code",
+   "topic": "structs_unions",
+   "question": "מהו הפלט של התוכנית הבאה?\n```c\n#define _CRT_SECURE_NO_WARNINGS\n\n#include <stdio.h>\n#include <string.h>\n#include <malloc.h>\n\n#define SIZE 4\n\nstruct TsT {\n    int val1;\n    char val2[SIZE];\n    char* val3;\n};\n\nvoid func1(struct TsT myTsT) {\n    myTsT.val3[1] = 'Y';\n    myTsT.val2[1] = 'Y';\n    myTsT.val1 = 444;\n};\n\nvoid func2(struct TsT* myTsT) {\n    myTsT->val3[1] = 'X';\n    myTsT->val2[1] = 'X';\n    myTsT->val1 = 222;\n};\n\nvoid main() {\n    struct TsT p1, p2;\n\n    p1.val3 = (char*)malloc(4);\n    strcpy(p1.val3, \"aaa\");\n    p1.val1 = 20;\n    strcpy(p1.val2, \"bbb\");\n\n    p2 = p1;\n    printf(\"p1 Print1: %d, %s, %s \\n\", p1.val1, p1.val2, p1.val3);\n    printf(\"p2 Print1: %d, %s, %s \\n\", p2.val1, p2.val2, p2.val3);\n\n    p2.val2[0] = 'Z';\n    p2.val3[0] = 'Z';\n    printf(\"p1 Print2: %d, %s, %s \\n\", p1.val1, p1.val2, p1.val3);\n    printf(\"p2 Print2: %d, %s, %s \\n\", p2.val1, p2.val2, p2.val3);\n\n    func1(p1);\n    func2(&p2);\n    printf(\"p1 Print3: %d, %s, %s \\n\", p1.val1, p1.val2, p1.val3);\n    printf(\"p2 Print3: %d, %s, %s \\n\", p2.val1, p2.val2, p2.val3);\n}\n```\nיש לנמק את התשובה.",
+   "solution": "**הפלט:**\n```\np1 Print1: 20, bbb, aaa\np2 Print1: 20, bbb, aaa\np1 Print2: 20, bbb, Zaa\np2 Print2: 20, Zbb, Zaa\np1 Print3: 20, bbb, ZXa\np2 Print3: 222, ZXb, ZXa\n```\n**נימוק:**\nאחרי ביצוע `p2 = p1` כל שדה של מבנה `p1` מועתק לשדה התואם של מבנה `p2`. בהתאם, 20 מועתק ל-`p2.val1` ו-\"bbb\" מועתקת ל-`p2.val2`. אחרי העתקת `p1.val3` ל-`p2.val3` מקבלים שני פוינטרים אשר מצביעים לאותה מחרוזת \"aaa\".\nלכן הפלט הראשון יהיה:\n```\np1 Print1: 20, bbb, aaa\np2 Print1: 20, bbb, aaa\n```\nתו מס' 0 של `p2.val2` משתנה ל-'Z'. מצד שני, `p1.val3` ו-`p2.val3` הם שני שמות של אותה מחרוזת ובכך שינוי של `p2.val3[0]` ל-'Z' אומר גם שינוי של `p1.val3[0]` ל-'Z'.\nלכן הפלט השני יהיה:\n```\np1 Print2: 20, bbb, Zaa\np2 Print2: 20, Zbb, Zaa\n```\nמבנה `p1` מועבר `by value` לפונקציה `func1`. כל השדות שלו מועתקים לשדות המתאימים של מבנה `TsT`. שינויים בשדות `val1` ו-`val2` של העתק לא משפיעים על השדות של המקור. אבל `myTsT.val3` הוא פוינטר. לכן שינוי של תו מס' 1 של מחרוזת עליה הוא מצביע הוא למעשה שינוי של תו מס' 1 של המחרוזת עליה מצביעים `p1.val3` ו-`p2.val3`.\nמבנה `p2` מועבר `by reference` לפונקציה `func2`. ז\"א כל השינויים בשדות עלייהם מצביע פוינטר `myTsT` הם למעשה שינויים בשדות המבנה `p2`. בזאת, תו מס' 1 של המחרוזת עליה מצביעים `p1.val3` ו-`p2.val3`, משתנה שוב הפעם ל-'X'. בהתאם, תו `p2.val2[1]` משתנה ל-'X' ושדה `p2.val1` משתנה ל-222.\nלכן הפלט השלישי יהיה:\n```\np1 Print3: 20, bbb, ZXa\np2 Print3: 222, ZXb, ZXa\n```",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "high",
+   "points": 10
+  },
+  {
+   "num": 5,
+   "kind": "code",
+   "topic": "c_traps_mcq",
+   "question": "בחרו את התשובה הנכונה **ונמקו** בכל אחד מהסעיפים הבאים (שאלה 5, 10 נק' בסך הכול).\nאיזה פעולה לא תיתן פלט `0`?\n```c\n(1) printf(\"%d\\n\", 0);\n(2) printf(\"%.0lf\\n\", 0.0);\n(3) printf(\"%d\\n\", NULL);\n(4) printf(\"%d\\n\", '0');\n(5) printf(\"%d\\n\", '\\0');\n(6) printf(\"%d\\n\", EOF + 1);\n(7) כל הפעולות לעיל יתנו פלט 0\n```",
+   "solution": "**התשובה:** (4) `printf(\"%d\\n\", '0');`\n\n**נימוק:**\n(1) מדפיסים מספר שלם 0.\n(2) מדפיסים מספר ממשי 0.0 עם אפס ספרות אחרי הנקודה, ז\"א מדפיסים רק 0.\n(3) `NULL` הוא שם של קבוע 0. לכן מדפיסים 0.\n(4) קוד ASCII של תו `'0'` הוא המספר ששונה מ-0. לכן מדפיסים לא 0.\n(5) קוד ASCII של תו `'\\0'` הוא 0. לכן מדפיסים 0.\n(6) קוד ASCII של תו `EOF` הוא -1. לכן מדפיסים ערך של 1+1-, ז\"א 0.",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "high",
+   "part": "א"
+  },
+  {
+   "num": 5,
+   "part": "ב",
+   "kind": "mcq",
+   "topic": "pointers",
+   "question": "בחרו את התשובה הנכונה **ונמקו** בכל אחד מהסעיפים הבאים (שאלה 5, 10 נק' בסך הכול).\nנתונה התוכנית הבאה:\n```c\n#include <stdio.h>\n\nint f(int n) {\n    int m = 2 * n;\n    return m;\n}\n\nvoid main() {\n    int k = 3;\n    printf(\"%d\\n\", f(k));     // 1\n    printf(\"%d\\n\", (*f)(k));  // 2\n}\n```\nמה ההבדל בין הפעולה המסומנת ב-1 לפעולה המסומנת ב-2?",
+   "options": [
+    {
+     "id": "a",
+     "type": "text",
+     "value": "פעולה 1 תציג ערך של משתנה לוקלי `m` ואילו פעולה 2 תציג את הכתובת של `m`"
+    },
+    {
+     "id": "b",
+     "type": "text",
+     "value": "פעולה 1 תציג ערך המוחזר ע\"י הקריאה `f(k)` ואילו פעולה 2 תציג את הערך מוכפל בעצמו"
+    },
+    {
+     "id": "c",
+     "type": "text",
+     "value": "פעולה 1 תציג ערך המוחזר ע\"י הקריאה `f(k)` ואילו פעולה 2 תציג את הערך מוכפל ב-`k`"
+    },
+    {
+     "id": "d",
+     "type": "text",
+     "value": "פעולה 2 בנוסף למה שמבצעת פעולה 1 גם משנה את הערך של `k`"
+    },
+    {
+     "id": "e",
+     "type": "text",
+     "value": "פעולה 2 פשוט לא תקינה"
+    },
+    {
+     "id": "f",
+     "type": "text",
+     "value": "פעולות 1 ו-2 שקולות"
+    }
+   ],
+   "correctId": "f",
+   "explanation": "שם של פונקציה הוא למעשה שם הפוינטר שמצביע לתחילת הפונקציה. לכן `f` הוא פוינטר שמצביע לתחילת הפונקציה שלנו. ובכך, בפעולה 2 פונים לאותה פונקציה כמו בפעולה 1 אך במפורש דרך הפוינטר.",
+   "official": true,
+   "confidence": "high"
+  },
+  {
+   "num": 6,
+   "kind": "code",
+   "topic": "bit_manipulation",
+   "question": "**שאלת בונוס.** מהו הפלט של התוכנית הבאה?\n```c\n#include <stdio.h>\n\nvoid main()\n{\n    char s[]={'^','^','^'^'^','^'};\n    printf(\"%s\",s);\n}\n```\nיש לנמק את התשובה.",
+   "solution": "**הפלט:** `^^`\n\n**נימוק:**\nאיבר מס' 0 ואיבר מס' 1 ב-`s` שווים ל-`'^'`. איבר מס' 2 הוא `'^' ^ '^'`, ז\"א ערך של פעולת XOR על סיביות קודי ASCII של תו `'^'`. פעולת XOR על ערכים שווים נותנת 0. לכן הערך מורכב רק מסיביות 0, ז\"א שווה ל-0 אשר מהווה קוד ASCII של `'\\0'`. פונקציה `printf` מדפיסה מחרוזת עד `'\\0'` הראשון.\nלכן יודפסו שני התווים הראשונים: `^^`.",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "high",
+   "points": 10
+  }
+ ]
+}

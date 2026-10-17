@@ -1,0 +1,218 @@
+{
+ "examCode": "21B-A",
+ "examLabel": "סדנה מתקדמת בתכנות 61108, סמסטר ב' תשפ\"א, מועד א'",
+ "year": 2021,
+ "examDate": "15.06.2021",
+ "sourceFile": "21B-A exam",
+ "solutionFile": "21B-A official solution",
+ "contexts": {},
+ "questions": [
+  {
+   "num": 1,
+   "kind": "code",
+   "topic": "strings",
+   "question": "נתונה הגדרה הבאה של הטיפוס `name` אשר מהווה שם פרטי ושם משפחה של בן-אדם:\n```c\ntypedef struct\n{\n    char first_name[30],\n    last_name[30];\n} name;\n```\nכתוב פונקציה אשר מקבלת מערך איברים מסוג `name` וגודלו.\nעל הפונקציה לבדוק האם איברי המערך ממוינים בסדר לקסיקוגרפי עולה לפי השמות (שדה `first_name`) או לפי שמות המשפחה (שדה `last_name`). אם המערך ממוין לפי השמות, הפונקציה תחזיר 1 ואם לפי שמות המשפחה - הפונקציה תחזיר 2. אם איברי המערך לא ממוינים בכלל, הפונקציה תחזיר 0.\n\n**דוגמה:** עבור המערך הבא\n```\n0 Mike Asher\n1 David Bern\n2 Joseph Borgman\n3 Alon Kapulski\n4 Ilan Mizrachi\n5 Oren Nodel\n6 Abraham Rosen\n```\nהפונקציה תחזיר 2.\n\n*בחלק זה יש לענות על שתי שאלות מתוך שלוש (שאלות 1, 2 ו-3).*",
+   "solution": "```c\nint ordered_name_array(name* name_arr, int n)\n{\n    int i;\n    for (i = 1; i < n; i++)\n        if (strcmp(name_arr[i].first_name, name_arr[i - 1].first_name) < 0)\n        {\n            for (i = 1; i < n; i++)\n                if (strcmp(name_arr[i].last_name, name_arr[i - 1].last_name) < 0)\n                    return 0;\n            return 2;\n        }\n    return 1;\n}\n```",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "high",
+   "points": 40
+  },
+  {
+   "num": 2,
+   "kind": "code",
+   "topic": "linked_lists",
+   "question": "נתונה הגדרה הבאה של הטיפוס:\n```c\ntypedef struct item {\n    int data;\n    struct item *next;\n} Item;\n```\nכתוב פונקציה אשר מקבלת שתי רשימות מקושרות **מעגליות** (רשימה מעגלית מועברת לפונקציה כמצביע לאחד מהאיברים שלה) המורכבות מאיברים מסוג `Item`.\nהרשימות מכילות מספרים שונים כאשר ישנו רק מספר אחד המופיע בשתי הרשימות.\n\nעל הפונקציה לאחד את הרשימות לרשימה מעגלית אחת כך שהמספר המשותף יופיע פעם אחת ויחצוץ בין שתי הרשימות המקוריות, שתשמורנה על סידרן הפנימי לאחר האיחוד.\nלא משנה מאיזו רשימה מקורית יהיו איברים \"אחרי\" המספר המשותף ברשימה המאוחדת ומאיזו רשימה יהיו \"לפניו\". גם לא משנה איזה איבר המכיל את המספר המשותף ייכלל ברשימה המאוחדת.\nהפונקציה תחזיר את כתובת האיבר המכיל את המספר המשותף ברשימה המאוחדת.\n\n**שים לב.** הפונקציה לא תקצה זיכרון לרשימה החדשה אלא תעדכן שדה `next` באיברים המתאימים של הרשימות המקוריות.\n\n**דוגמא:** (באיור) המספר המשותף הוא 5.\n\n**שים לב.** כל אחת מרשימות מקוריות יכולה להיות מורכבת גם רק מאיבר אחד (שדה `next` שלו מצביע לאיבר עצמו). במקרה זה האיבר היחיד מכיל את המספר המשותף.\n\n*בחלק זה יש לענות על שתי שאלות מתוך שלוש (שאלות 1, 2 ו-3).*",
+   "solution": "```c\n/* Auxiliary function. Search of common items.\n   The function gives addresses of items preceding common ones */\nvoid addresses_of_items_preceding_common(Item *L1, Item *L2, Item **p1, Item **p2){\n    Item *prev1 = L1, *prev2, *curr1 = prev1->next, *curr2;\n    while (1) //external loop: scan first list\n    {\n        prev2 = L2;\n        curr2 = prev2->next;\n        do //internal loop: scan second list\n        {\n            if (curr2->data != curr1->data)\n            {\n                prev2 = curr2;\n                curr2 = curr2->next;\n            }\n            else //common items are found\n            {\n                *p1 = prev1;\n                *p2 = prev2;\n                return;\n            }\n        } while (curr2 != L2->next);\n        prev1 = curr1;\n        curr1 = curr1->next;\n    } //while (1)\n}\n\n/* Special case: list L1 has one item */\nItem *one_item_list(Item *L1, Item *L2){\n    int common = L1->data;\n    free(L1);\n    while (L2->data != common) //search of common item in L2\n        L2 = L2->next;\n    return L2;\n}\n\nItem *cyclic_lists_combining(Item *L1, Item *L2){\n    Item *p1, *p2, *common;\n    if (L1->next == L1) //L1 has one item\n        return one_item_list(L1, L2);\n    if (L2->next == L2) //L2 has one item\n        return one_item_list(L2, L1);\n\n    //p1 and p2 are addresses of items preceding common ones\n    addresses_of_items_preceding_common(L1, L2, &p1, &p2);\n\n    /* Combining of L1 and L2*/\n    common = p1->next;\n    p1->next = p2->next->next;\n    free(p2->next);\n    p2->next = common;\n    return common;\n}\n```",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "high",
+   "points": 40,
+   "image": "images/exams/21B-A-Q2.png"
+  },
+  {
+   "num": 3,
+   "kind": "code",
+   "topic": "files",
+   "question": "כתוב פונקציה אשר מקבלת מחרוזת `fileName` המהווה שם של **קובץ טקסט**. הקובץ שומר תוכן של מערך דו-ממדי של מספרים שלמים שבו כל שורה מורכבת מרצפים של מספרים זהים בדרך חסכונית.\n\nשורה מס' `i` בקובץ מתאימה לשורה מס' `i` של המערך (שורות הקובץ ממוספרות מ-0).\nכל רצף של מספרים זהים בשורת המערך (מתחילתה עד סופה) מוצג בשורת הקובץ (מתחילתה עד סופה) בהתאם כזוג מספרים: ערך האיברים ברצף וכמות האיברים ברצף.\nהמספרים הסמוכים בכל שורה מופרדים ברווח אחד. התו של סוף השורה מופיע מיד אחרי המספר האחרון בכל שורה, כולל השורה האחרונה.\n\nעל הפונקציה לשחזר מערך דו-ממדי דינאמי `A`. יש למלא את `A` בהתאם לתוכן הקובץ.\nבנוסף הפונקציה תיצור מערך דינאמי `S` המורכב מגדלי שורות של `A` כך שאיבר מס' `i` ב-`S` יהיה שווה לגודל שורה מס' `i` ב-`A`.\nהפונקציה תחזיר את `A` ותעביר (`by reference`) את `S` ואת מספר השורות ב-`A`.\n\nניתן להניח שיש בזיכרון מספיק מקום להקצאה.\n\n**דוגמא:**\n```\nתוכן הקובץ        המערך A                    S\n4 2 7 4 3 3       4 4 7 7 7 7 3 3 3          9\n2 6 1 2           2 2 2 2 2 2 1 1            8\n9 1 12 3          9 12 12 12                 4\n3 2 18 5 0 2      3 3 18 18 18 18 18 0 0     9\n```\nהפונקציה תעביר 4 כמספר השורות ב-`A`.\n\n*בחלק זה יש לענות על שתי שאלות מתוך שלוש (שאלות 1, 2 ו-3).*",
+   "solution": "```c\nint **file_to_sequences_in_rows(char* filename, int **S, int *rows)\n{\n    char ch;\n    int **A, num, size, start_row, i, j, k;\n    FILE* fptr = fopen(filename, \"r\");\n    if (!fptr)\n        exit(1);\n\n    /* Estimation of the number of rows */\n    *rows = 0;\n    while ((ch = fgetc(fptr)) != EOF)\n        if (ch == '\\n')\n            (*rows)++;\n\n    A = (int**)calloc(*rows, sizeof(int*)); //pointer array allocation\n    *S = (int*)calloc(*rows, sizeof(int)); //array of row sizes allocation\n\n    rewind(fptr);\n    for (i = 0; i < *rows; i++)\n    {\n        start_row = ftell(fptr);\n        /* Estimation of row size */\n        do\n        {\n            fscanf(fptr, \"%d%d\", &num, &size);\n            (*S)[i] += size;\n        } while ((ch = fgetc(fptr)) != '\\n');\n\n        A[i] = (int*)calloc((*S)[i], sizeof(int)); //row allocation\n\n        /* File row -> array row */\n        fseek(fptr, start_row, SEEK_SET);\n        k = 0;\n        do\n        {\n            fscanf(fptr, \"%d%d\", &num, &size);\n            for (j = 1; j <= size; j++, k++)\n                A[i][k] = num;\n        } while ((ch = fgetc(fptr)) != '\\n');\n    } //for i\n    fclose(fptr);\n    return A;\n}\n```",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "high",
+   "points": 40
+  },
+  {
+   "num": 4,
+   "part": "א",
+   "kind": "mcq",
+   "topic": "c_traps_mcq",
+   "question": "בחר את התשובה הנכונה **ונמק** בכל אחד מהסעיפים הבאים (שאלה 4, 20 נק' בסך הכול; חובה לרשום את הבחירה והנימוק במחברת). זהו סעיף 1 בשאלה.\nמה מאותחל כברירת המחדל?",
+   "options": [
+    {
+     "id": "a",
+     "type": "text",
+     "value": "משתנה מסוג `int` שמוגדר בתוך פונקציה, למשל `int x;`"
+    },
+    {
+     "id": "b",
+     "type": "text",
+     "value": "משתנה מסוג פוינטר ל-`int` שמוגדר בתוך פונקציה, למשל `int *p;`"
+    },
+    {
+     "id": "c",
+     "type": "text",
+     "value": "קבועים של טיפוס `enum`"
+    },
+    {
+     "id": "d",
+     "type": "text",
+     "value": "משתנה בקרה בלולאת `for` אשר לא מאותחל במפורש בחלק הראשון של הלולאה, למשל `for( ; i<n; i++)`"
+    },
+    {
+     "id": "e",
+     "type": "text",
+     "value": "איברי מערך דינאמי שהוקצה באמצעות פונקציית `malloc`"
+    },
+    {
+     "id": "f",
+     "type": "text",
+     "value": "אף תשובה אינה נכונה"
+    }
+   ],
+   "correctId": "c",
+   "explanation": "ערכים של הקבועים של `enum` נקבעים אוטומטית, מתחילים מ-0 וגדלים ב-1.",
+   "official": true,
+   "confidence": "high"
+  },
+  {
+   "num": 4,
+   "part": "ב",
+   "kind": "mcq",
+   "topic": "bit_manipulation",
+   "question": "בחר את התשובה הנכונה **ונמק** בכל אחד מהסעיפים הבאים (שאלה 4, 20 נק' בסך הכול; חובה לרשום את הבחירה והנימוק במחברת). זהו סעיף 2 בשאלה.\nמה קורה בצד שמאל של מספר `int` חיובי לאחר ביצוע פעולת הזזת סיביות ימינה בתוכו?",
+   "options": [
+    {
+     "id": "a",
+     "type": "text",
+     "value": "מצד שמאל המספר מתמלא ב-0-ים"
+    },
+    {
+     "id": "b",
+     "type": "text",
+     "value": "מצד שמאל המספר מתמלא ב-1-ים"
+    },
+    {
+     "id": "c",
+     "type": "text",
+     "value": "מצד שמאל המספר מתמלא בסיביות שהלכו לאיבוד מצד ימין"
+    },
+    {
+     "id": "d",
+     "type": "text",
+     "value": "שיטת מילוי המספר מצד שמאל תלויה במערכת"
+    },
+    {
+     "id": "e",
+     "type": "text",
+     "value": "אף תשובה אינה נכונה"
+    }
+   ],
+   "correctId": "a",
+   "explanation": "לפי כללי שפת C.",
+   "official": true,
+   "confidence": "high"
+  },
+  {
+   "num": 4,
+   "part": "ג",
+   "kind": "mcq",
+   "topic": "structs_unions",
+   "question": "בחר את התשובה הנכונה **ונמק** בכל אחד מהסעיפים הבאים (שאלה 4, 20 נק' בסך הכול; חובה לרשום את הבחירה והנימוק במחברת). זהו סעיף 3 בשאלה.\nאיזה מערך מועבר לפונקציה `by value` (ז\"א הפונקציה מקבלת גישה להעתק של תוכנו אבל לא לתוכן המקורי שלו)?",
+   "options": [
+    {
+     "id": "a",
+     "type": "text",
+     "value": "מערך סטטי חד-ממדי"
+    },
+    {
+     "id": "b",
+     "type": "text",
+     "value": "מערך דינאמי חד-ממדי"
+    },
+    {
+     "id": "c",
+     "type": "text",
+     "value": "מערך סטטי דו-ממדי"
+    },
+    {
+     "id": "d",
+     "type": "text",
+     "value": "מערך דינאמי דו-ממדי"
+    },
+    {
+     "id": "e",
+     "type": "text",
+     "value": "מערך סטטי אשר מהווה שדה של המבנה כאשר המבנה מועבר לפונקציה `by value`"
+    },
+    {
+     "id": "f",
+     "type": "text",
+     "value": "אף תשובה אינה נכונה"
+    }
+   ],
+   "correctId": "e",
+   "explanation": "מערך עצמו תמיד מועבר `by reference` כי הפונקציה מקבלת לא מערך עצמו אלא כתובתו. אבל מבנה מועבר `by value` כך שכל השדות שלו מועתקים כולל שדות שהם מערכים.",
+   "official": true,
+   "confidence": "high"
+  },
+  {
+   "num": 4,
+   "part": "ד",
+   "kind": "mcq",
+   "topic": "storage_classes",
+   "question": "בחר את התשובה הנכונה **ונמק** בכל אחד מהסעיפים הבאים (שאלה 4, 20 נק' בסך הכול; חובה לרשום את הבחירה והנימוק במחברת). זהו סעיף 4 בשאלה.\nנתונה הפונקציה הבאה:\n```c\nint *fun() {\n    static int x;\n    x++;\n    return &x;\n}\n```\nמהי הטענה הנכונה?",
+   "options": [
+    {
+     "id": "a",
+     "type": "text",
+     "value": "הפונקציה לא תקינה רק מכיוון שהיא מחזירה כתובת של משתנה אשר לא קיים מעבר לפונקציה"
+    },
+    {
+     "id": "b",
+     "type": "text",
+     "value": "הפונקציה לא תקינה רק מכיוון שניגשים בתוכה למשתנה אשר לא מאותחל"
+    },
+    {
+     "id": "c",
+     "type": "text",
+     "value": "הפונקציה לא תקינה גם מכיוון שהיא מחזירה כתובת של משתנה אשר לא קיים מעבר לפונקציה וגם מכוון שניגשים בתוכה למשתנה אשר לא מאותחל"
+    },
+    {
+     "id": "d",
+     "type": "text",
+     "value": "הפונקציה תקינה"
+    },
+    {
+     "id": "e",
+     "type": "text",
+     "value": "אף טענה אינה נכונה"
+    }
+   ],
+   "correctId": "d",
+   "explanation": "משתנה `static` נשמר בזיכרון גם אחרי יציאה מהפונקציה. משתנה `static` ללא אתחול מפורש מאותחל ב-0.",
+   "official": true,
+   "confidence": "high"
+  },
+  {
+   "num": 5,
+   "kind": "code",
+   "topic": "c_traps_mcq",
+   "question": "**שאלת בונוס.** מהו הפלט של התוכנית הבאה?\n```c\n#include <stdio.h>\n\nvoid main()\n{\n    printf(\"%d\\n\", sizeof\"|0\\0/00\\0/0|\");\n}\n```\nיש לנמק את התשובה.",
+   "solution": "**הפלט:** `11`\n\n**נימוק:**\nבטקסט שבתוך המירכאות יש 12 סימנים. ביניהם פעמיים מופיעה סדרת `'\\0'` אשר מהווה תו אחד. לכן מופיעים פה 10 תווים. בסוף כל מחרוזת קבועה יש עוד תו אפסי (`'\\0'`). לכן סה\"כ המערך מורכב מ-11 תווים. אופרטור `sizeof` מחזיר את גודל האופרנד בבתים. כל תו תופס בית אחד. לכן הפלט יהיה 11.",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "high",
+   "points": 10
+  }
+ ]
+}

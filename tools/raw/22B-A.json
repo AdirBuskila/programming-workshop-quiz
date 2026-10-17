@@ -1,0 +1,218 @@
+{
+ "examCode": "22B-A",
+ "examLabel": "סדנה מתקדמת בתכנות 61108, סמסטר ב' תשפ\"ב, מועד א'",
+ "year": 2022,
+ "examDate": "23.06.2022",
+ "sourceFile": "22B-A exam",
+ "solutionFile": "22B-A official solution",
+ "contexts": {},
+ "questions": [
+  {
+   "num": 1,
+   "kind": "code",
+   "topic": "strings",
+   "question": "כתבו פונקציה בשם `duplicateString` אשר מקבלת מחרוזת בסיס `base`, מחרוזת אמצע `middle` ומספר שלם `times`.\n\nעל הפונקציה ליצור ולהחזיר מחרוזת דינאמית חדשה המהווה שרשור של מחרוזת הבסיס עם מחרוזת האמצע לסירוגין.\nמחרוזת הבסיס תופיע `times` פעמים כתת-מחרוזת במחרוזת החדשה. מחרוזת האמצע לא תהיה בתחילת ובסוף המחרוזת החדשה ותופיע כתת-מחרוזת רק בין מחרוזת הבסיס.\n\n**לדוגמא,** עבור `times = 3` המחרוזת החדשה תיראה כך:\n```\nbase | middle | base | middle | base\n```\nניתן להניח שיש בזיכרון מספיק מקום להקצאת המחרוזת.\n\n*בחלק זה יש לענות על שתי שאלות מתוך שלוש (שאלות 1, 2 ו-3).*",
+   "solution": "```c\nchar* duplicateString(char* base, char* middle, int times)\n{\n    // zeroed dynamic array\n    char* str = calloc(times * strlen(base) + (times - 1) * strlen(middle) + 1,\n        sizeof(char));\n    int i;\n\n    for (i = 1; i <= times - 1; i++)\n    {\n        strcat(str, base);\n        strcat(str, middle);\n    }\n    strcat(str, base);\n    return str;\n}\n```",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "high",
+   "points": 40
+  },
+  {
+   "num": 2,
+   "kind": "code",
+   "topic": "linked_lists",
+   "question": "נתון מספר חיובי שלם `M` המיוצג באמצעות רשימה מקושרת `L`, כך שכל איבר ברשימה מכיל ספרה אחת של המספר (הספרה המשמעותית ביותר של `M` - באיבר הראשון של `L`, ..., הספרה הכי פחות משמעותית של `M` - באיבר האחרון של `L`).\n\nכתבו פונקציה `void` בשם `List_num_add` המקבלת מצביע לראש הרשימה `L` ומספר חיובי שלם `N`.\nעל הפונקציה להגדיל ב-`N` את המספר `M` המיוצג ע\"י `L` (כלומר להפוך `L` לרשימה מקושרת שתייצג את המספר `M+N`). במידת הצורך להאריך את הרשימה (במקרה זה ניתן להניח שיש בזיכרון מספיק מקום להקצאה).\n\n**שימו לב.** אין ליצור רשימה חדשה אלא רק לעדכן את הרשימה המקורית.\n\n**דוגמא:**\nהמספר 9994 ירשם כמתואר להלן, כך שהספרה הראשונה מופיעה בראש הרשימה והאחרונה בזנבה. לאחר הוספת הערך 18, הרשימה תראה כך (באיור).\n\nיש להגדיר את הטיפוס של איברי הרשימה מעל הפונקציה.\n\n*בחלק זה יש לענות על שתי שאלות מתוך שלוש (שאלות 1, 2 ו-3).*",
+   "solution": "```c\ntypedef struct item {\n    int data;\n    struct item* next;\n}Item;\n\n/* Auxiliary function: estimation of the size of a number */\nint countDigit(int number)\n{\n    int j = 0;\n    while (number)\n    {\n        ++j;\n        number /= 10;\n    }\n    return j;\n}\n```\n**גרסה 1:**\n```c\nvoid List_num_add_1(Item* head, int N)\n{\n    int i, p, k, new_size, number = 0;\n    Item* node = head;\n\n    /* Creating a number from the list */\n    while (node)\n    {\n        number = number * 10 + node->data;\n        node = node->next;\n    }\n\n    number += N; //new number\n    new_size = countDigit(number); //the size of a new number\n\n    /* List transformation for a new number */\n    p = (int)pow(10, new_size);\n    node = head;\n    for (i = 0; i < new_size; ++i)\n    {\n        p /= 10;\n        k = number / p;\n        node->data = k;\n        number = number - k * p;\n        if (!node->next && i < new_size - 1)  //additional element\n            node->next = (Item*)calloc(1, sizeof(Item));\n        node = node->next;\n    } //for\n}\n```\n**גרסה 2:**\n```c\nvoid List_num_add(Item* head, int N)\n{\n    int i, p, k, size = 0, new_size, number = 0, diff;\n    Item* node = head;\n\n    /* Creating a number from the list */\n    while (node)\n    {\n        number = number * 10 + node->data;\n        node = node->next;\n        size++;\n    }\n\n    number += N; //new number\n    new_size = countDigit(number); //the size of a new number\n    diff = new_size - size;\n\n    /* Addition of new elements for a new number */\n    if (diff > 0)\n    {\n        node = head;\n        while (node->next) //search of a last element\n            node = node->next;\n        for (i = 1; i <= diff; i++) //diff new elements\n        {\n            node->next = (Item*)malloc(sizeof(Item));\n            node = node->next;\n        }\n        node->next = NULL;\n    }\n\n    /* List filling for a new number */\n    p = (int)pow(10, new_size);\n    node = head;\n    while (node)\n    {\n        p /= 10;\n        k = number / p % 10;\n        node->data = k;\n        node = node->next;\n    }\n}\n```",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "high",
+   "points": 40,
+   "image": "images/exams/22B-A-Q2.png"
+  },
+  {
+   "num": 3,
+   "kind": "code",
+   "topic": "files",
+   "question": "נתונה הגדרת המבנה הבאה:\n```c\ntypedef struct {\n    char address[30];\n    int rooms;\n    int price;\n} apartment;\n```\nהמתארת מידע על דירה למכירה במשרד תיווך, כאשר:\n- `address` - הכתובת של הדירה למכירה,\n- `rooms` - מספר החדרים בדירה,\n- `price` - מחיר הדירה.\n\nכתבו פונקציה בשם `appropriateAppartment` אשר מקבלת מחרוזת `fileName` המהווה שם של **קובץ בינארי**. הקובץ מורכב מרשומות הנתונים שהפורמט של כל אחת מהן מתאים למבנה `apartment`. כמו כן, הפונקציה מקבלת כפרמטרים את מספר החדרים הרצוי לקונה (מספר שלם `room_number`) ואת המחיר המקסימאלי שהקונה מוכן לשלם (מספר שלם `max_price`).\n\nעל הפונקציה ליצור מערך דינאמי של מבני `apartment`. המערך יכיל את נתוני כל הדירות של הקובץ שמחירן אינו עולה על `max_price` ושמספר חדריהן שווה ל-`room_number`.\nהפונקציה תחזיר את כתובת תחילת המערך ותעביר (`by reference`) את גודלו.\nאם אף דירה בקובץ לא מתאימה לתנאים לעיל או הקובץ לא נפתח, הפונקציה תחזיר `NULL` ותעביר 0.\n\n**דוגמא:**\nעבור הקובץ הבא (הרשומות משמאל לימין):\n```\naddress   Begin 7   Reznik 4   Ben-Gurion 27   Dubnov 13   Cohen 66\nrooms     3         4          5               3           3\nprice     700,000   1,000,000  4,000,000       1,100,000   900,000\n```\nו-`room_number=3`, `max_price=1,000,000` הפונקציה תיצור את המערך\n```\naddress   Begin 7   Cohen 66\nrooms     3         3\nprice     700,000   900,000\n```\nותעביר 2.\n\nניתן להניח שיש בזיכרון מספיק מקום להקצאת המערך.\n\n*בחלק זה יש לענות על שתי שאלות מתוך שלוש (שאלות 1, 2 ו-3).*",
+   "solution": "```c\napartment* appropriateAppartment(char* fileName, int room_number, int max_price,\n    int* count)\n{\n    int i=0;\n    FILE* fptr = fopen(fileName, \"rb\");\n    apartment* approp_apart_units, unit;\n    *count = 0;\n    if (!fptr)\n        return NULL;\n\n    /* Estimation of array size */\n    fread(&unit, sizeof(apartment), 1, fptr);\n    while (!feof(fptr))\n    {\n        if (unit.rooms == room_number && unit.price <= max_price)\n            (*count)++;\n        fread(&unit, sizeof(apartment), 1, fptr);\n    }\n\n    if (*count == 0)\n    {\n        fclose(fptr);\n        return NULL;\n    }\n\n    approp_apart_units = (apartment*)calloc(*count, sizeof(apartment)); //array allocation\n\n    /* Filling of array */\n    rewind(fptr);\n    fread(&unit, sizeof(apartment), 1, fptr);\n    while (!feof(fptr))\n    {\n        if (unit.rooms == room_number && unit.price <= max_price)\n            approp_apart_units[i++] = unit;\n        fread(&unit, sizeof(apartment), 1, fptr);\n    }\n\n    fclose(fptr);\n    return approp_apart_units;\n}\n```",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "high",
+   "points": 40
+  },
+  {
+   "num": 4,
+   "part": "א",
+   "kind": "mcq",
+   "topic": "files",
+   "question": "בחרו את התשובה הנכונה **ונמקו** בכל אחד מהסעיפים הבאים (שאלה 4, 20 נק' בסך הכול; חובה לרשום את הבחירה והנימוק במחברת).\nנתון קובץ טקסט בעל התוכן הבא: `1 2 3 4 5` (משמאל לימין). אחרי כל אחד מחמישה המספרים (גם אחרי 5) יש רווח. מיד אחרי הפתיחה המוצלחת של הקובץ באמצעות מצביע `fptr` מופיע הקטע הבא בתוכנית (`x` הוא משתנה מסוג `int`):\n```c\nwhile (!feof(fptr)) {\n    fscanf(fptr, \"%d\", &x);\n    printf(\"%d \", x);\n}\n```\nכמה פעמים מבוצע גוף הלולאה?",
+   "options": [
+    {
+     "id": "a",
+     "type": "text",
+     "value": "5 פעמים"
+    },
+    {
+     "id": "b",
+     "type": "text",
+     "value": "4 פעמים"
+    },
+    {
+     "id": "c",
+     "type": "text",
+     "value": "מספר אינסופי פעמים"
+    },
+    {
+     "id": "d",
+     "type": "text",
+     "value": "פעם אחת"
+    },
+    {
+     "id": "e",
+     "type": "text",
+     "value": "אף תשובה אינה נכונה"
+    }
+   ],
+   "correctId": "e",
+   "explanation": "הקוד מאורגן בצורה לא תקינה - ללא קלט לפני בדיקת סוף הקובץ. כתוצאה אחרי טיפול בחמישה המספרים השמורים נכנס לתוך הלולאה גם בפעם השישי כאשר נהיה כבר בסוף הקובץ.",
+   "official": true,
+   "confidence": "high"
+  },
+  {
+   "num": 4,
+   "part": "ב",
+   "kind": "mcq",
+   "topic": "pointers",
+   "question": "בחרו את התשובה הנכונה **ונמקו** בכל אחד מהסעיפים הבאים (שאלה 4, 20 נק' בסך הכול; חובה לרשום את הבחירה והנימוק במחברת).\nנתונה ההצהרה:\n```c\ndouble (**q) ();\n```\nעל מה מצביע פוינטר `q`?",
+   "options": [
+    {
+     "id": "a",
+     "type": "text",
+     "value": "על פוינטר ל-`double`"
+    },
+    {
+     "id": "b",
+     "type": "text",
+     "value": "על פונקציה"
+    },
+    {
+     "id": "c",
+     "type": "text",
+     "value": "על פוינטר לפונקציה"
+    },
+    {
+     "id": "d",
+     "type": "text",
+     "value": "על פוינטר לפוינטר ל-`double`"
+    },
+    {
+     "id": "e",
+     "type": "text",
+     "value": "`q` זה לא פוינטר אלא פונקציה"
+    },
+    {
+     "id": "f",
+     "type": "text",
+     "value": "אף תשובה אינה נכונה"
+    }
+   ],
+   "correctId": "c",
+   "explanation": "לפי תחביר שפת C, `q` זה פוינטר לפוינטר לפונקציה ללא פרמטרים אשר מחזירה `double`. ז\"א, `q` מצביע על פוינטר לפונקליה.",
+   "official": true,
+   "confidence": "high"
+  },
+  {
+   "num": 4,
+   "part": "ג",
+   "kind": "mcq",
+   "topic": "dynamic_memory",
+   "question": "בחרו את התשובה הנכונה **ונמקו** בכל אחד מהסעיפים הבאים (שאלה 4, 20 נק' בסך הכול; חובה לרשום את הבחירה והנימוק במחברת).\nנתון פוינטר ל-`int` בשם `p`. בחרו מה יקרה אחרי ביצוע פעולת\n```c\np = (int*)malloc(0);\n```",
+   "options": [
+    {
+     "id": "a",
+     "type": "text",
+     "value": "`malloc` תקצה ביית אחד בעל אינדקס 0"
+    },
+    {
+     "id": "b",
+     "type": "text",
+     "value": "`p` יצביע על איזשהו מקום"
+    },
+    {
+     "id": "c",
+     "type": "text",
+     "value": "`p` יהיה שווה ל-`NULL`"
+    },
+    {
+     "id": "d",
+     "type": "text",
+     "value": "הפעולה תגרום לשגיאת ריצה"
+    },
+    {
+     "id": "e",
+     "type": "text",
+     "value": "אף תשובה אינה נכונה"
+    }
+   ],
+   "correctId": "b",
+   "explanation": "במידה והפרמטר של `malloc` שווה ל-0 , הפונקציה לא מקצה זיכרון אבל לא מחזירה `NULL`.",
+   "official": true,
+   "confidence": "high"
+  },
+  {
+   "num": 4,
+   "part": "ד",
+   "kind": "mcq",
+   "topic": "strings",
+   "question": "בחרו את התשובה הנכונה **ונמקו** בכל אחד מהסעיפים הבאים (שאלה 4, 20 נק' בסך הכול; חובה לרשום את הבחירה והנימוק במחברת).\nבתוכנית נתונה ההצהרה הבאה:\n```c\nchar *str = \"hello\";\n```\nבחרו מה יקרה אחרי ביצוע פעולת\n```c\nstr = \"good-bye\";\n```",
+   "options": [
+    {
+     "id": "a",
+     "type": "text",
+     "value": "ישתנה ערך של מצביע `str`"
+    },
+    {
+     "id": "b",
+     "type": "text",
+     "value": "תוכן המערך `str` ישתנה ל-\"good-bye\""
+    },
+    {
+     "id": "c",
+     "type": "text",
+     "value": "תוכן המערך `str` ישתנה ל-\"good-\""
+    },
+    {
+     "id": "d",
+     "type": "text",
+     "value": "תוכן המערך `str` ישתנה ל-\"good-byehello\""
+    },
+    {
+     "id": "e",
+     "type": "text",
+     "value": "הפעולה תגרום לשגיאת ריצה"
+    },
+    {
+     "id": "f",
+     "type": "text",
+     "value": "אף תשובה אינה נכונה"
+    }
+   ],
+   "correctId": "a",
+   "explanation": "לא מוגדר פה מערך ו-`str` הוא מצביע. עבור הגדרה זו של `str` המחשב מקצה שטח זיכרון ל-`str` ולמחרוזת \"hello\" ומציב ל-`str` את כתובת התו הראשון של המחרוזת.",
+   "official": true,
+   "confidence": "high"
+  },
+  {
+   "num": 5,
+   "kind": "code",
+   "topic": "bit_manipulation",
+   "question": "**שאלת בונוס.** מהו הפלט של התוכנית הבאה?\n```c\n#include <stdio.h>\n#include <math.h>\n\nvoid main()\n{\n    int z='z'-1;\n    putchar(z-(int)pow((z^1)-z,z<<1));\n}\n```\nיש לנמק את התשובה.",
+   "solution": "**הפלט:** `x`\n\n**נימוק:**\nבשורה הראשונה משתנה `z` מקבל ערך שקטן ב-1 מקוד ASCII של `'z'`, ז\"א קוד ASCII של `'y'`. ייצוג בינארי של 1 מורכב מאפסים וסיבית 1 בסוף. לפי כללי פעולת `^` (XOR), `a^0=a`, `a^1=ā`. לכן `z^1` שונה מ-`z` רק בסיבית ימנית ולכן הפרש ביניהם הוא 1 או -1. אחרי הזזת שמאלה סיביות של `z`, הסיבית הימנית של `z` תהיה 0 ולכן זה מספר זוגי. לכן `z^1` בחזקת `z<<1` שווה ל-1. `z` שווה לקוד ASCII של `'y'` ואז `z-1` שווה לקוד ASCII של `'x'`. לכן הפלט הוא `x`.\n\n**הערת מתמלל (לא חלק מהפתרון הרשמי):** בקוד עצמו בסיס החזקה הוא `(z^1)-z`, וערכו -1 (`z` אי-זוגי ולכן `z^1 = z-1`), והמעריך `z<<1` זוגי, ולכן החזקה שווה ל-1. הנימוק הרשמי מקצר את הביטוי. הפלט נבדק בהרצה: `x`.",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "high",
+   "points": 10
+  }
+ ]
+}
