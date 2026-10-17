@@ -1,0 +1,90 @@
+{
+ "examCode": "25B-B",
+ "refuter": "claude",
+ "method": "own derivation recorded first; independent clang runs in tools/verify/25B-B/refute_*",
+ "derivations": {
+  "q4": "1 1 / 1 2 / 1 3 / 2 8 / 3 8",
+  "q5a": "c",
+  "q5b": "a",
+  "q6": "10"
+ },
+ "items": {
+  "1": {
+   "solution": "agree (spot-check: example 0 3 4; 20000 random cases vs own brute force, 0 mismatches)",
+   "rubric": "agree (14+9+9+8=40)",
+   "pitfalls": "agree; pitfall 3 is weak: it mixes duplicate elements with an uninitialized return, so it is a loose pitfall, not wrong",
+   "steps": [
+    "agree numeric 3",
+    "agree choice a (helper returns 0)",
+    "agree fillblank a unique (b fails to compile on clang19: int param given Item*; c prints 8 8 8; d prints 2 6 5 1 8)",
+    "agree order",
+    "agree findbug idx 4 (single line diff, output 3 4)"
+   ]
+  },
+  "2": {
+   "solution": "agree (matches official page, example matrix reproduced)",
+   "rubric": "agree (10+12+12+6=40)",
+   "pitfalls": "agree",
+   "steps": [
+    "agree 4",
+    "agree 42",
+    "agree choice a",
+    "agree fillblank a unique, blankIndex 13 (b gives wrong values, c crashes, d garbage)",
+    "agree findbug idx 12 (single line diff, last column 0)"
+   ]
+  },
+  "3": {
+   "solution": "agree (spot-check example: 3 recs, 168 bytes); known note: last record lost without trailing newline, reproduced (112 bytes)",
+   "rubric": "agree (8+12+12+8=40)",
+   "pitfalls": "agree",
+   "steps": [
+    "agree 56 on x64 clang (platform-dependent: 52 on 32-bit gcc/Linux)",
+    "agree 168 (with trailing newline, as stated)",
+    "agree key a, with caveat: option b (%10s%31s) gives byte-identical correct output on the example file; it fails only for full-width input (9-char id directly followed by a 30-char name: corrupted id/name, overflow). Option c crashes (0xC0000005); option d writes 0.00 for the first total.",
+    "agree order",
+    "agree findbug idx 10 (30 bytes)"
+   ]
+  },
+  "4": {
+   "solution": "agree",
+   "rubric": "agree (3+3+2+2=10)",
+   "pitfalls": "agree",
+   "steps": [
+    "agree a",
+    "agree a",
+    "agree 8",
+    "agree order"
+   ]
+  },
+  "5a": {
+   "key": "agree c (clang: field has incomplete type; pointer-to-struct fields compile)",
+   "pitfalls": "agree"
+  },
+  "5b": {
+   "key": "agree a (str1==str2 -> 0, no output, no compile error)",
+   "pitfalls": "agree"
+  },
+  "6": {
+   "solution": "agree 10 (s={47,1,0,47})",
+   "rubric": "agree (4+2+3+1=10)",
+   "pitfalls": "agree",
+   "steps": [
+    "agree 1",
+    "agree 0",
+    "agree 2",
+    "agree 10"
+   ]
+  }
+ },
+ "transcription": "no mismatches against page images (Q5 option counts 5/6, Q6 array, Q2 shifted layout all match)",
+ "counts": {
+  "agree": "all items and steps",
+  "disagree": 0,
+  "unclear": 0,
+  "flags": [
+   "Q3 fillblank option b is a weak distractor (correct on the example data)",
+   "Q3 sizeof=56 platform-dependent",
+   "Q1 pitfall 3 muddled"
+  ]
+ }
+}
