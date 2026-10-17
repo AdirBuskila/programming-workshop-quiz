@@ -1,0 +1,192 @@
+{
+ "examCode": "21B-B",
+ "examLabel": "סדנה מתקדמת בתכנות 61108, סמסטר ב' תשפ\"א, מועד ב'",
+ "year": 2021,
+ "examDate": "13.07.2021",
+ "sourceFile": "21B-B exam",
+ "solutionFile": "21B-B official solution",
+ "contexts": {},
+ "questions": [
+  {
+   "num": 1,
+   "kind": "code",
+   "topic": "files",
+   "question": "כתוב פונקציה אשר מקבלת מחרוזות `infile_1`, `infile_2` ו-`outfile` המהוות שמות של שלושה קבצי טקסט.\nתוכן של כל שורה בקבצים `infile_1` ו-`infile_2` הוא רצף של מספרים שלמים **ממוינים** (מתחילת השורה עד סופה) מופרדים ברווחים. התו של סוף השורה מופיע מיד אחרי המספר האחרון בכל שורה, כולל השורה האחרונה.\n\nעל הפונקציה למלא קובץ `outfile` כך שתוכן שורה מס' `i` בתוכו יהיה רצף **ממוין** (מתחילת השורה עד סופה) של כל המספרים ששייכים לשורות מס' `i` בקבצים `infile_1` ו-`infile_2`.\nאם מספרי השורות בקבצים `infile_1` ו-`infile_2` הם שונים (נסמן אותם ב-`n` ו-`m` כך שלמשל `n>m`) אז קובץ `outfile` יכלול `n` שורות כך ש-`n-m` השורות האחרונות יועתקו מהקובץ התואם.\n\n**דוגמא:**\n`infile_1`:\n```\n3 8 12 16 20\n0 2 2 6\n9 10 10 11 19 26\n4 4 4 5\n```\n`infile_2`:\n```\n9 17\n2 6 7 11\n5 13 14 18\n```\n`outfile`:\n```\n3 8 9 12 16 17 20\n0 2 2 2 6 6 7 11\n5 9 10 10 11 13 14 18 19 26\n4 4 4 5\n```\n\n*בחלק זה יש לענות על שתי שאלות מתוך שלוש.*",
+   "solution": "```c\n/* Auxiliary function. Copy a number from file to file\nand input of a next number */\nvoid next_number(FILE* in, FILE* out, int* num, char* ch)\n{\n    fprintf(out, \"%d \", *num);\n    if ((*ch = fgetc(in)) != '\\n')\n        fscanf(in, \"%d\", num);\n}\n\n/* Auxiliary function.\nMerging 2 sorted rows of 2 files into a sorted row in a new file */\nvoid rows_merge(FILE* in1, FILE* in2, FILE* out)\n{\n    char ch1=0, ch2=0;\n    int num1, num2;\n\n    /* Merging rows until one of the rows ends */\n    fscanf(in1, \"%d\", &num1);\n    fscanf(in2, \"%d\", &num2);\n    while (ch1 != '\\n' && ch2 != '\\n')\n        if (num1 < num2)\n            next_number(in1, out, &num1, &ch1);\n        else\n            next_number(in2, out, &num2, &ch2);\n\n    /* Copying remainder of a longer row */\n    while (ch1 != '\\n')\n        next_number(in1, out, &num1, &ch1);\n    while (ch2 != '\\n')\n        next_number(in2, out, &num2, &ch2);\n\n    fputc('\\n', out);\n}\n\n/* Auxiliary function */\nvoid copy_file(FILE* in, FILE* out)\n{\n    char ch;\n    while ((ch = fgetc(in)) != EOF)\n        fputc(ch, out);\n}\n\nvoid filesMerge(char* infile1, char* infile2, char* outfile)\n{\n    FILE* in1 = fopen(infile1, \"r\");\n    FILE* in2 = fopen(infile2, \"r\");\n    FILE* out = fopen(outfile, \"w\");\n    if (!in1 || !in2 || !out)\n        exit(1);\n\n    /* Merging file rows until one of the files ends */\n    while (fgetc(in1) != EOF && fgetc(in2) != EOF)\n    {\n        fseek(in1, -1, SEEK_CUR);\n        fseek(in2, -1, SEEK_CUR);\n        rows_merge(in1, in2, out);\n    }\n\n    /* Copying remainder of a larger file */\n    fseek(in1, -1, SEEK_CUR);\n    fseek(in2, -1, SEEK_CUR);\n    copy_file(in1, out);\n    copy_file(in2, out);\n\n    fclose(in1);\n    fclose(in2);\n    fclose(out);\n}\n```\n\n**הערת מתמלל (לא חלק מהפתרון הרשמי):** בהרצה אמיתית (`tools/verify/21B-B/q1.c`) הפתרון הרשמי ממזג נכון את השורות המשותפות, אך אינו מייצר את הפלט של הדוגמה. כשאחד הקבצים נגמר לפני השני, `fseek(..., -1, SEEK_CUR)` על הקובץ שלא נקרא (או שכבר הגיע ל-EOF) מחזיר אותו תו אחד אחורה, ו-`copy_file` מעתיק אליו תו `\\n` עודף. בדוגמה (ל-`infile_1` ארבע שורות ול-`infile_2` שלוש) מתקבלת שורה ריקה בסוף `outfile`, וכש-`infile_2` ארוך יותר מ-`infile_1` מתקבלות שורות ריקות בין השורות. בנוסף, ב-Windows עם הספרייה המודרנית `fseek` בכיוון אחורה על קובץ שנפתח במצב טקסט נכשל, ולכן ההרצה נעשתה במצב בינארי.",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "low",
+   "points": 40,
+   "hold": "official solution fails its own example (stray blank lines in outfile when the files differ in length); see ASK_ADIR 21B-B Q1"
+  },
+  {
+   "num": 2,
+   "kind": "code",
+   "topic": "structs_unions",
+   "question": "נתונה הגדרה הבאה של הטיפוס `person` אשר מהווה שם משפחה, שם פרטי ומס' זהות של בן-אדם:\n```c\ntypedef struct {\n    char last_name[30], first_name[30];\n    unsigned id;\n} person;\n```\nכתוב פונקציה בוליאנית אשר מקבלת מערך איברים מסוג `person` וגודלו.\nעל הפונקציה להחזיר `1` אם המערך ממוין בסדר עולה ולהחזיר `0` אחרת.\n\nנגדיר מערך איברים מסוג `person` כ**ממוין בסדר עולה** אם:\n1. איברי המערך ממוינים בסדר לקסיקוגרפי עולה ממש לפי שמות המשפחה (שדה `last_name`);\n2. כאשר בין איברי המערך יש איברים בעלי שדות `last_name` זהים, האיברים הללו ממוינים בסדר לקסיקוגרפי עולה ממש לפי שמות פרטיים (שדה `first_name`);\n3. כאשר בין איברי המערך יש איברים בעלי שדות `last_name` זהים וגם שדות `first_name` זהים, האיברים הללו ממוינים בסדר עולה לפי מספרי הזהות (שדה `id`).\n\n**דוגמאות:**\nעבור המערך הבא\n```\n0 Asher Mike 231567809\n1 Bern David 216578900\n2 Borgman Joseph 354678903\n3 Cohen Abraham 224567821\n4 Cohen Den 206666431\n5 Levi Ilan 290876441\n6 Levi Omri 245689432\n7 Levi Omri 245689436\n8 Smith Jack 345389010\n9 Smith John 311232111\n```\nהפונקציה תחזיר `1`.\n\nעבור המערך הבא\n```\n0 Asher Mike 231567809\n1 Bern David 216578900\n2 Borgman Joseph 354678903\n3 Cohen Abraham 224567821\n4 Cohen Den 206666431\n5 Levi Ilan 290876441\n6 Levi Omri 245689436\n7 Levi Omri 245689432\n8 Smith Jack 345389010\n9 Smith John 311232111\n```\nהפונקציה תחזיר `0`.\n\n*בחלק זה יש לענות על שתי שאלות מתוך שלוש.*",
+   "solution": "```c\nint ordered_person_array(person* person_arr, int n)\n{\n    int i, cmp;\n    for (i = 1; i < n; i++)\n        if ( (cmp = strcmp(person_arr[i].last_name, person_arr[i - 1].last_name)) < 0 )\n            return 0;\n        else\n            if (cmp == 0)\n                if ((cmp=strcmp(person_arr[i].first_name, person_arr[i-1].first_name))<0)\n                    return 0;\n                else\n                    if (cmp == 0)\n                        if (person_arr[i].id < person_arr[i - 1].id)\n                            return 0;\n    return 1;\n}\n```",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "high",
+   "points": 40
+  },
+  {
+   "num": 3,
+   "kind": "code",
+   "topic": "list_manipulation",
+   "question": "**מטריצה דלילה** הינה מטריצה שמרבית איבריה בעלי ערך אפס.\n\nכתוב פונקציה אשר מקבלת מטריצה דלילה `A` המיושמת כמערך של רשימות מקושרות (היישום החסכוני, כאשר מופיעים ברשימה רק איברי המטריצה שאינם בעלי ערך אפס). רשימה מס' `i` של המערך תתאים לשורה מס' `i` של מטריצה `A`.\nאיברי הרשימות יכילו ערך שהוא איבר המטריצה וגם ערך שהוא מס' העמודה בה הוא נמצא במטריצה.\nהפונקציה תקבל כפרמטרים את מערך הרשימות וגודלו וגם את מספר העמודות במטריצה.\n\nעל הפונקציה לשחזר את המטריצה כמערך דו-ממדי **דינאמי** שכל שורותיו באותו גודל.\nהפונקציה תחזיר כתובת של המערך הדו-ממדי הדינאמי הבנוי.\n\n**דוגמא:** (באיור: משמאל המטריצה `A`, מימין מערך הרשימות שלה)\n\nבדוגמא הנ\"ל הפונקציה תקבל את `A` כמערך רשימות, את גודל המערך, 4, וגם את מספר העמודות ב-`A`, 5.\n\nיש להגדיר את הטיפוס של איברי הרשימה מעל הפונקציה.\n\nניתן להניח שיש בזיכרון מספיק מקום להקצאה.\n\n*בחלק זה יש לענות על שתי שאלות מתוך שלוש.*",
+   "solution": "```c\ntypedef struct element\n{\n    int data;\n    int col;\n    struct element* ptr_next;\n} element;\n\nint** lists_to_sparse_matrix(element** list_row, int rows, int cols)\n{\n    int** arr, i;\n    element* ptr;\n    arr = (int**)calloc(rows, sizeof(int*));\n    for (i = 0; i < rows; i++)\n        arr[i] = (int*)calloc(cols, sizeof(int));\n\n    for (i = 0; i < rows; i++)\n    {\n        ptr = list_row[i];\n        while (ptr)\n        {\n            arr[i][ptr->col] = ptr->data;\n            ptr = ptr->ptr_next;\n        }\n    } // for i\n    return arr;\n}\n```",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "high",
+   "points": 40,
+   "image": "images/exams/21B-B-Q3.png"
+  },
+  {
+   "num": 4,
+   "kind": "code",
+   "topic": "storage_classes",
+   "question": "בחר את התשובה הנכונה **ונמק** בכל אחד מהסעיפים הבאים (חובה לרשום את הבחירה והנימוק במחברת). שאלה 4, 20 נק' בסך הכול.\nמהו פלט (משמאל לימין) של התוכנית הבאה?\n```c\n#include <stdio.h>\n\nint x;\n\nvoid f() {\n    static int x;\n    printf(\"%d\", x);\n    printf(\"%d\", ++x);\n}\n\nvoid main() {\n    f();\n    printf(\"%d\", x);\n    printf(\"%d\", ++x);\n    f();\n}\n```\n(1) `010101`\n(2) `000000`\n(3) `000011`\n(4) `010112`\n(5) `011223`\n(6) התוכנית אינה תקינה\n(7) אף תשובה אינה נכונה",
+   "solution": "**התשובה:** (4) `010112`\n\n**נימוק:**\nכברירת מחדל ערך התחלתי של `static x` הוא 0. לכן בקריאה ראשונה של `f()` מדפיסים 0, מקדמים `x` ומדפיסים 1. אחרי זה מדפיסים ערך התחלתי של `x` גלובלי ששווה ל-0, מקדמים `x` גלובלי ומדפיסים 1. בקריאה שנייה של `f()` מדפיסים `static x` שערכו נשאר 1, מקדמים `x` ומדפיסים 2.",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "high",
+   "part": "א"
+  },
+  {
+   "num": 4,
+   "part": "ב",
+   "kind": "mcq",
+   "topic": "bit_manipulation",
+   "question": "בחר את התשובה הנכונה **ונמק** בכל אחד מהסעיפים הבאים (חובה לרשום את הבחירה והנימוק במחברת). שאלה 4, 20 נק' בסך הכול.\nכמה פעמים יודפס `Hi` עקב ביצוע התוכנית הבאה?\n```c\n#include <stdio.h>\nvoid main() {\n    int i = 64;\n    for (; i; i >>= 1)\n        printf(\"Hi \\n\");\n}\n```",
+   "options": [
+    {
+     "id": "a",
+     "type": "text",
+     "value": "פעם אחת"
+    },
+    {
+     "id": "b",
+     "type": "text",
+     "value": "7 פעמים"
+    },
+    {
+     "id": "c",
+     "type": "text",
+     "value": "64 פעמים"
+    },
+    {
+     "id": "d",
+     "type": "text",
+     "value": "אף פעם"
+    },
+    {
+     "id": "e",
+     "type": "text",
+     "value": "תהיה לולאה אינסופית"
+    },
+    {
+     "id": "f",
+     "type": "text",
+     "value": "אף תשובה אינה נכונה"
+    }
+   ],
+   "correctId": "b",
+   "explanation": "ייצוג בינארי של 64 הוא 1000000 (6 אפסים, 7 סיביות). כל פעולה `i >>= 1` מביאה להזזה של 1 בסיבית אחת ימינה. לכן תוך 7 בדיקות (6 הזזות) סיבית 1 תהיה עוד במספר `i`, ערך של `i` יהיה שונה מ-0 ותנאי המשך הלולאה יתקיים. אחרי הזזה שביעית 1 יצאה מייצוג בינארי של `i` אשר יהיה מורכב רק מאפסים, ולכן ערך עשרוני שלו יהיה 0 כך שתנאי המשך הלולאה בבדיקה שמינית לא יתקיים.",
+   "official": true,
+   "confidence": "high"
+  },
+  {
+   "num": 4,
+   "part": "ג",
+   "kind": "mcq",
+   "topic": "dynamic_memory",
+   "question": "בחר את התשובה הנכונה **ונמק** בכל אחד מהסעיפים הבאים (חובה לרשום את הבחירה והנימוק במחברת). שאלה 4, 20 נק' בסך הכול.\nנתון פוינטר ל-`int p` שמצביע למערך דינאמי. למה יצביע `p` אחרי ביצוע פעולת `p = (int*)realloc(p, 0);`?",
+   "options": [
+    {
+     "id": "a",
+     "type": "text",
+     "value": "לאותו מערך"
+    },
+    {
+     "id": "b",
+     "type": "text",
+     "value": "לאיזשהו מקום חדש"
+    },
+    {
+     "id": "c",
+     "type": "text",
+     "value": "`p` יהיה שווה ל-`NULL`"
+    },
+    {
+     "id": "d",
+     "type": "text",
+     "value": "הפעולה תגרום לשגיאת ריצה"
+    },
+    {
+     "id": "e",
+     "type": "text",
+     "value": "אף תשובה אינה נכונה"
+    }
+   ],
+   "correctId": "c",
+   "explanation": "לפי כללי שפת C כאשר גודל חדש של בלוק זיכרון ב-`realloc` שווה ל-0, הפונקציה מחזירה `NULL`.",
+   "official": true,
+   "confidence": "high"
+  },
+  {
+   "num": 4,
+   "part": "ד",
+   "kind": "mcq",
+   "topic": "files",
+   "question": "בחר את התשובה הנכונה **ונמק** בכל אחד מהסעיפים הבאים (חובה לרשום את הבחירה והנימוק במחברת). שאלה 4, 20 נק' בסך הכול.\nבתוכנית בה `a` מוגדר כמשתנה מסוג `int` ו-`fptr1` ו-`fptr2` הם פוינטרים לקבצים בינאריים קיימות שתי השורות הבאות:\n```c\nfread(&a, sizeof(a), 1, fptr1);\nfwrite(&a, sizeof(a), 1, fptr2);\n```\nמהי הטענה הנכונה?",
+   "options": [
+    {
+     "id": "a",
+     "type": "text",
+     "value": "ברשימת פרמטרי `fread` בשורה הראשונה יש סימן `&` מיותר והשורה השנייה תקינה"
+    },
+    {
+     "id": "b",
+     "type": "text",
+     "value": "ברשימת פרמטרי `fwrite` בשורה השנייה יש סימן `&` מיותר והשורה הראשונה תקינה"
+    },
+    {
+     "id": "c",
+     "type": "text",
+     "value": "ברשימות פרמטרי `fread` ו-`fwrite` יש סימן `&` מיותר"
+    },
+    {
+     "id": "d",
+     "type": "text",
+     "value": "שתי השורות תקינות"
+    },
+    {
+     "id": "e",
+     "type": "text",
+     "value": "באחת מהשורות או בשתי השורות סימן `&` נמצא במקום לא נכון"
+    },
+    {
+     "id": "f",
+     "type": "text",
+     "value": "אף טענה אינה נכונה"
+    }
+   ],
+   "correctId": "d",
+   "explanation": "גם `fread` וגם `fwrite` מקבלות כפרמטר מצביע לבלוק הזיכרון. לכן צריך להציב כתובת של המשתנה.",
+   "official": true,
+   "confidence": "high"
+  },
+  {
+   "num": 5,
+   "kind": "code",
+   "topic": "c_basics_output",
+   "question": "*שאלת בונוס (10 נק').*\nמהו הפלט של התוכנית הבאה?\n```c\n#include <stdio.h>\nvoid main()\n{\n    printf(\"%d\",printf(\"%d%d\",printf(\"%d\",11),printf(\"%d\",11)));\n}\n```\nיש לנמק את התשובה.",
+   "solution": "**הפלט:**\n```\n1111222\n```\n**נימוק:**\nכל אחת מהפונקציות `printf(\"%d\",11)` מדפיסה 11, סה\"כ 1111. פונקציית `printf` מחזירה מספר בתים כתובים, לכן כל אחת מהפונקציות הנ\"ל מחזירה 2. אז `printf` שלישית (מימין) מדפיסה 22 (שני תווים) ומחזירה 2. לכן `printf` חיצונית (רביעית מימין) מדפיסה 2.",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "high",
+   "points": 10
+  }
+ ]
+}

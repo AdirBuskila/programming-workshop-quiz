@@ -1,0 +1,188 @@
+{
+ "examCode": "19B-A",
+ "examLabel": "סדנה מתקדמת בתכנות 61108, סמסטר ב' תשע\"ט, מועד א'",
+ "year": 2019,
+ "examDate": "10.07.2019",
+ "sourceFile": "19B-A exam",
+ "solutionFile": "19B-A official solution",
+ "contexts": {},
+ "questions": [
+  {
+   "num": 1,
+   "kind": "code",
+   "topic": "files",
+   "question": "כתוב פונקציה אשר מקבלת מערך מחרוזות `str`, גודלו `n` וגם מחרוזת `fileName`.\nתו מס' 0 של מחרוזת `str[i]` הוא ספרה בעלת ערך `i+1` (ניתן להניח ש-`n` לא עולה על 9).\n\nעל הפונקציה ליצור קובץ טקסט ששמו נכלל ב-`fileName` ולהעתיק את תוכן המערך לקובץ באופן מחזורי כך שמחרוזת `str[1]` תהיה שורה ראשונה בקובץ, מחרוזת `str[2]` תהיה שורה שנייה בקובץ, ..., מחרוזת `str[n-1]` תהיה שורה שלפני אחרונה בקובץ ומחרוזת `str[0]` תהיה שורה אחרונה בקובץ.\nיש לעדכן תו ראשון בתחילת כל שורה כך ששורות כמו מחרוזות המערך יהיו ממוספרות מ-1 עד `n`.\n\n**דוגמא:**\n`str`:\n```\n1 Bill Johns, 28\n2 Ron Smith, 367\n3 Arthur Mitchell, 84\n4 Eduard Stone, 17\n```\nתוכן הקובץ:\n```\n1 Ron Smith, 367\n2 Arthur Mitchell, 84\n3 Eduard Stone, 17\n4 Bill Johns, 28\n```",
+   "solution": "```c\nvoid cyclic_shift_to_file (char **str, int n, char *fileName)\n{\n    int i;\n    FILE *fptr = fopen(fileName, \"w\");\n    if (!fptr)\n        exit(1);\n    for (i=1; i<n; i++)\n    {\n        fputc(i+'0', fptr);\n        fputs(str[i]+1, fptr);\n        fputc('\\n', fptr);\n    }\n    fputc(n+'0', fptr);\n    fputs(str[0]+1, fptr);\n    fputc('\\n', fptr);\n    fclose(fptr);\n}\n```",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "high",
+   "points": 28
+  },
+  {
+   "num": 2,
+   "kind": "code",
+   "topic": "list_manipulation",
+   "question": "נתונות ההגדרות הבאות של טיפוסים:\n```c\ntypedef struct data_item {\n  int data;\n  struct data_item *next;\n} DataItem;\n```\n```c\ntypedef struct ptr_item {\n  DataItem *ptr;\n  struct ptr_item *next;\n} PtrItem;\n```\nכתוב פונקציה המקבלת **רשימה מקושרת** `L` של **רשימות מקושרות** אשר מורכבת מאיברים מסוג `PtrItem`. השדה `ptr` של איבר מס' `i` ב-`L` יצביע לראש **רשימת המספרים** מס' `i` ושדה ה-`next` שלו יצביע לאיבר הבא ב-`L`. רשימות מספרים יהיו מורכבות מאיברים מסוג `DataItem`.\n\nעל הפונקציה לבנות רשימה מקושרת חדשה `R` אשר מורכבת מאיברים מסוג `DataItem`. כמות האיברים ב-`R` תהיה שווה לכמות הרשימות ב-`L`. שדה `data` של איבר מס' `i` ב-`R` יהיה שווה לסכום שדות `data` של איברי הרשימה מס' `i` של `L`.\n\nהפונקציה תחזיר את כתובת האיבר הראשון של רשימת `R`.\n\n**דוגמא:** (באיור: `L` היא רשימה של ארבעה איברים `PtrItem` שמצביעים, לפי הסדר, על הרשימות `3,2,4`, `6`, רשימה ריקה ו-`1,7`; `R` היא רשימה בת ארבעה איברים)\n\nניתן להניח שיש בזיכרון מספיק מקום להקצאות.",
+   "solution": "```c\nDataItem *list_of_lists_to_list (PtrItem *L)\n{\n    DataItem *data_item_list, *curr_ptr,\n        *lst = (DataItem *)malloc(sizeof(DataItem)); //dummy\n    PtrItem *temp = L;\n    curr_ptr = lst;\n    while (temp) // scan list of lists\n    {\n        data_item_list = temp->ptr;\n        curr_ptr->next = (DataItem *)malloc(sizeof(DataItem));\n        curr_ptr = curr_ptr->next;\n        curr_ptr->data = 0;\n        while (data_item_list) // scan internal list\n        {\n            curr_ptr->data += data_item_list->data;\n            data_item_list = data_item_list->next;\n        }\n        temp = temp->next;\n    }\n    curr_ptr->next = NULL;\n    /* deletion of dummy */\n    curr_ptr = lst;\n    lst = lst->next;\n    free (curr_ptr);\n    return lst;\n}\n```",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "high",
+   "points": 28,
+   "image": "images/exams/19B-A-Q2.png"
+  },
+  {
+   "num": 3,
+   "kind": "code",
+   "topic": "dynamic_arrays_2d",
+   "question": "כתוב פונקציה אשר מקבלת **מערך דו-ממדי סטטי** (לא דינאמי) `A` של מספרים שלמים בעל `rows` שורות ו-`cols` עמודות.\nהמספר הפיסי של העמודות יינתן ע\"י קבוע בשם `COLS`. יש להגדיר אותו לפני הפונקציה.\n\nעל הפונקציה ליצור מערך דו-ממדי דינאמי `B` אשר יהיה מורכב אך ורק מהשורות של `A` שסכומי האיברים שלהן הם מספרים זוגיים. עם זאת רק איברים אי-זוגיים מועתקים מ-`A` ל-`B`.\nיש לשמור את סדר השורות מעותקות מ-`A` ל-`B` וגם את סדר האיברים מעותקים מ-`A` ל-`B` בכל שורה.\nאם סכום האיברים בשורה של `A` הוא מספר זוגי אבל גם כל האיברים בשורה הם זוגיים אז לא להעתיק את השורה מ-`A` ל-`B`.\n\nהפונקציה תחזיר את הכתובת של מערך `B` ותעביר by reference את מספר השורות בתוכו. בנוסף הפונקציה תעביר by reference מערך דינאמי `S` המורכב מגדלי השורות של מערך `B`. איבר מס' `i` של מערך `S` יהיה שווה לגודל שורה מס' `i` של `B`.\n\nניתן להניח שיש בזיכרון מספיק מקום להקצאות.\n\n**דוגמא:**\n`A`:\n```\n20 14 10 13 33 80  sum=170\n40 10 55 11 12 13  sum=141\n15 16 17 18 19 21  sum=106\n41 43 53 41 17 15  sum=210\n10 20 30 40 50 62  sum=212\n```\n`B`:\n```\n13 33\n15 17 19 21\n41 43 53 41 17 15\n```\n`S`:\n```\n2\n4\n6\n```\nהפונקציה גם תעביר by reference 3 כמספר השורות במערך `B`.",
+   "solution": "```c\n#define COLS 6 //example\n\nint **even_sums_odd_numbers (int A[][COLS], int rows, int cols, int **S,\n                             int *prows)\n{\n    int i, j, k, sum, odd_count, **B;\n    *prows = 0;\n    B = (int **)calloc(rows, sizeof(int *));\n    *S = (int *)calloc(rows, sizeof(int));\n    for (i=0; i<rows; i++)\n    {\n        sum = odd_count = k = 0;\n        for (j=0; j<cols; j++)\n        {\n            sum += A[i][j];\n            odd_count += A[i][j]%2;\n        }\n        if (sum%2 == 0 && odd_count>0)\n        {\n            B[*prows] = (int *)calloc(odd_count, sizeof(int));\n            for (j=0; j<cols; j++)\n                if (A[i][j]%2 == 1)\n                    B[*prows][k++] = A[i][j];\n            (*S)[*prows] = odd_count;\n            (*prows)++;\n        }\n    }\n    B = (int **)realloc(B, *prows*sizeof(int *));\n    *S = (int *)realloc(*S, *prows*sizeof(int));\n    return B;\n}\n```",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "high",
+   "points": 28
+  },
+  {
+   "num": 4,
+   "part": "א",
+   "kind": "mcq",
+   "topic": "pointers",
+   "question": "בחר את התשובה הנכונה **ונמק** בכל אחד מהסעיפים הבאים (חובה לרשום את הבחירה והנימוק במחברת). שאלה 4, 16 נק' בסך הכול.\n```c\nint (*p) (int *);\n```\nמה זה `p`?",
+   "options": [
+    {
+     "id": "a",
+     "type": "text",
+     "value": "מצביע לפונקציה שמקבלת מצביע ל-`int` ומחזירה `int`"
+    },
+    {
+     "id": "b",
+     "type": "text",
+     "value": "פונקציה שמקבלת מצביע ל-`int` ומחזירה מצביע ל-`int`"
+    },
+    {
+     "id": "c",
+     "type": "text",
+     "value": "מצביע לפונקציה שמקבלת מצביע ל-`int` ומחזירה מצביע ל-`int`"
+    },
+    {
+     "id": "d",
+     "type": "text",
+     "value": "אף תשובה אינה נכונה"
+    }
+   ],
+   "correctId": "a",
+   "explanation": "לפי התחביר של שפת C.",
+   "official": true,
+   "confidence": "high"
+  },
+  {
+   "num": 4,
+   "part": "ב",
+   "kind": "mcq",
+   "topic": "bit_manipulation",
+   "question": "בחר את התשובה הנכונה **ונמק** בכל אחד מהסעיפים הבאים (חובה לרשום את הבחירה והנימוק במחברת). שאלה 4, 16 נק' בסך הכול.\n```c\nz = x^y;\n```\nמה יהיה ערך של `z`?",
+   "options": [
+    {
+     "id": "a",
+     "type": "text",
+     "value": "`x` בחזקת `y`"
+    },
+    {
+     "id": "b",
+     "type": "text",
+     "value": "המספר המתקבל מהזזת `y` סיביות שמאלה ב-`x`"
+    },
+    {
+     "id": "c",
+     "type": "text",
+     "value": "המספר המתקבל מהזזת `y` סיביות ימינה ב-`x`"
+    },
+    {
+     "id": "d",
+     "type": "text",
+     "value": "אף תשובה אינה נכונה"
+    }
+   ],
+   "correctId": "d",
+   "explanation": "כי `^` זה XOR.",
+   "official": true,
+   "confidence": "high"
+  },
+  {
+   "num": 4,
+   "part": "ג",
+   "kind": "mcq",
+   "topic": "storage_classes",
+   "question": "בחר את התשובה הנכונה **ונמק** בכל אחד מהסעיפים הבאים (חובה לרשום את הבחירה והנימוק במחברת). שאלה 4, 16 נק' בסך הכול.\n```c\nstatic int c;\n```\nמה הוא ערך התחלתי של `c`?",
+   "options": [
+    {
+     "id": "a",
+     "type": "text",
+     "value": "`c` לא מאותחל"
+    },
+    {
+     "id": "b",
+     "type": "text",
+     "value": "0"
+    },
+    {
+     "id": "c",
+     "type": "text",
+     "value": "1"
+    },
+    {
+     "id": "d",
+     "type": "text",
+     "value": "אף תשובה אינה נכונה"
+    }
+   ],
+   "correctId": "b",
+   "explanation": "כי ברירת המחדל ערך התחלתי של משתנה `static` הוא 0.",
+   "official": true,
+   "confidence": "high"
+  },
+  {
+   "num": 4,
+   "part": "ד",
+   "kind": "mcq",
+   "topic": "pointers",
+   "question": "בחר את התשובה הנכונה **ונמק** בכל אחד מהסעיפים הבאים (חובה לרשום את הבחירה והנימוק במחברת). שאלה 4, 16 נק' בסך הכול.\n```c\nconst int* q;\n```\nמה הוא `q`?",
+   "options": [
+    {
+     "id": "a",
+     "type": "text",
+     "value": "מצביע קבוע למשתנה"
+    },
+    {
+     "id": "b",
+     "type": "text",
+     "value": "מצביע שיכול להשתנות לקבוע"
+    },
+    {
+     "id": "c",
+     "type": "text",
+     "value": "מצביע קבוע לקבוע"
+    },
+    {
+     "id": "d",
+     "type": "text",
+     "value": "אף תשובה אינה נכונה"
+    }
+   ],
+   "correctId": "b",
+   "explanation": "לפי התחביר של שפת C.",
+   "official": true,
+   "confidence": "high"
+  },
+  {
+   "num": 5,
+   "kind": "code",
+   "topic": "c_traps_mcq",
+   "question": "*שאלת בונוס (10 נק').*\nמהו הפלט של התוכנית הבאה?\n```c\n#include <stdio.h>\nvoid main()\n{\n     int i;\n     for (i=0; i<sizeof\"sizeof\"[i]; i++)\n          printf(\"%d\",sizeof\"sizeof\"[i]);\n}\n```\nיש לנמק את התשובה.",
+   "solution": "**הפלט:**\n```\n1\n```\n**נימוק:**\n`sizeof\"sizeof\"[i]` זה גודל של תו מס' `i` במחרוזת `\"sizeof\"`. גודל של כל תו הוא 1 (בית אחד). לכן באיטרציה הראשונה `i=0` והתנאי `0 < 1` מתקיים. נכנסים לגוף הלולאה ומדפיסים 1. באיטרציה השנייה `i=1` והתנאי `1 < 1` לא מתקיים. יוצאים מהלולאה.",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "high",
+   "points": 10
+  }
+ ]
+}

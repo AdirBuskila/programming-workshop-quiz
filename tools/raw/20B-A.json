@@ -1,0 +1,295 @@
+{
+ "examCode": "20B-A",
+ "examLabel": "סדנה מתקדמת בתכנות 61108, סמסטר ב' תש\"ף, מועד א'",
+ "year": 2020,
+ "examDate": "28.06.2020",
+ "sourceFile": "20B-A exam",
+ "solutionFile": "20B-A official solution",
+ "contexts": {},
+ "questions": [
+  {
+   "num": 1,
+   "kind": "code",
+   "topic": "pointer_to_pointer",
+   "question": "כתוב פונקציה אשר מקבלת מערך דו-ממדי דינאמי `A` בעל `n` שורות וגם מערך `SIZE` המכיל את אורכי השורות של מערך `A` – כך שערך האיבר ה-`i` במערך `SIZE` מייצג את גודל השורה ה-`i` ב-`A`.\n\nעל הפונקציה לבצע את החלפת השורות ב-`A`, כך ששורה מס' `0` תוחלף עם שורה מס' `n-1`, שורה מס' `1` תוחלף עם שורה מס' `n-2`, שורה מס' `2` תוחלף עם שורה מס' `n-3` וכו'. אם `n` הוא מספר זוגי אז שורה מס' `n/2-1` תוחלף עם שורה מס' `n/2`, אחרת שורה מס' `(n-1)/2` לא תשתנה.\nבנוסף, הפונקציה תעדכן את איברי `SIZE` בהתאם להיסט המחזורי שבוצע על `A`.\n\n**דוגמא** (בתחילת כל שורה נמצא מספרה):\n`A` לפני ההיסט:\n```\n0 5 12 6 9\n1 0 3 1 29 101\n2 13 14\n3 2 20 4\n```\n`A` אחרי ההיסט:\n```\n0 2 20 4\n1 13 14\n2 0 3 1 29 101\n3 5 12 6 9\n```\n`SIZE` לפני ההיסט (משמאל לימין): 4, 5, 2, 3.\n`SIZE` אחרי ההיסט (משמאל לימין): 3, 2, 5, 4.\n\nזמן ריצת הפונקציה יהיה תלוי רק בכמות שורות במערך הדו-ממדי `A` ולא יהיה תלוי בגדלי השורות!\n\nעל הפונקציה להיות אוניברסאלית כלפי טיפוס איברי המערך `A`, ז\"א לבצע את ההיסט המחזורי על המערך בעל איברים של טיפוס שרירותי.\n\nאפשר להשתמש במשתני עזר בודדים, אך לא במערכים מכל סוג שהוא.\n\n*בחלק זה יש לענות על שתי שאלות מתוך שלוש.*",
+   "solution": "```c\nvoid point_swap(void **p, void **q) {\n    void *temp = *p;\n    *p = *q;\n    *q = temp;\n}\n\nvoid swap(int *p, int *q) {\n    int temp = *p;\n    *p = *q;\n    *q = temp;\n}\n\nvoid row_reverse(void **A, int n, int *SIZE) {\n    int row1, row2;\n    for (row1=0, row2=n-1; row1<row2; row1++, row2--) {\n        point_swap(A + row1, A + row2);\n        swap(SIZE + row1, SIZE + row2);\n    }\n}\n```",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "high",
+   "points": 40
+  },
+  {
+   "num": 2,
+   "kind": "code",
+   "topic": "linked_lists",
+   "question": "נתונה הגדרה הבאה של הטיפוס:\n```c\ntypedef struct item\n{\n  int data;\n  struct item *next;\n} Item;\n```\n**רשימה מעגלית ממוינת** מורכבת מאיברים מסוג `Item` אשר ממוינים בסדר עולה ממש לפי שדה `data`. שדה `next` של איבר עם `data` יותר קטן מצביע לאיבר עם `data` יותר גדול. שדה `next` של איבר עם `data` המקסימלי מצביע לאיבר עם `data` המינימלי. ברשימה בעלת איבר אחד שדה `next` שלו מצביע לאיבר עצמו.\n\nכתוב פונקציה אשר מקבלת כתובת של אחד מהאיברים של רשימה מעגלית ממוינת `L`.\nעל הפונקציה \"לחתוך\" את הרשימה כך ששדה `next` של איבר עם `data` המקסימלי ישתנה ל-`NULL`.\nהפונקציה תחזיר כתובת של האיבר עם `data` המינימלי.\nאם `L` היא רשימה ריקה הפונקציה תקבל `NULL` ותחזיר `NULL`.\n\n**דוגמא:** (באיור: `L` לפני עיבוד, עם הכתובת המתקבלת שמצביעה על האיבר 4, ו-`L` אחרי עיבוד עם הכתובת המוחזרת)\n\n*בחלק זה יש לענות על שתי שאלות מתוך שלוש.*",
+   "solution": "```c\nItem *cut_cyclic_list(Item *L)\n{\n    Item *first;\n    if (!L)\n        return NULL;\n    while (L->data < L->next->data)\n        L = L->next;\n    first = L->next;\n    L->next = NULL;\n    return first;\n}\n```",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "high",
+   "points": 40,
+   "image": "images/exams/20B-A-Q2.png"
+  },
+  {
+   "num": 3,
+   "kind": "code",
+   "topic": "files",
+   "question": "כתוב פונקציה שמקבלת מערך מחרוזות בשם `Infiles` עם גודלו `n`.\nכל אחת מהמחרוזות מהווה שם של קובץ (טקסט או בינארי) עם נקודה וסיומת שם הקובץ בסוף. שם של קובץ בינארי מתחיל באות 'b' קטנה או באות 'B' גדולה. שם של קובץ טקסט מתחיל בכל תו אחר. תווים אחרונים משמאל לנקודה, בשם הקובץ הבינארי, הם ספרות אשר מייצגות גודל בבתים של רשומות הקובץ. בקבצי הטקסט תו של סוף השורה מופיע גם בסוף השורה האחרונה.\n\nעל הפונקציה לספור את כמות השורות בכל קובץ טקסט ואת כמות הרשומות בכל קובץ בינארי ולאחסן את התוצאות במערך דינאמי `Results` בגודל `n` של מבנים המוגדרים באופן הבא:\n```c\ntypedef struct pair\n{\n  int num_text_rows;\n  int num_bin_records;\n} Pair;\n```\nאם מחרוזת מס' `i` ב-`Infiles` היא שם קובץ טקסט אז שדה `num_text_rows` באיבר מס' `i` של `Results` יהיה שווה למספר השורות בקובץ זה ושדה `num_bin_records` יקבל ערך `-1`.\nאם המחרוזת היא שם קובץ בינארי אז בהתאם שדה `num_bin_records` באיבר מס' `i` יהיה שווה למספר הרשומות בקובץ ושדה `num_bin_records` יקבל `-1`.\nאם הקובץ הנבחן לא נפתח יש להכניס ערך `0` לשדה המתאים.\n\nהפונקציה תחזיר את הכתובת ההתחלתית של מערך `Results`.\n\nניתן להניח שיש בזיכרון מספיק מקום להקצאה.\n\n**דוגמא:** שמות הקבצים ותוכנם (באיור): `MyFile.dat` (טקסט, שתי שורות: `Name: Moshe`, `Date: 24.05.2012`), `binFile120.doc` (בינארי), `Students.txt` (טקסט, שלוש שורות: `Amir Shai`, `Doron Levi`, `Tomer Cohen`), `B_Numbers68.xr` (בינארי), `Letters.dat`.\n```\nInfiles\nMyFile.dat\nbinFile120.doc\nStudents.txt\nB_Numbers68.xr\nLetters.dat\n```\n`Results`:\n```\nnum_text_rows   num_bin_records\n 2              -1\n-1               5\n 3              -1\n-1               4\n 0              -1\n```\n\n**הערת מתמלל:** בנוסח המודפס, בפסקה על קובץ בינארי, מופיע `num_bin_records` גם בשדה שמקבל `-1`. מהדוגמה ברור שהכוונה לשדה `num_text_rows`.\n\n*בחלק זה יש לענות על שתי שאלות מתוך שלוש.*",
+   "solution": "```c\n/* Counting number of rows in text file */\nint NumOfRows(char *fname) {\n    FILE *f = fopen(fname, \"r\");\n    int count = 0;\n    char c;\n    if (!f) return 0;\n    while ( (c=fgetc(f))!=EOF )\n        if (c == '\\n') count++;\n    fclose(f);\n    return count;\n}\n\n/* Counting number of records in binary file */\nint NumOfRecords(char *fname, int rec_size) {\n    char c;\n    FILE *f = fopen(fname, \"rb\");\n    int count = 0;\n    if (!f) return 0;\n    while (fread(&c, 1, 1, f)) //byte by byte input\n        count++;               //number of bytes\n    fclose(f);\n    return count/rec_size;     //number of records\n}\n\n/* Extract a record size from a binary file name */\nint getNumber(char *str) {\n    int i = 0, dec = 1, num = 0;\n    while (str[i] != '.') i++;\n    i--; /*Scan of digits and deriving the number to the left of the point*/\n    while (isdigit(str[i])) {\n        num += (str[i--] - '0') * dec;\n        dec *= 10;\n    }\n    return num;\n}\n\nPair *numRowsRecords(char **Infiles, int n) {\n    Pair *Results = (Pair *)malloc(n * sizeof(Pair));\n    int i;\n    for (i = 0; i < n; i++) {\n        if (Infiles[i][0] == 'b' || Infiles[i][0] == 'B') {\n            /* Processing of binary file */\n            int rec = getNumber(Infiles[i]);\n            Results[i].num_bin_records = NumOfRecords(Infiles[i], rec);\n            Results[i].num_text_rows = -1;\n        }\n        else {\n            /* Processing of text file */\n            Results[i].num_text_rows = NumOfRows(Infiles[i]);\n            Results[i].num_bin_records = -1;\n        }\n    } //for\n    return Results;\n}\n```",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "high",
+   "points": 40,
+   "image": "images/exams/20B-A-Q3.png"
+  },
+  {
+   "num": 4,
+   "part": "א",
+   "kind": "mcq",
+   "topic": "c_traps_mcq",
+   "question": "בחר את התשובה הנכונה **ונמק** בכל אחד מהסעיפים. **התשובה הנכונה ללא נימוק או עם נימוק לא נכון תזכה רק בנקודה אחת.** \"לפי כללי שפת C\" הינו גם יכול להיות נימוק מקובל. (שאלה 4, 20 נק' בסך הכול; סטודנט יקבל ארבע שאלות.)\nנגדיר כי פעולה `Y` היא **הכללה** של פעולה `X` אם `X` מוגדרת אך ורק לחלק מהמקרים שבהם מוגדרת `Y` ולכל המקרים שבהם מוגדרת `X` התנהגותה של `Y` זהה **לחלוטין** להתנהגותה של `X`.\nמהי הטענה הלא נכונה?",
+   "options": [
+    {
+     "id": "a",
+     "type": "text",
+     "value": "`fprintf` היא הכללה של `printf`"
+    },
+    {
+     "id": "b",
+     "type": "text",
+     "value": "`fscanf` היא הכללה של `scanf`"
+    },
+    {
+     "id": "c",
+     "type": "text",
+     "value": "`fgets` היא הכללה של `gets`"
+    },
+    {
+     "id": "d",
+     "type": "text",
+     "value": "`fgetc` היא הכללה של `getchar`"
+    },
+    {
+     "id": "e",
+     "type": "text",
+     "value": "כל הטענות לעיל הן נכונות"
+    }
+   ],
+   "correctId": "c",
+   "explanation": "הצבת `stdout` או `stdin` (בהתאמה) ב-`fprintf`, `fscanf`, `fgetc` הופכת אותן מבחינת ההתנהגות ל-`printf`, `scanf`, `getchar` בהתאמה. `fgets` עם `stdin` לא זהה לחלוטין ל-`gets` כי ל-`fgets` יש עוד פרמטר למספר תווים מקסימלי ובנוסף היא קולטת גם `'\\n'` לעומת `gets`.",
+   "official": true,
+   "confidence": "high"
+  },
+  {
+   "num": 4,
+   "part": "ב",
+   "kind": "mcq",
+   "topic": "bit_manipulation",
+   "question": "בחר את התשובה הנכונה **ונמק** בכל אחד מהסעיפים. **התשובה הנכונה ללא נימוק או עם נימוק לא נכון תזכה רק בנקודה אחת.** \"לפי כללי שפת C\" הינו גם יכול להיות נימוק מקובל. (שאלה 4, 20 נק' בסך הכול; סטודנט יקבל ארבע שאלות.)\nמה קורה בצד שמאל של מספר `int` שלילי לאחר ביצוע פעולת הזזת סיביות ימינה בתוכו?",
+   "options": [
+    {
+     "id": "a",
+     "type": "text",
+     "value": "מצד שמאל המספר מתמלא ב-0-ים"
+    },
+    {
+     "id": "b",
+     "type": "text",
+     "value": "מצד שמאל המספר מתמלא ב-1-ים"
+    },
+    {
+     "id": "c",
+     "type": "text",
+     "value": "מצד שמאל המספר מתמלא בסיביות שהלכו לאיבוד מצד ימין"
+    },
+    {
+     "id": "d",
+     "type": "text",
+     "value": "שיטת מילוי המספר מצד שמאל תלויה במערכת"
+    },
+    {
+     "id": "e",
+     "type": "text",
+     "value": "אף תשובה אינה נכונה"
+    }
+   ],
+   "correctId": "d",
+   "explanation": "לפי כללי שפת C.",
+   "official": true,
+   "confidence": "high"
+  },
+  {
+   "num": 4,
+   "part": "ג",
+   "kind": "mcq",
+   "topic": "pointers",
+   "question": "בחר את התשובה הנכונה **ונמק** בכל אחד מהסעיפים. **התשובה הנכונה ללא נימוק או עם נימוק לא נכון תזכה רק בנקודה אחת.** \"לפי כללי שפת C\" הינו גם יכול להיות נימוק מקובל. (שאלה 4, 20 נק' בסך הכול; סטודנט יקבל ארבע שאלות.)\nנתונה ההצהרה:\n```c\nconst int **p;\n```\nמה הוא `p`?",
+   "options": [
+    {
+     "id": "a",
+     "type": "text",
+     "value": "פוינטר לפוינטר קבוע שמצביע למשתנה"
+    },
+    {
+     "id": "b",
+     "type": "text",
+     "value": "פוינטר קבוע לפוינטר קבוע שמצביע למשתנה"
+    },
+    {
+     "id": "c",
+     "type": "text",
+     "value": "פוינטר קבוע לפוינטר שמצביע למשתנה"
+    },
+    {
+     "id": "d",
+     "type": "text",
+     "value": "פוינטר קבוע לפוינטר שמצביע לקבוע"
+    },
+    {
+     "id": "e",
+     "type": "text",
+     "value": "אף תשובה אינה נכונה"
+    }
+   ],
+   "correctId": "e",
+   "explanation": "התשובה הנכונה: פוינטר לפוינטר שמצביע לקבוע.",
+   "official": true,
+   "confidence": "high"
+  },
+  {
+   "num": 4,
+   "part": "ד",
+   "kind": "mcq",
+   "topic": "storage_classes",
+   "question": "בחר את התשובה הנכונה **ונמק** בכל אחד מהסעיפים. **התשובה הנכונה ללא נימוק או עם נימוק לא נכון תזכה רק בנקודה אחת.** \"לפי כללי שפת C\" הינו גם יכול להיות נימוק מקובל. (שאלה 4, 20 נק' בסך הכול; סטודנט יקבל ארבע שאלות.)\nמהי הטענה הנכונה?",
+   "options": [
+    {
+     "id": "a",
+     "type": "text",
+     "value": "משתנה מסוג `static` מוכר גם אחרי יציאה מהפונקציה בה הוא הוצהר"
+    },
+    {
+     "id": "b",
+     "type": "text",
+     "value": "משתנה מסוג `static` יכול להשתנות גם אחרי יציאה מהפונקציה בה הוא הוצהר"
+    },
+    {
+     "id": "c",
+     "type": "text",
+     "value": "משתנה מסוג `static` חייב להיות מאותחל באופן מפורש"
+    },
+    {
+     "id": "d",
+     "type": "text",
+     "value": "אחרי יציאה מהפונקציה בה הוצהר משתנה מסוג `static` ערך המשתנה נשמר בזיכרון ולא ניתן לשנות אותו"
+    },
+    {
+     "id": "e",
+     "type": "text",
+     "value": "שינוי משתנה מסוג `static` בשם `x` שהוצהר באחת מהפונקציות גורם לשינוי משתנה מסוג `static` בשם `x` שהוצהר בפונקציה אחרת"
+    },
+    {
+     "id": "f",
+     "type": "text",
+     "value": "אף טענה אינה נכונה"
+    }
+   ],
+   "correctId": "b",
+   "explanation": "משתנה מסוג `static` לא מוכר אחרי יציאה מהפונקציה אבל נשמר בזיכרון. הפונקציה יכולה להחזיר כתובתו ודרכה אפשר לשנות את המשתנה גם אחרי יציאה מהפונקציה.",
+   "official": true,
+   "confidence": "high"
+  },
+  {
+   "num": 4,
+   "part": "ה",
+   "kind": "mcq",
+   "topic": "storage_classes",
+   "question": "בחר את התשובה הנכונה **ונמק** בכל אחד מהסעיפים. **התשובה הנכונה ללא נימוק או עם נימוק לא נכון תזכה רק בנקודה אחת.** \"לפי כללי שפת C\" הינו גם יכול להיות נימוק מקובל. (שאלה 4, 20 נק' בסך הכול; סטודנט יקבל ארבע שאלות.)\nבתוכנית הוצהרו משתנה לוקאלי בשם `x` בתוך פונקציה `main` וגם משתנה גלובלי בשם `x` שמוכר בכל התוכנית. לאיזה משתנה ניגשים כאשר פונים ל-`x` בתוך `main`?",
+   "options": [
+    {
+     "id": "a",
+     "type": "text",
+     "value": "למשתנה לוקאלי"
+    },
+    {
+     "id": "b",
+     "type": "text",
+     "value": "למשתנה גלובלי"
+    },
+    {
+     "id": "c",
+     "type": "text",
+     "value": "אין משמעות בשאלה כי משתנה לוקאלי ומשתנה גלובלי בעלי אותו שם תופסים אותו מקום בזיכרון"
+    },
+    {
+     "id": "d",
+     "type": "text",
+     "value": "תלוי במערכת ובמהדר"
+    },
+    {
+     "id": "e",
+     "type": "text",
+     "value": "אף תשובה אינה נכונה כי המהדר ייתן הודעה על שגיאה"
+    }
+   ],
+   "correctId": "a",
+   "explanation": "כללי הטווח: לקטעים מקוננים עם משתנים בעלי אותו שם עדיפות בגישה – למשתנה הפנימי ביותר.",
+   "official": true,
+   "confidence": "high"
+  },
+  {
+   "num": 4,
+   "part": "ו",
+   "kind": "mcq",
+   "topic": "c_traps_mcq",
+   "question": "בחר את התשובה הנכונה **ונמק** בכל אחד מהסעיפים. **התשובה הנכונה ללא נימוק או עם נימוק לא נכון תזכה רק בנקודה אחת.** \"לפי כללי שפת C\" הינו גם יכול להיות נימוק מקובל. (שאלה 4, 20 נק' בסך הכול; סטודנט יקבל ארבע שאלות.)\nעבור איזה משפט המהדר ייתן הודעה קשורה עם אי-התאמת טיפוסים?",
+   "options": [
+    {
+     "id": "a",
+     "type": "text",
+     "value": "`int n='a';`"
+    },
+    {
+     "id": "b",
+     "type": "text",
+     "value": "`char c=123;`"
+    },
+    {
+     "id": "c",
+     "type": "text",
+     "value": "`double x=38;`"
+    },
+    {
+     "id": "d",
+     "type": "text",
+     "value": "`int m=2000000000;`"
+    },
+    {
+     "id": "e",
+     "type": "text",
+     "value": "`float y=2.6;`"
+    },
+    {
+     "id": "f",
+     "type": "text",
+     "value": "כל המשפטים לעיל הם תקינים"
+    }
+   ],
+   "correctId": "e",
+   "explanation": "מספר ממשי הוא בברירת מחדל `double`. לכן המהדר נותן את האזהרה: `truncation from 'double' to 'float'`.",
+   "official": true,
+   "confidence": "high"
+  },
+  {
+   "num": 5,
+   "kind": "code",
+   "topic": "c_basics_output",
+   "question": "*שאלת בונוס (10 נק').*\nמהו הפלט של התוכנית הבאה?\n```c\n#include <stdio.h>\n\nvoid main()\n{\n  char C[]=\"C++\", c;\n  for (c=0; c<3; c++)\n       C[c]+=!c?'+'-'+':'-'-'+';\n  puts(C);\n}\n```\nחובה לנמק את התשובה! התשובה ללא נימוק או עם נימוק לא נכון לא תזכה בנקודות.",
+   "solution": "**הפלט:**\n```\nC--\n```\n**נימוק:**\nל-`c==0` מתקיים `!c` ולכן מבצעים פעולות לפני \":\" – ל-`C[0]` מחברים קוד ASCII של `'+'` ומחסירים קוד ASCII של `'+'`. לכן `C[0]` לא משתנה וערך שלו נשאר `'C'`.\nל-`c==1` ו-`c==2` לא מתקיים `!c` ולכן מבצעים פעולות אחרי \":\" – ל-`C[1]` ו-`C[2]` מחברים קוד ASCII של `'-'` ומחסירים קוד ASCII של `'+'`. ערך של התווים הוא `'+'` ולכן אחרי חיסור `'+'` וחיבור `'-'` ערך שלהם משתנה ל-`'-'`.",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "high",
+   "points": 10
+  }
+ ]
+}
