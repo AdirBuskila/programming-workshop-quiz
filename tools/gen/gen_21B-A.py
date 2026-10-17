@@ -279,6 +279,188 @@ questions = [
     Q(5, "code", "c_traps_mcq", Q5_TEXT, Q5_SOL, points=10),
 ]
 
+# ---- rubric / pitfalls / steps (ai-draft). Every expected value comes from a real clang run: tools/verify/21B-A/steps_check.py
+# (probes + order/fillblank/findbug checks through verify/step_lib.py). Lines of order/findbug/fillblank come from the stored solutions.
+def rub(*items):
+    return [{"text": t, "points": p} for t, p in items]
+
+
+def lines_of(src):
+    return [ln for ln in src.strip("\n").split("\n") if ln.strip() and not ln.startswith("```")]
+
+
+def clean(lines):
+    """Drop comment-only lines and trailing // comments (they are not part of the logic being asked about)."""
+    out = []
+    for ln in lines:
+        s = ln.strip()
+        if s.startswith("/*") or s.startswith("//"):
+            continue
+        if "//" in ln:
+            ln = ln[:ln.index("//")].rstrip()
+        out.append(ln)
+    return out
+
+
+def func_lines(src, header_start):
+    """The code lines of the function whose header line starts with header_start, to its closing brace."""
+    ls = clean(lines_of(src))
+    i0 = [i for i, ln in enumerate(ls) if ln.startswith(header_start)]
+    assert len(i0) == 1, header_start
+    i1 = next(i for i in range(i0[0], len(ls)) if ls[i] == "}")
+    return ls[i0[0]:i1 + 1]
+
+
+def swap(lines, old, new, nth=0):
+    idx = [i for i, ln in enumerate(lines) if ln.strip() == old.strip()]
+    assert len(idx) > nth and (nth > 0 or len(idx) == 1), old
+    out = list(lines)
+    out[idx[nth]] = out[idx[nth]].replace(old.strip(), new.strip())
+    return out, idx[nth]
+
+
+def blank(lines, target, nth=0):
+    idx = [i for i, ln in enumerate(lines) if ln.strip() == target]
+    assert len(idx) > nth and (nth > 0 or len(idx) == 1), target
+    return [("___" if i == idx[nth] else ln) for i, ln in enumerate(lines)], idx[nth]
+
+
+def add(num, part=None, **kw):
+    for q in questions:
+        if q["num"] == num and q.get("part") == part:
+            q.update(kw)
+            return
+    raise KeyError(num)
+
+
+# Q1
+F1 = func_lines(Q1_SOL, "int ordered_name_array")
+b1, i1 = swap(F1, "if (strcmp(name_arr[i].first_name, name_arr[i - 1].first_name) < 0)",
+              "if (strcmp(name_arr[i].first_name, name_arr[i - 1].first_name) > 0)")
+f1, j1 = blank(F1, "if (strcmp(name_arr[i].last_name, name_arr[i - 1].last_name) < 0)")
+Q1_BODY = ["int i;",
+           "for (i = 1; i < n; i++) if (strcmp(name_arr[i].first_name, name_arr[i - 1].first_name) < 0) { for (i = 1; i < n; i++) if (strcmp(name_arr[i].last_name, name_arr[i - 1].last_name) < 0) return 0; return 2; }",
+           "return 1;"]
+add(1,
+    rubric=rub(("לולאה על זוגות סמוכים שמשווה `first_name` עם `strcmp`, ומזהה סדר יורד (`strcmp(...) < 0`)", 10),
+               ("כשנמצא זוג בסדר יורד בשמות הפרטיים, בדיקה של כל המערך לפי `last_name`", 12),
+               ("החזרת 1 כשכל המערך ממוין לפי השמות הפרטיים", 6),
+               ("החזרת 2 כשהמערך ממוין לפי שמות המשפחה", 6),
+               ("החזרת 0 כשיש זוג בסדר יורד גם בשמות המשפחה", 6)),
+    rubricSource="ai-draft",
+    pitfalls=["לסמן שם כחוסר סדר גם כשהוא שווה לקודם (`<= 0` במקום `< 0`): מערך ממוין יכול להכיל שמות זהים.",
+              "להשוות מחרוזות עם `<` או `==` (השוואת כתובות) במקום `strcmp`.",
+              "להחזיר 2 כשהמערך כבר ממוין לפי השמות הפרטיים: הבדיקה לפי שם פרטי באה קודם, והתוצאה היא 1."],
+    steps=[
+        {"type": "numeric",
+         "prompt": "במערך הדוגמה, באיזה אינדקס `i` נמצא הזוג הראשון שבו `first_name[i]` קטן מ-`first_name[i-1]` (בסדר לקסיקוגרפי)?",
+         "answer": 1, "tol": 0,
+         "explain": "`David` קודם ל-`Mike` בסדר האלפבית, ולכן כבר באינדקס 1 המערך אינו ממוין לפי שמות פרטיים (ריצה אמיתית: 1). אז הפונקציה עוברת לבדוק לפי שמות משפחה."},
+        {"type": "fillblank", "prompt": "השלימו את התנאי שמזהה סדר יורד בשמות המשפחה.", "code": True,
+         "lines": f1, "blankIndex": j1,
+         "options": opts("if (strcmp(name_arr[i].last_name, name_arr[i - 1].last_name) < 0)",
+                         "if (strcmp(name_arr[i].last_name, name_arr[i - 1].last_name) <= 0)",
+                         "if (strcmp(name_arr[i].last_name, name_arr[i - 1].last_name) > 0)",
+                         "if (strcmp(name_arr[i].last_name, name_arr[i - 1].last_name) != 0)"),
+         "correctId": "a",
+         "explain": "סדר יורד פירושו שהשם הנוכחי קטן ממש מהקודם. `<= 0` פוסל גם שמות שווים, ו-`> 0` ו-`!= 0` פוסלים מערכים ממוינים (ריצה אמיתית: הדוגמה מחזירה 2 רק עם `< 0`)."},
+        {"type": "order", "prompt": "סדרו את גוף הפונקציה `ordered_name_array`. כל שורה היא בלוק לוגי אחד.", "code": True,
+         "lines": Q1_BODY,
+         "explain": "הצהרה על `i`, הלולאה שבודקת שמות פרטיים (ובתוכה בדיקת שמות משפחה), ובסוף `return 1`. החלפת בלוקים שוברת את הקומפילציה או מחזירה תמיד 1 (ריצה אמיתית)."},
+        {"type": "findbug",
+         "prompt": "בגרסה הבאה שורה אחת שונתה, ועבור מערך שממוין לפי שמות פרטיים בלבד (`Aaron Zed`, `Ben Yoni`, `Carl Xavi`) מתקבל 0 במקום 1. מצאו אותה.",
+         "code": True, "lines": b1, "bugIndex": i1,
+         "explain": "`> 0` מזהה כל זוג בסדר עולה כחוסר סדר, ולכן הפונקציה עוברת לבדוק שמות משפחה ומחזירה 0 (ריצה אמיתית: 0)."},
+    ],
+    stepsSource="ai-draft")
+
+# Q2
+F2 = func_lines(Q2_SOL, "Item *cyclic_lists_combining")
+b2, i2 = swap(F2, "p1->next = p2->next->next;", "p1->next = p2;")
+f2, j2 = blank(F2, "p2->next = common;")
+add(2,
+    rubric=rub(("טיפול במקרה של רשימה בת איבר אחד (`next` מצביע על האיבר עצמו): הערך שלו הוא המשותף, והאיבר משוחרר", 10),
+               ("חיפוש האיבר המשותף בשתי הרשימות, תוך שמירת הכתובות של האיברים שלפניו (`p1`, `p2`)", 10),
+               ("חיבור הרשימות: שמירת `common = p1->next`, `p1->next = p2->next->next`, שחרור העותק השני ו-`p2->next = common`", 14),
+               ("החזרת כתובת האיבר המשותף ברשימה המאוחדת", 6)),
+    rubricSource="ai-draft",
+    pitfalls=["לא לטפל ברשימה בת איבר אחד: בה `next` מצביע על האיבר עצמו, והחיפוש עם איבר קודם נתקע.",
+              "לדרוס את `p1->next` לפני ששומרים אותו ב-`common`, ולאבד את האיבר המשותף.",
+              "להשאיר את האיבר המשותף פעמיים ברשימה המאוחדת (בלי לדלג על העותק שברשימה השנייה)."],
+    steps=[
+        {"type": "numeric",
+         "prompt": "הרשימות המעגליות הן `L1: 1,2,5,3` ו-`L2: 7,5,8` והמספר המשותף הוא 5. כמה איברים יש ברשימה המעגלית המאוחדת?",
+         "answer": 6, "tol": 0,
+         "explain": "4 + 3 - 1 = 6, כי המספר המשותף מופיע פעם אחת (ריצה אמיתית: 6)."},
+        {"type": "numeric",
+         "prompt": "באותה דוגמה, הפונקציה מחזירה את האיבר המשותף ב-`L1`. איזה ערך מופיע מיד אחריו ברשימה המאוחדת?",
+         "answer": 3, "tol": 0,
+         "explain": "המשכה של `L1` אחרי 5 נשאר כפי שהיה (`3`), ואילו לפני 5 מופיעים איברי `L2`: 8 ואז 7 (ריצה אמיתית: הסדר 5, 3, 1, 2, 8, 7)."},
+        {"type": "fillblank", "prompt": "השלימו את השורה שמחברת את האיבר שלפני העותק השני לאיבר המשותף.", "code": True,
+         "lines": f2, "blankIndex": j2,
+         "options": opts("p2->next = common;", "p2->next = p1->next;", "p2->next = common->next;", "p2->next = p2;"),
+         "correctId": "a",
+         "explain": "אחרי שהעותק השני שוחרר, האיבר שלפניו (`p2`) צריך להצביע על האיבר המשותף שנשאר ברשימה. בחלופות האחרות המעגל לא מכיל את כל האיברים (ריצה אמיתית)."},
+        {"type": "findbug",
+         "prompt": "בגרסה הבאה שורה אחת שונתה, ובדוגמה האיבר 8 חסר ברשימה המאוחדת (נוצרת רשימה בת 5 איברים). מצאו אותה.",
+         "code": True, "lines": b2, "bugIndex": i2,
+         "explain": "אחרי `p1->next = p2` נדלג על כל האיברים שאחרי העותק השני ב-`L2`, ולכן 8 אובד (ריצה אמיתית: 5 איברים)."},
+    ],
+    stepsSource="ai-draft")
+
+# Q3
+F3 = func_lines(Q3_SOL, "int **file_to_sequences_in_rows")
+b3, i3 = swap(F3, "for (j = 1; j <= size; j++, k++)", "for (j = 1; j < size; j++, k++)")
+f3, j3 = blank(F3, "fseek(fptr, start_row, SEEK_SET);")
+add(3,
+    rubric=rub(("ספירת השורות בקובץ לפי תווי `'\\n'`, והקצאת `A` (מערך מצביעים) ו-`S`", 8),
+               ("בכל שורה: קריאת זוגות (ערך, כמות) עד סוף השורה וחישוב גודל השורה כסכום הכמויות", 12),
+               ("הקצאת שורה `A[i]` בגודל המתאים", 8),
+               ("חזרה לתחילת השורה בקובץ (`ftell` ו-`fseek`) וקריאה חוזרת שממלאת את האיברים בערך החוזר", 12)),
+    rubricSource="ai-draft",
+    pitfalls=["לחשוב שהמספר השני בכל זוג הוא ערך ולא כמות, ולהקצות שורה לפי מספר הזוגות במקום סכום הכמויות.",
+              "לא לזכור את תחילת השורה (`ftell`) לפני הסריקה הראשונה, ולכן לא ניתן לקרוא אותה שוב כדי למלא.",
+              "לבדוק את סוף השורה לפני קריאת הזוג הראשון, ולדלג על שורה."],
+    steps=[
+        {"type": "numeric",
+         "prompt": "בקובץ הדוגמה, מה הערך של `S[3]`, כלומר גודל שורה 3 של `A`? (שורת הקובץ: `3 2 18 5 0 2`)",
+         "answer": 9, "tol": 0,
+         "explain": "2 + 5 + 2 = 9: הכמויות הן המספרים השני, הרביעי והשישי בשורה (ריצה אמיתית: 9)."},
+        {"type": "numeric",
+         "prompt": "בקובץ הדוגמה, מה הערך של `A[1][6]`? (שורת הקובץ: `2 6 1 2`)",
+         "answer": 1, "tol": 0,
+         "explain": "השורה מתפרשת כשישה פעמים 2 ואחריהם פעמיים 1, ולכן באינדקס 6 נמצא 1 (ריצה אמיתית: 1)."},
+        {"type": "fillblank", "prompt": "השלימו את השורה שחוזרת לתחילת השורה הנוכחית בקובץ.", "code": True,
+         "lines": f3, "blankIndex": j3,
+         "options": opts("fseek(fptr, start_row, SEEK_SET);", "rewind(fptr);", "fseek(fptr, start_row - 1, SEEK_SET);"),
+         "correctId": "a",
+         "explain": "`start_row` נשמר ב-`ftell` לפני הסריקה הראשונה, וחוזרים אליו במדויק. `rewind` חוזרת לתחילת הקובץ ולא לתחילת השורה, ו-`start_row - 1` נכשלת בשורה הראשונה (ריצה אמיתית: הפלט שונה)."},
+        {"type": "findbug",
+         "prompt": "בגרסה הבאה שורה אחת שונתה, ובקובץ הדוגמה השורה הראשונה של `A` מסתיימת באפסים (`4 7 7 7 3 3 0 0 0`) במקום `4 4 7 7 7 7 3 3 3`. מצאו אותה.",
+         "code": True, "lines": b3, "bugIndex": i3,
+         "explain": "`j < size` ממלא כל רצף באיבר אחד פחות מהכמות, ולכן המערך מתמלא בחסר והסוף נשאר אפסים (ריצה אמיתית: `4 7 7 7 3 3 0 0 0`)."},
+    ],
+    stepsSource="ai-draft")
+
+# Q5 (bonus; checked with a probe program)
+add(5,
+    rubric=rub(("זיהוי ש-`\\0` הוא תו אחד, ולכן בין המירכאות 10 תווים (לא 12 סימנים)", 4),
+               ("ליטרל של מחרוזת מסתיים בתו `'\\0'` אוטומטי נוסף, ולכן 11 תווים במערך", 3),
+               ("`sizeof` מחזיר גודל בבתים, ותו תופס בית אחד: הפלט 11", 3)),
+    rubricSource="ai-draft",
+    pitfalls=["לספור את `\\0` כשני תווים, או לעצור את הספירה ב-`\\0` הראשון (כמו `strlen`) ולקבל 2.",
+              "לשכוח את תו הסיום האוטומטי שבסוף הליטרל ולהדפיס 10."],
+    steps=[
+        {"type": "numeric", "prompt": r'כמה תווי `\0` מפורשים מופיעים בליטרל `"|0\0/00\0/0|"`?', "answer": 2, "tol": 0,
+         "explain": r"`\0` מופיע פעמיים, וכל מופע הוא תו אחד (ריצה אמיתית: 2 בתים אפס לפני הסיום)."},
+        {"type": "numeric", "prompt": "כמה תווים יש בליטרל, לא כולל תו הסיום שהקומפיילר מוסיף?", "answer": 10, "tol": 0,
+         "explain": "`|`, `0`, `\\0`, `/`, `0`, `0`, `\\0`, `/`, `0`, `|`: עשרה תווים (ריצה אמיתית: 10)."},
+        {"type": "numeric", "prompt": "מה מדפיסה התוכנית (`sizeof` של הליטרל)?", "answer": 11, "tol": 0,
+         "explain": "10 תווים ועוד תו סיום: 11 בתים (ריצה אמיתית: 11)."},
+    ],
+    stepsSource="ai-draft")
+
+
 exam = {
     "examCode": "21B-A",
     "examLabel": "סדנה מתקדמת בתכנות 61108, סמסטר ב' תשפ\"א, מועד א'",
