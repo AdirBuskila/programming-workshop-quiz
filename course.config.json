@@ -1,0 +1,99 @@
+{
+  "slug": "programming-workshop",
+  "titleHe": "סדנה מתקדמת בתכנות",
+  "descriptionHe": "תרגול מבחנים - סדנה מתקדמת בתכנות",
+  "accent": "#facc15",
+  "accent2": "#7c3aed",
+  "sourceFolder": "C:/Users/Adir/Desktop/BSC/שנה א/סמסטר ב/סדנה מתקדמת בתכנות",
+  "topics": [
+    [
+      "c_basics_output",
+      "ערכים, אופרטורים ופלט"
+    ],
+    [
+      "strings",
+      "מחרוזות"
+    ],
+    [
+      "arrays_static",
+      "מערכים סטטיים ודו-ממדיים"
+    ],
+    [
+      "pointers",
+      "מצביעים וכתובות"
+    ],
+    [
+      "pointer_to_pointer",
+      "מצביע למצביע"
+    ],
+    [
+      "dynamic_memory",
+      "הקצאה דינמית"
+    ],
+    [
+      "dynamic_arrays_2d",
+      "מערכים דינמיים דו-ממדיים"
+    ],
+    [
+      "structs_unions",
+      "מבנים ואיחודים"
+    ],
+    [
+      "files",
+      "קבצי טקסט"
+    ],
+    [
+      "linked_lists",
+      "רשימות מקושרות"
+    ],
+    [
+      "list_manipulation",
+      "מיזוג והמרת רשימות"
+    ],
+    [
+      "storage_classes",
+      "static, const ו-scope"
+    ],
+    [
+      "bit_manipulation",
+      "פעולות סיביות"
+    ],
+    [
+      "c_traps_mcq",
+      "מלכודות C"
+    ]
+  ],
+  "briefs": [],
+  "needHelp": [
+    {
+      "id": "linked_lists",
+      "titleHe": "רשימות מקושרות",
+      "icon": "🔗",
+      "topic": "linked_lists",
+      "entryLabelHe": "צריך עזרה ברשימות מקושרות?"
+    },
+    {
+      "id": "dyn_2d",
+      "titleHe": "מערכים דינמיים ודו-ממדיים",
+      "icon": "🧱",
+      "topic": "dynamic_arrays_2d",
+      "entryLabelHe": "צריך עזרה במערכים דינמיים ודו-ממדיים?"
+    },
+    {
+      "id": "files_strings",
+      "titleHe": "קבצים ומחרוזות",
+      "icon": "📄",
+      "topic": "files",
+      "entryLabelHe": "צריך עזרה בקבצים ובמחרוזות?"
+    },
+    {
+      "id": "c_traps",
+      "titleHe": "מלכודות C",
+      "icon": "🪤",
+      "topic": "c_traps_mcq",
+      "entryLabelHe": "צריך עזרה במלכודות C?"
+    }
+  ],
+  "storePrefix": "programming-workshop",
+  "includeDrafts": false
+}
