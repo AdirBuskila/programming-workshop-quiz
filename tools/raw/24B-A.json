@@ -17,7 +17,154 @@
    "official": true,
    "confidence": "high",
    "points": 40,
-   "image": "images/exams/24B-A-Q1.png"
+   "image": "images/exams/24B-A-Q1.png",
+   "rubric": [
+    {
+     "text": "השוואת האורכים של הרשימות בלי המרה למספר: מעבר מקביל על שתי הרשימות, והרשימה הארוכה יותר מייצגת מספר גדול יותר",
+     "points": 14
+    },
+    {
+     "text": "עבור רשימות באותו אורך: מעבר מקביל והשוואת ספרה מול ספרה מהמשמעותית ביותר, עד ההבדל הראשון",
+     "points": 14
+    },
+    {
+     "text": "החזרת `-1`, `1` או `0` בהתאם לתוצאת ההשוואה, כולל `0` כשכל הספרות שוות",
+     "points": 6
+    },
+    {
+     "text": "עבודה ישירה על הרשימות בלי שינוי שלהן ובלי גישה ל-`NULL`",
+     "points": 6
+    }
+   ],
+   "rubricSource": "ai-draft",
+   "pitfalls": [
+    "להשוות ספרה מול ספרה בלי לבדוק קודם את האורכים, ולהחליט לפי הספרה הראשונה: `9,9,9,9` מול `1,0,0,0,0` נותן `1` במקום `-1`.",
+    "לעצור בהבדל הראשון בספרות ולהחזיר תשובה גם כשהרשימות באורכים שונים, או להמשיך לעבור על רשימה שהסתיימה ולגשת ל-`NULL`.",
+    "להמיר את הרשימות למספרים (חריגה מהדרישה, ובנוסף גלישה במספרים ארוכים)."
+   ],
+   "steps": [
+    {
+     "type": "numeric",
+     "prompt": "מה מחזירה `numListCmp` עבור `L1: 9,9,9,9` ו-`L2: 1,0,0,0,0`?",
+     "answer": -1,
+     "tol": 0,
+     "explain": "ל-`L2` יש יותר ספרות, ולכן המספר שלה גדול יותר ו-`L1` קטנה (ריצה אמיתית: -1)."
+    },
+    {
+     "type": "numeric",
+     "prompt": "מה מחזירה `numListCmp` עבור `L1: 5,3,7,0,1` ו-`L2: 5,3,6,8,7` (שתי הרשימות באורך 5)?",
+     "answer": 1,
+     "tol": 0,
+     "explain": "האורכים שווים, והספרות הראשונות שונות בספרה השלישית: 7 > 6, ולכן `L1` גדולה יותר (ריצה אמיתית: 1)."
+    },
+    {
+     "type": "fillblank",
+     "prompt": "השלימו את התנאי שמחזיר `-1` אחרי השוואת האורכים.",
+     "code": true,
+     "lines": [
+      "int numListCmp_2(Item* L1, Item* L2)",
+      "{",
+      "       Item* ptr1 = L1, * ptr2 = L2;",
+      "       int diff = 0;",
+      "       while (ptr1 && ptr2)",
+      "       {",
+      "              ptr1 = ptr1->next;",
+      "              ptr2 = ptr2->next;",
+      "       }",
+      "___",
+      "              return -1;",
+      "       else",
+      "              if (ptr1 && !ptr2)",
+      "                     return 1;",
+      "       while (L1)",
+      "       {",
+      "              if (L1->digit < L2->digit)",
+      "                     return -1;",
+      "              else",
+      "                     if (L1->digit > L2->digit)",
+      "                            return 1;",
+      "              L1 = L1->next;",
+      "              L2 = L2->next;",
+      "       }",
+      "       return 0;",
+      "}"
+     ],
+     "blankIndex": 9,
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "if (!ptr1 && ptr2)"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "if (ptr1 && !ptr2)"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "if (!ptr1 || ptr2)"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "if (!ptr1)"
+      }
+     ],
+     "correctId": "a",
+     "explain": "`L1` קצרה מ-`L2` כש-`ptr1` הסתיים (`NULL`) ו-`ptr2` עדיין לא. ב' מחליף בין התפקידים, וג' ו-ד' מחזירים `-1` גם כשהאורכים שווים (ריצה אמיתית: תוצאות שגויות על הדוגמאות)."
+    },
+    {
+     "type": "order",
+     "prompt": "סדרו את הפקודות של `numListCmp_2` (כל שורה היא בלוק לוגי אחד).",
+     "code": true,
+     "lines": [
+      "Item* ptr1 = L1, * ptr2 = L2;",
+      "while (ptr1 && ptr2) { ptr1 = ptr1->next; ptr2 = ptr2->next; }",
+      "if (!ptr1 && ptr2) return -1; else if (ptr1 && !ptr2) return 1;",
+      "while (L1) { if (L1->digit < L2->digit) return -1; else if (L1->digit > L2->digit) return 1; L1 = L1->next; L2 = L2->next; }",
+      "return 0;"
+     ],
+     "explain": "קודם הצבת הסמנים, אחר כך התקדמות עד סוף אחת הרשימות, אחר כך החלטה לפי האורך, ורק אז השוואת הספרות ברשימות באורך שווה; `return 0` רק בסוף. כל החלפה של שני בלוקים נכשלת בבנייה או נותנת תוצאה שגויה (נבדק בריצה)."
+    },
+    {
+     "type": "findbug",
+     "prompt": "בגרסה הבאה שורה אחת שונתה, ו-`numListCmp_2` מחזירה `-1` כבר כשהספרה הראשונה שווה (למשל עבור `5,3,7,0,1` מול `5,3,6,8,7`). מצאו את השורה.",
+     "code": true,
+     "lines": [
+      "int numListCmp_2(Item* L1, Item* L2)",
+      "{",
+      "       Item* ptr1 = L1, * ptr2 = L2;",
+      "       int diff = 0;",
+      "       while (ptr1 && ptr2)",
+      "       {",
+      "              ptr1 = ptr1->next;",
+      "              ptr2 = ptr2->next;",
+      "       }",
+      "       if (!ptr1 && ptr2)",
+      "              return -1;",
+      "       else",
+      "              if (ptr1 && !ptr2)",
+      "                     return 1;",
+      "       while (L1)",
+      "       {",
+      "              if (L1->digit <= L2->digit)",
+      "                     return -1;",
+      "              else",
+      "                     if (L1->digit > L2->digit)",
+      "                            return 1;",
+      "              L1 = L1->next;",
+      "              L2 = L2->next;",
+      "       }",
+      "       return 0;",
+      "}"
+     ],
+     "bugIndex": 16,
+     "explain": "`<=` במקום `<` מחזיר `-1` גם כשהספרות שוות, ולכן הלולאה נעצרת בספרה הראשונה (ריצה אמיתית: -1 במקום 1)."
+    }
+   ],
+   "stepsSource": "ai-draft"
   },
   {
    "num": 2,
@@ -29,7 +176,132 @@
    "official": true,
    "confidence": "high",
    "points": 40,
-   "image": "images/exams/24B-A-Q2.png"
+   "image": "images/exams/24B-A-Q2.png",
+   "rubric": [
+    {
+     "text": "הקצאת מערך `B` של `n-1` מבנים מטיפוס `dyn_array` (שורה `i-2` עבור המחלק `i`)",
+     "points": 8
+    },
+    {
+     "text": "לולאה על המחלקים `2..n` ולולאה פנימית על `A` עם בדיקת התחלקות `A[j] % i == 0`",
+     "points": 12
+    },
+    {
+     "text": "איסוף האיברים המתחלקים למערך דינמי מתאים: הקצאה בגודל מקסימלי, מילוי, וצמצום ל-`k` עם `realloc`",
+     "points": 12
+    },
+    {
+     "text": "עדכון `size` ל-`k` (0 ו-`NULL` כשאין איבר מתחלק) והחזרת `B`",
+     "points": 8
+    }
+   ],
+   "rubricSource": "ai-draft",
+   "pitfalls": [
+    "לכתוב `B[i].ptr` במקום `B[i - 2].ptr`: המחלק `i` מתחיל ב-2 והאינדקס ב-0.",
+    "לשכוח לעדכן את `size`, או לא לצמצם את המערך לגודל האמיתי, כך שיש בו תאים לא מאותחלים.",
+    "לבדוק `i % A[j]` במקום `A[j] % i`, ולחלק באפס כש-`A[j]` שווה 0."
+   ],
+   "steps": [
+    {
+     "type": "numeric",
+     "prompt": "עבור `A={15, 49, -8, 6, -25, 9, 10, -58, 1, 77}` ו-`n=5`, מה `B[0].size` (האיברים המתחלקים ב-2)?",
+     "answer": 4,
+     "tol": 0,
+     "explain": "האיברים הם `-8, 6, 10, -58` (ריצה אמיתית: 4)."
+    },
+    {
+     "type": "numeric",
+     "prompt": "באותה דוגמה, מה `B[3].size` (האיברים המתחלקים ב-5)?",
+     "answer": 3,
+     "tol": 0,
+     "explain": "האיברים הם `15, -25, 10` (ריצה אמיתית: 3)."
+    },
+    {
+     "type": "fillblank",
+     "prompt": "השלימו את תנאי הבדיקה בלולאה הפנימית.",
+     "code": true,
+     "lines": [
+      "dyn_array* divNumbers(int* A, int sz, int n)",
+      "{",
+      "       int i, j, k;",
+      "       dyn_array* B = (dyn_array*)calloc(n - 1, sizeof(dyn_array));",
+      "       for (i = 2; i <= n; i++)",
+      "       {",
+      "              k = 0;",
+      "              B[i - 2].ptr = (int*)calloc(sz, sizeof(int));",
+      "              for (j = 0; j < sz; j++)",
+      "___",
+      "                            B[i - 2].ptr[k++] = A[j];",
+      "              B[i - 2].ptr = (int*)realloc(B[i - 2].ptr, k * sizeof(int));",
+      "              B[i - 2].size = k;",
+      "       }",
+      "       return B;",
+      "}"
+     ],
+     "blankIndex": 9,
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "if (A[j] % i == 0)"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "if (A[j] / i == 0)"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "if (A[j] % i != 0)"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "if (i % A[j] == 0)"
+      }
+     ],
+     "correctId": "a",
+     "explain": "מספר מתחלק ב-`i` ללא שארית כש-`A[j] % i == 0`. ג' בוחר את האיברים שאינם מתחלקים, וב' ו-ד' בוחרים איברים אחרים לגמרי (ריצה אמיתית: גדלים שונים מ-4, 3, 1, 3)."
+    },
+    {
+     "type": "order",
+     "prompt": "סדרו את שלוש הפקודות שבגוף הלולאה החיצונית `for (i = 2; i <= n; i++)`.",
+     "code": true,
+     "lines": [
+      "k = 0; B[i - 2].ptr = (int*)calloc(sz, sizeof(int));",
+      "for (j = 0; j < sz; j++) if (A[j] % i == 0) B[i - 2].ptr[k++] = A[j];",
+      "B[i - 2].ptr = (int*)realloc(B[i - 2].ptr, k * sizeof(int)); B[i - 2].size = k;"
+     ],
+     "explain": "קודם הקצאת המערך בגודל מקסימלי, אחר כך מילויו, ולבסוף צמצום והגדרת `size`. כל החלפה כותבת למצביע שעדיין לא הוקצה או מצמצמת מערך לפני המילוי (ריצה אמיתית: קריסה או תוצאה שונה בכל החלפה)."
+    },
+    {
+     "type": "findbug",
+     "prompt": "בגרסה הבאה שורה אחת שונתה, ובכל המערכים `B[i]` חסר האיבר הראשון של `A` אם הוא מתחלק (`15` חסר ב-`B[1]` וב-`B[3]`). מצאו אותה.",
+     "code": true,
+     "lines": [
+      "dyn_array* divNumbers(int* A, int sz, int n)",
+      "{",
+      "       int i, j, k;",
+      "       dyn_array* B = (dyn_array*)calloc(n - 1, sizeof(dyn_array));",
+      "       for (i = 2; i <= n; i++)",
+      "       {",
+      "              k = 0;",
+      "              B[i - 2].ptr = (int*)calloc(sz, sizeof(int));",
+      "              for (j = 1; j < sz; j++)",
+      "                     if (A[j] % i == 0)",
+      "                            B[i - 2].ptr[k++] = A[j];",
+      "              B[i - 2].ptr = (int*)realloc(B[i - 2].ptr, k * sizeof(int));",
+      "              B[i - 2].size = k;",
+      "       }",
+      "       return B;",
+      "}"
+     ],
+     "bugIndex": 8,
+     "explain": "הלולאה מתחילה מ-`j = 1` ומדלגת על `A[0]` (ריצה אמיתית: `B[1]` הוא `6, 9` במקום `15, 6, 9`)."
+    }
+   ],
+   "stepsSource": "ai-draft"
   },
   {
    "num": 3,
@@ -41,7 +313,206 @@
    "official": true,
    "confidence": "high",
    "points": 40,
-   "image": "images/exams/24B-A-Q3.png"
+   "image": "images/exams/24B-A-Q3.png",
+   "rubric": [
+    {
+     "text": "פתיחת הקובץ לקריאה וסגירתו בכל מסלול יציאה",
+     "points": 4
+    },
+    {
+     "text": "חיפוש האות הראשונה של המילה בקובץ בקריאה תו אחר תו, והחזרת 0 אם היא לא נמצאה",
+     "points": 8
+    },
+    {
+     "text": "המשך החיפוש: קריאת התו הבא מימין והשוואה לאות הנוכחית של המילה",
+     "points": 10
+    },
+    {
+     "text": "כשהאות אינה מימין: חזרה אחורה עם `fseek` (צעד אחד מהקריאה, ועוד שניים כדי להגיע לתו שמשמאל) ובדיקת התו משמאל",
+     "points": 12
+    },
+    {
+     "text": "טיפול בגבולות: התא הראשון בקובץ אין משמאלו תא (בדיקה עם `ftell`), וסוף הקובץ מימין; החזרת 1 כשכל המילה נמצאה",
+     "points": 6
+    }
+   ],
+   "rubricSource": "ai-draft",
+   "pitfalls": [
+    "לקרוא את כל הקובץ למחרוזת, בניגוד לדרישה, או לא להשתמש ב-`fseek` ו-`ftell`.",
+    "לחזור אחורה בצעד שגוי: אחרי קריאה מימין צריך `-1` כדי לחזור למקום, ועוד `-2` כדי לקרוא את התו שמשמאל לתו הנוכחי (במקום `-1` בלבד).",
+    "לא לבדוק את הגבול השמאלי, ולנסות לקרוא לפני תחילת הקובץ."
+   ],
+   "steps": [
+    {
+     "type": "choice",
+     "prompt": "הלוח הוא `etybag`. אילו מהמילים `byte`, `baby`, `gat` ניתנות להרכבה?",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`byte` ו-`baby` בלבד"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "שלושתן"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`byte` בלבד"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`baby` ו-`gat` בלבד"
+      }
+     ],
+     "correctId": "a",
+     "explain": "ריצה אמיתית של הפונקציה: `byte` ו-`baby` מחזירות 1, ו-`gat` מחזירה 0 (אחרי `g`, `a` משמאל, אין `t` לא מימין ולא משמאל של `a`)."
+    },
+    {
+     "type": "numeric",
+     "prompt": "בחיפוש המילה `bag` בלוח `etybag`: מה ערך `ftell(fptr)` מיד אחרי שהלולאה הראשונה מצאה את האות `b`?",
+     "answer": 4,
+     "tol": 0,
+     "explain": "האות `b` נמצאת במקום 3 (מתחילים מ-0), ו-`fgetc` כבר קדמה את המיקום ל-4 (ריצה אמיתית: 4)."
+    },
+    {
+     "type": "fillblank",
+     "prompt": "השלימו את החזרה אחורה אל התו שמשמאל לתו הנוכחי (לפני כן כבר בוצעה חזרה של צעד אחד).",
+     "code": true,
+     "lines": [
+      "int boggle(char* file_name, char* word)",
+      "{",
+      "       char c;",
+      "       FILE* fptr = fopen(file_name, \"r\");",
+      "       int w = 0;",
+      "       if (!fptr) exit(1);",
+      "       while ((c = fgetc(fptr)) != EOF)",
+      "              if (c == word[0])",
+      "              {",
+      "                     w++;",
+      "                     break;",
+      "              }",
+      "       if (w == 0)",
+      "       {",
+      "              fclose(fptr); return 0;",
+      "       }",
+      "       while (word[w] != '\\0')",
+      "       {",
+      "              if ((c = fgetc(fptr)) == word[w])",
+      "                     w++;",
+      "              else",
+      "              {",
+      "                     if (c != EOF)",
+      "                            fseek(fptr, -1, SEEK_CUR);",
+      "                     if (ftell(fptr) - 2 < 0)",
+      "                     {",
+      "                            fclose(fptr); return 0;",
+      "                     }",
+      "___",
+      "                     if (fgetc(fptr) == word[w])",
+      "                            w++;",
+      "                     else",
+      "                     {",
+      "                            fclose(fptr); return 0;",
+      "                     }",
+      "              }",
+      "       }",
+      "       fclose(fptr);",
+      "       return 1;",
+      "}"
+     ],
+     "blankIndex": 28,
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "fseek(fptr, -2, SEEK_CUR);"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "fseek(fptr, -1, SEEK_CUR);"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "fseek(fptr, -3, SEEK_CUR);"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "fseek(fptr, 0, SEEK_CUR);"
+      }
+     ],
+     "correctId": "a",
+     "explain": "אחרי החזרה של צעד אחד המיקום הוא מיד אחרי התו הנוכחי; כדי לקרוא את התו שמשמאל לו צריך לחזור עוד שני מקומות. ב' קורא את התו הנוכחי, ג' קורא תו רחוק מדי וד' קורא את התו מימין (ריצה אמיתית: `byte` מחזירה 0 בכל אחת מהן)."
+    },
+    {
+     "type": "order",
+     "prompt": "סדרו את הפקודות של `boggle` (כל שורה היא בלוק לוגי אחד).",
+     "code": true,
+     "lines": [
+      "char c; FILE* fptr = fopen(file_name, \"r\"); int w = 0; if (!fptr) exit(1);",
+      "while ((c = fgetc(fptr)) != EOF) if (c == word[0]) { w++; break; } if (w == 0) { fclose(fptr); return 0; }",
+      "while (word[w] != '\\0') { if ((c = fgetc(fptr)) == word[w]) w++; else { if (c != EOF) fseek(fptr, -1, SEEK_CUR); if (ftell(fptr) - 2 < 0) { fclose(fptr); return 0; } fseek(fptr, -2, SEEK_CUR); if (fgetc(fptr) == word[w]) w++; else { fclose(fptr); return 0; } } }",
+      "fclose(fptr); return 1;"
+     ],
+     "explain": "הצהרות ופתיחה, חיפוש האות הראשונה (והחזרת 0 אם לא נמצאה), חיפוש שאר האותיות ואז סגירה והחזרת 1. כל החלפה של שני בלוקים נכשלת בבנייה או נותנת תוצאה שגויה על המילים בדוגמה (נבדק בריצה)."
+    },
+    {
+     "type": "findbug",
+     "prompt": "בגרסה הבאה שורה אחת שונתה, והמילה `yte` בלוח `etybag` (שמשתמשת בתא הראשון בקובץ) כבר לא נמצאת. מצאו את השורה.",
+     "code": true,
+     "lines": [
+      "int boggle(char* file_name, char* word)",
+      "{",
+      "       char c;",
+      "       FILE* fptr = fopen(file_name, \"r\");",
+      "       int w = 0;",
+      "       if (!fptr) exit(1);",
+      "       while ((c = fgetc(fptr)) != EOF)",
+      "              if (c == word[0])",
+      "              {",
+      "                     w++;",
+      "                     break;",
+      "              }",
+      "       if (w == 0)",
+      "       {",
+      "              fclose(fptr); return 0;",
+      "       }",
+      "       while (word[w] != '\\0')",
+      "       {",
+      "              if ((c = fgetc(fptr)) == word[w])",
+      "                     w++;",
+      "              else",
+      "              {",
+      "                     if (c != EOF)",
+      "                            fseek(fptr, -1, SEEK_CUR);",
+      "                     if (ftell(fptr) - 2 <= 0)",
+      "                     {",
+      "                            fclose(fptr); return 0;",
+      "                     }",
+      "                     fseek(fptr, -2, SEEK_CUR);",
+      "                     if (fgetc(fptr) == word[w])",
+      "                            w++;",
+      "                     else",
+      "                     {",
+      "                            fclose(fptr); return 0;",
+      "                     }",
+      "              }",
+      "       }",
+      "       fclose(fptr);",
+      "       return 1;",
+      "}"
+     ],
+     "bugIndex": 24,
+     "explain": "`<= 0` פוסל גם מצב שבו מיקום 0 עדיין נגיש (התו הראשון בקובץ), ולכן `yte` מחזירה 0 במקום 1 (ריצה אמיתית). הבדיקה הנכונה היא `< 0`."
+    }
+   ],
+   "stepsSource": "ai-draft"
   },
   {
    "num": 4,
@@ -52,7 +523,67 @@
    "solutionSource": "official-pdf",
    "official": true,
    "confidence": "high",
-   "points": 10
+   "points": 10,
+   "rubric": [
+    {
+     "text": "בקריאה הראשונה `p2` מצביע על `y` של `main`: `*p2 = 400` משנה אותו, וההחזרה היא `*p1 + 200 = 400`, ולכן `200 400`",
+     "points": 3
+    },
+    {
+     "text": "`swap(&x, y)` משנה את `x` ל-300 (הפרמטר `b` הוא עותק), ולכן `300 300`",
+     "points": 2
+    },
+    {
+     "text": "`blabla(&y, &x)`: `*p2 = 400` קובע את `x` ל-400, ההחזרה היא `*p1 + 200 = 400` ונשמרת ב-`x`, ולכן `400 200`",
+     "points": 2
+    },
+    {
+     "text": "`blabla(&x, &x)`: שני המצביעים מצביעים על אותו משתנה, `*p2 = 400` ואז `*p1 + 200 = 600`",
+     "points": 3
+    }
+   ],
+   "rubricSource": "ai-draft",
+   "pitfalls": [
+    "לבלבל בין המשתנים המקומיים `x`,`y` של `blabla` לבין המשתנים של `main`: ההשמות המקומיות אינן משפיעות על `main`.",
+    "לחשוב ש-`swap` מחליפה את `x` ו-`y`: `b` הוא עותק, ולכן רק `*a` משתנה.",
+    "לחשב `500 + 200 = 700` בקריאה האחרונה ולשכוח ש-`*p2 = 400` דורס את `x` לפני שהוא נקרא דרך `p1`."
+   ],
+   "steps": [
+    {
+     "type": "numeric",
+     "prompt": "אחרי `y = blabla(&x, &y);` (עם `x = 200`, `y = 100` לפני הקריאה), מה ערך `y`?",
+     "answer": 400,
+     "tol": 0,
+     "explain": "`*p2 = 400` מציב 400 ב-`y`, ו-`*p1 + 200` נותן 400, שגם נשמר ב-`y` (ריצה אמיתית: השורה `200 400`)."
+    },
+    {
+     "type": "numeric",
+     "prompt": "אחרי `x = y; y = 300; swap(&x, y);` מה ערך `x`?",
+     "answer": 300,
+     "tol": 0,
+     "explain": "`*a = b` מציבה ב-`x` את הערך 300 (ריצה אמיתית: השורה `300 300`)."
+    },
+    {
+     "type": "numeric",
+     "prompt": "מה מדפיסה השורה האחרונה: `printf(\"%d\\n\", blabla(&x, &x))` כאשר `x = 500`?",
+     "answer": 600,
+     "tol": 0,
+     "explain": "שני המצביעים מצביעים על `x`: `*p2 = 400`, ואז `*p1 + 200 = 600` (ריצה אמיתית: 600)."
+    },
+    {
+     "type": "order",
+     "prompt": "סדרו את ארבע שורות הפלט של התוכנית, מהראשונה לאחרונה.",
+     "code": true,
+     "lines": [
+      "200 400",
+      "300 300",
+      "400 200",
+      "600"
+     ],
+     "explain": "ריצה אמיתית: אותן ארבע שורות."
+    }
+   ],
+   "stepsSource": "ai-draft"
   },
   {
    "num": 5,
@@ -144,7 +675,52 @@
    "solutionSource": "official-pdf",
    "official": true,
    "confidence": "high",
-   "points": 10
+   "points": 10,
+   "rubric": [
+    {
+     "text": "`fgets(st, 2, fptr)` קוראת תו אחד בלבד (מקום אחד למחרוזת ועוד תו סיום)",
+     "points": 3
+    },
+    {
+     "text": "בכל איטרציה הקריאה בתנאי הלולאה צורכת תו אחד והקריאה בתוך `fputs` תו נוסף שמודפס",
+     "points": 4
+    },
+    {
+     "text": "בסוף הקובץ `fgets` מחזירה `NULL` והלולאה נעצרת, והפלט הסופי `24`",
+     "points": 3
+    }
+   ],
+   "rubricSource": "ai-draft",
+   "pitfalls": [
+    "לחשוב ש-`fgets` עם גודל 2 קוראת שני תווים, ולהדפיס `12` או `1234`.",
+    "לשכוח שהקריאה בתנאי הלולאה צורכת תו שלא מודפס, ולהדפיס `1234`."
+   ],
+   "steps": [
+    {
+     "type": "numeric",
+     "prompt": "כמה תווים מהקובץ קולטת הקריאה `fgets(st, 2, fptr)`?",
+     "answer": 1,
+     "tol": 0,
+     "explain": "הפרמטר 2 כולל את תו הסיום, ולכן נקלט תו אחד (ריצה אמיתית: `st` מכיל תו אחד בכל קריאה)."
+    },
+    {
+     "type": "numeric",
+     "prompt": "כמה איטרציות מבצעת הלולאה על הקובץ `1234`?",
+     "answer": 2,
+     "tol": 0,
+     "explain": "כל איטרציה צורכת שני תווים (אחד בתנאי ואחד ב-`fputs`), ובשלישית `fgets` מחזירה `NULL` (ריצה אמיתית: 2 איטרציות)."
+    },
+    {
+     "type": "text",
+     "prompt": "מה הפלט של התוכנית? (רצף ספרות, ללא רווחים)",
+     "accept": [
+      "24"
+     ],
+     "normalize": "none",
+     "explain": "מודפסים התווים השני והרביעי (ריצה אמיתית: `24`)."
+    }
+   ],
+   "stepsSource": "ai-draft"
   }
  ]
 }
