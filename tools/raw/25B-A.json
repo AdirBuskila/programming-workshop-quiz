@@ -17,7 +17,137 @@
    "official": true,
    "confidence": "high",
    "points": 40,
-   "image": "images/exams/25B-A-Q1.png"
+   "image": "images/exams/25B-A-Q1.png",
+   "rubric": [
+    {
+     "text": "מחיקת הרווחים שבתחילת הרשימה בלולאה על `*head`, כך שהראש מתעדכן דרך המצביע הכפול ואיברים נמחקים עם `free`",
+     "points": 12
+    },
+    {
+     "text": "טיפול ברשימה שנהפכה לריקה (כולה רווחים או ריקה מההתחלה): חזרה מהפונקציה כש-`*head` הוא `NULL`",
+     "points": 6
+    },
+    {
+     "text": "מעבר על שאר הרשימה עם שני מצביעים `prev` ו-`curr`, ומחיקת רווח שאחריו רווח נוסף או שהוא האיבר האחרון",
+     "points": 14
+    },
+    {
+     "text": "שמירה על תקינות המצביעים אחרי מחיקה: `prev` לא מתקדם כשנמחק איבר, ו-`curr` נקרא מחדש מ-`prev->next`",
+     "points": 8
+    }
+   ],
+   "rubricSource": "ai-draft",
+   "pitfalls": [
+    "להניח שהראש לא משתנה ולקבל `node*` במקום `node**`, או לגשת ל-`(*head)->value` כשהרשימה כבר ריקה (קריסה ברשימה שכולה רווחים).",
+    "להתקדם ב-`prev` גם אחרי מחיקה, ואז לדלג על איבר או להשאיר שני רווחים רצופים.",
+    "לא לבדוק את הרווח האחרון ברשימה: התנאי חייב לכלול גם `curr->next == NULL`, אחרת נשאר רווח בסוף."
+   ],
+   "steps": [
+    {
+     "type": "numeric",
+     "prompt": "הרשימה מייצגת את המשפט `\"  No  way! \"` (שני רווחים בתחילה, שני רווחים בין המילים ורווח בסוף). כמה איברים נשארים ברשימה אחרי `removeExtraSpaces`?",
+     "answer": 7,
+     "tol": 0,
+     "explain": "מתקבל `\"No way!\"`: שבעה תווים (ריצה אמיתית: 7 איברים)."
+    },
+    {
+     "type": "numeric",
+     "prompt": "הרשימה מורכבת מהתווים: רווח, רווח, `a`, רווח, רווח, `b`, רווח, רווח. כמה איברים נשארים ברשימה בסוף הפונקציה?",
+     "answer": 3,
+     "tol": 0,
+     "explain": "מתקבל `\"a b\"`: שני הרווחים בתחילה נמחקים בלולאה הראשונה, רווח אחד מבין שני הרווחים שבאמצע נמחק, ושני הרווחים בסוף נמחקים (ריצה אמיתית: 3 איברים)."
+    },
+    {
+     "type": "fillblank",
+     "prompt": "השלימו את תנאי הלולאה שמוחקת את הרווחים שבתחילת הרשימה.",
+     "code": true,
+     "lines": [
+      "void removeExtraSpaces(node** head)",
+      "{",
+      "       node* curr, *prev;",
+      "___",
+      "              deleteHead(head);",
+      "       if (*head == NULL)",
+      "              return;",
+      "       prev = *head;",
+      "       curr = prev->next;",
+      "       while (curr)",
+      "       {",
+      "              if (curr->value == ' ' && (!curr->next || curr->next->value == ' '))",
+      "                     deleteNext(prev);",
+      "              else",
+      "                     prev = curr;",
+      "              curr = prev->next;",
+      "       }",
+      "}"
+     ],
+     "blankIndex": 3,
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "while (*head && (*head)->value == ' ')"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "while ((*head)->value == ' ')"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "while (*head && (*head)->value != ' ')"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "while (*head && (*head)->value == ' ' && (*head)->next)"
+      }
+     ],
+     "correctId": "a",
+     "explain": "הבדיקה `*head &&` מונעת גישה ל-`NULL` ברשימה שכולה רווחים (ב' קורס עליה), ו-ד' משאיר רווח אחד ברשימה שכולה רווחים. ג' מוחק את האותיות במקום את הרווחים (ריצה אמיתית: כל אחת מהאפשרויות הללו נכשלת)."
+    },
+    {
+     "type": "order",
+     "prompt": "סדרו את הפקודות של `removeExtraSpaces` (כל שורה היא בלוק לוגי אחד).",
+     "code": true,
+     "lines": [
+      "while (*head && (*head)->value == ' ') deleteHead(head);",
+      "if (*head == NULL) return;",
+      "node* curr, *prev = *head; curr = prev->next;",
+      "while (curr) { if (curr->value == ' ' && (!curr->next || curr->next->value == ' ')) deleteNext(prev); else prev = curr; curr = prev->next; }"
+     ],
+     "explain": "קודם מחיקת הרווחים מההתחלה, אז חזרה אם הרשימה ריקה, אחר כך הצהרה ואתחול של `prev` ו-`curr`, ולבסוף הלולאה הראשית. כל החלפה של שני בלוקים נכשלת בבנייה, קורסת או מחזירה פלט שונה (נבדק בריצה)."
+    },
+    {
+     "type": "findbug",
+     "prompt": "בגרסה הבאה שורה אחת שונתה, ורווח שנמצא בסוף הרשימה אינו נמחק (למשל אחרי `x` נשאר רווח). מצאו את השורה.",
+     "code": true,
+     "lines": [
+      "void removeExtraSpaces(node** head)",
+      "{",
+      "       node* curr, *prev;",
+      "       while (*head && (*head)->value == ' ')",
+      "              deleteHead(head);",
+      "       if (*head == NULL)",
+      "              return;",
+      "       prev = *head;",
+      "       curr = prev->next;",
+      "       while (curr)",
+      "       {",
+      "              if (curr->value == ' ' && (curr->next && curr->next->value == ' '))",
+      "                     deleteNext(prev);",
+      "              else",
+      "                     prev = curr;",
+      "              curr = prev->next;",
+      "       }",
+      "}"
+     ],
+     "bugIndex": 11,
+     "explain": "התנאי `curr->next && ...` לא מתקיים באיבר האחרון, ולכן רווח אחרון נשאר (ריצה אמיתית: אחרי `x` נשאר רווח). בפתרון הנכון התנאי הוא `!curr->next || ...`."
+    }
+   ],
+   "stepsSource": "ai-draft"
   },
   {
    "num": 2,
@@ -29,7 +159,129 @@
    "official": true,
    "confidence": "high",
    "points": 40,
-   "image": "images/exams/25B-A-Q2.png"
+   "image": "images/exams/25B-A-Q2.png",
+   "rubric": [
+    {
+     "text": "הגדרת הקבוע `N` לפני הפונקציה והקצאת מערך מצביעים בגודל `n` לכל אחד משני המשולשים",
+     "points": 8
+    },
+    {
+     "text": "המשולש התחתון: שורה `i` מוקצית בגודל `i+1` ומועתקים אליה `A[i][0..i]`",
+     "points": 10
+    },
+    {
+     "text": "המשולש העליון: שורה `i` מוקצית בגודל `n-i` ומועתקים אליה `A[i][0..n-i-1]`",
+     "points": 14
+    },
+    {
+     "text": "העברה by reference: `*tr_low = low` ו-`*tr_up = up`",
+     "points": 8
+    }
+   ],
+   "rubricSource": "ai-draft",
+   "pitfalls": [
+    "להקצות לכל שורה `n` תאים במקום גודל השורה במשולש (המשולש אינו מלבני), או לחשב את גודל שורה `i` של המשולש העליון כ-`i+1`.",
+    "לשכוח את האיבר שעל האלכסון: `j < i` במקום `j <= i` במשולש התחתון, או `j < n-i-1` במשולש העליון.",
+    "לכתוב `tr_low = low` במקום `*tr_low = low`, כך שהמערך לא מגיע לפונקציה הקוראת."
+   ],
+   "steps": [
+    {
+     "type": "numeric",
+     "prompt": "עבור `n = 4`, מה גודל שורה מספר 1 (השנייה) במשולש השמאלי העליון?",
+     "answer": 3,
+     "tol": 0,
+     "explain": "בשורה `i` של המשולש העליון יש `n - i` איברים: 4 - 1 = 3 (ריצה אמיתית: שורות בגדלים 4, 3, 2, 1)."
+    },
+    {
+     "type": "numeric",
+     "prompt": "המטריצה היא `A = {{5,7,-3,13},{76,16,8,0},{98,4,43,6},{11,19,21,2}}`. מה ערך `tr_low[3][2]`?",
+     "answer": 21,
+     "tol": 0,
+     "explain": "`tr_low[3][2] = A[3][2] = 21` (ריצה אמיתית)."
+    },
+    {
+     "type": "fillblank",
+     "prompt": "השלימו את שורת ההעתקה של המשולש העליון (באותה מטריצה).",
+     "code": true,
+     "lines": [
+      "void triangles(int A[][N], int n, int*** tr_low, int*** tr_up)",
+      "{",
+      "       int i, j, ** low, ** up;",
+      "       low = (int**)calloc(n, sizeof(int*));",
+      "       for (i = 0; i < n; i++)",
+      "       {",
+      "              low[i] = (int*)calloc(i + 1, sizeof(int));",
+      "              for (j = 0; j <= i; j++)",
+      "                     low[i][j] = A[i][j];",
+      "       }",
+      "       up = (int**)calloc(n, sizeof(int*));",
+      "       for (i = 0; i < n; i++)",
+      "       {",
+      "              up[i] = (int*)calloc(n - i, sizeof(int));",
+      "              for (j = 0; j < n - i; j++)",
+      "___",
+      "       }",
+      "       *tr_low = low;",
+      "       *tr_up = up;",
+      "}"
+     ],
+     "blankIndex": 15,
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "up[i][j] = A[i][j];"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "up[i][j] = A[j][i];"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "up[i][j] = A[i][j + i];"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "up[i][j] = A[i][n - 1 - j];"
+      }
+     ],
+     "correctId": "a",
+     "explain": "השורות של המשולש העליון הן תחילת השורות של `A`, ולכן `up[i][j] = A[i][j]`. ב' מעתיק את המשוחלפת, ג' ו-ד' מעתיקים תאים אחרים (ריצה אמיתית: ערכים שונים)."
+    },
+    {
+     "type": "findbug",
+     "prompt": "בגרסה הבאה שורה אחת שונתה, ובמשולש התחתון האיברים שעל האלכסון הראשי יוצאים 0 במקום ערכי `A`. מצאו אותה.",
+     "code": true,
+     "lines": [
+      "void triangles(int A[][N], int n, int*** tr_low, int*** tr_up)",
+      "{",
+      "       int i, j, ** low, ** up;",
+      "       low = (int**)calloc(n, sizeof(int*));",
+      "       for (i = 0; i < n; i++)",
+      "       {",
+      "              low[i] = (int*)calloc(i + 1, sizeof(int));",
+      "              for (j = 0; j < i; j++)",
+      "                     low[i][j] = A[i][j];",
+      "       }",
+      "       up = (int**)calloc(n, sizeof(int*));",
+      "       for (i = 0; i < n; i++)",
+      "       {",
+      "              up[i] = (int*)calloc(n - i, sizeof(int));",
+      "              for (j = 0; j < n - i; j++)",
+      "                     up[i][j] = A[i][j];",
+      "       }",
+      "       *tr_low = low;",
+      "       *tr_up = up;",
+      "}"
+     ],
+     "bugIndex": 7,
+     "explain": "`j < i` במקום `j <= i` מדלג על התא `A[i][i]` (ריצה אמיתית: האיברים 5, 16, 43, 2 יצאו 0)."
+    }
+   ],
+   "stepsSource": "ai-draft"
   },
   {
    "num": 3,
@@ -40,7 +292,145 @@
    "solutionSource": "official-pdf",
    "official": true,
    "confidence": "high",
-   "points": 40
+   "points": 40,
+   "rubric": [
+    {
+     "text": "פתיחת הקובץ לקריאה והחזרת `-1` כשהפתיחה נכשלת",
+     "points": 6
+    },
+    {
+     "text": "קריאת הקובץ שורה אחרי שורה (`fgets` עם מערך עזר של 101 תווים לכל היותר)",
+     "points": 8
+    },
+    {
+     "text": "פירוק כל שורה למילים לפי רווח ותו שורה חדשה (`strtok` עם `\" \\n\"`) או בדיקת גבולות המילה בחיפוש `strstr`",
+     "points": 14
+    },
+    {
+     "text": "השוואת כל מילה שלמה ל-`word` וספירה; מילה שהיא תת-מחרוזת של מילה אחרת (`lives`, `alive`) לא נספרת",
+     "points": 8
+    },
+    {
+     "text": "סגירת הקובץ והחזרת הספירה",
+     "points": 4
+    }
+   ],
+   "rubricSource": "ai-draft",
+   "pitfalls": [
+    "לספור כל מופע של `strstr` בלי לבדוק גבולות: `lives`, `alive` ו-`lived` נספרות בטעות והתוצאה גדולה מ-5.",
+    "לשכוח שהמילה האחרונה בשורה מסתיימת ב-`'\\n'`, ולהפריד רק לפי רווח: אז `live\\n` לא שווה ל-`live`.",
+    "להחזיר 0 או לקרוא מ-`NULL` כשהקובץ לא נפתח, במקום להחזיר `-1`."
+   ],
+   "steps": [
+    {
+     "type": "numeric",
+     "prompt": "כמה פעמים מופיעה המילה `live` בקובץ הדוגמה (כמילה שלמה)?",
+     "answer": 5,
+     "tol": 0,
+     "explain": "ריצה אמיתית של שתי הגרסאות על הדוגמה: 5. המילים `lives`, `alive` ו-`lived` אינן נספרות."
+    },
+    {
+     "type": "numeric",
+     "prompt": "כמה פעמים נספרת המילה `live` בשורה `10 alive creatures live in this lived place` בלבד?",
+     "answer": 1,
+     "tol": 0,
+     "explain": "רק `live` האמצעית היא מילה שלמה; `alive` ו-`lived` רק מכילות אותה (ריצה אמיתית: 1)."
+    },
+    {
+     "type": "fillblank",
+     "prompt": "השלימו את ההצהרה, כך שכל שורה תפורק למילים (תו שורה חדשה בסוף השורה אינו חלק ממילה).",
+     "code": true,
+     "lines": [
+      "int wordAppearanceNum(char* file_name, char* word)",
+      "{",
+      "       FILE* fptr = fopen(file_name, \"r\");",
+      "___",
+      "       int count = 0;",
+      "       if (!fptr)",
+      "              return -1;",
+      "       while (fgets(str, 100, fptr))",
+      "       {",
+      "              token = strtok(str, separators);",
+      "              while (token != NULL)",
+      "              {",
+      "                     if (strcmp(token, word) == 0)",
+      "                            count++;",
+      "                     token = strtok(NULL, separators);",
+      "              }",
+      "       }",
+      "       fclose(fptr);",
+      "       return count;",
+      "}"
+     ],
+     "blankIndex": 3,
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "char str[100], *separators = \" \\n\", *token;"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "char str[100], *separators = \" \", *token;"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "char str[100], *separators = \"\\n\", *token;"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "char str[100], *separators = \".,;\", *token;"
+      }
+     ],
+     "correctId": "a",
+     "explain": "יש להפריד גם לפי רווח וגם לפי `'\\n'`. עם רווח בלבד המילה האחרונה בשורה היא `live\\n` ולא נספרת (ריצה אמיתית: 4 במקום 5), ועם `'\\n'` בלבד או סימני פיסוק כל שורה היא \"מילה\" אחת (ריצה אמיתית: 0)."
+    },
+    {
+     "type": "order",
+     "prompt": "סדרו את הפקודות של הפונקציה (כל שורה היא בלוק לוגי אחד).",
+     "code": true,
+     "lines": [
+      "FILE* fptr = fopen(file_name, \"r\"); char str[100], *separators = \" \\n\", *token; int count = 0;",
+      "if (!fptr) return -1;",
+      "while (fgets(str, 100, fptr)) { token = strtok(str, separators); while (token != NULL) { if (strcmp(token, word) == 0) count++; token = strtok(NULL, separators); } }",
+      "fclose(fptr); return count;"
+     ],
+     "explain": "הצהרות, בדיקת פתיחה, לולאת הקריאה והספירה, ובסוף סגירה והחזרה. כל החלפה של שני בלוקים נכשלת בבנייה, קורסת או נותנת פלט שונה (נבדק בריצה, כולל קובץ שאינו קיים)."
+    },
+    {
+     "type": "findbug",
+     "prompt": "בגרסה הבאה שורה אחת שונתה, והתוצאה על קובץ הדוגמה אינה 5. מצאו את השורה.",
+     "code": true,
+     "lines": [
+      "int wordAppearanceNum(char* file_name, char* word)",
+      "{",
+      "       FILE* fptr = fopen(file_name, \"r\");",
+      "       char str[100], *separators = \" \\n\", *token;",
+      "       int count = 0;",
+      "       if (!fptr)",
+      "              return -1;",
+      "       while (fgets(str, 10, fptr))",
+      "       {",
+      "              token = strtok(str, separators);",
+      "              while (token != NULL)",
+      "              {",
+      "                     if (strcmp(token, word) == 0)",
+      "                            count++;",
+      "                     token = strtok(NULL, separators);",
+      "              }",
+      "       }",
+      "       fclose(fptr);",
+      "       return count;",
+      "}"
+     ],
+     "bugIndex": 7,
+     "explain": "`fgets(str, 10, fptr)` קורא עד 9 תווים בכל פעם, ולכן שורות ארוכות נחתכות באמצע מילים (ריצה אמיתית: תוצאה שונה מ-5)."
+    }
+   ],
+   "stepsSource": "ai-draft"
   },
   {
    "num": 4,
@@ -51,7 +441,89 @@
    "solutionSource": "official-pdf",
    "official": true,
    "confidence": "high",
-   "points": 10
+   "points": 10,
+   "rubric": [
+    {
+     "text": "זיהוי שבאיגוד `x` ו-`y` חולקים את אותו מקום בזיכרון, ובמבנה לא",
+     "points": 3
+    },
+    {
+     "text": "שתי השורות הראשונות: `3 5` למבנה ו-`5 5` לאיגוד",
+     "points": 2
+    },
+    {
+     "text": "השורה השלישית `4 4`: ההשמה האחרונה לאיגוד (4) נכנסת לשני השדות של המבנה",
+     "points": 2
+    },
+    {
+     "text": "העברת האיגוד לפונקציה by value: בתוך `fun` מודפס `19 19` ובחזרה ל-`main` נשאר `18 18`",
+     "points": 3
+    }
+   ],
+   "rubricSource": "ai-draft",
+   "pitfalls": [
+    "להתייחס לאיגוד כמו למבנה ולהדפיס `3 5` גם לאיגוד, במקום `5 5`.",
+    "לחשוב ש-`b.x++` ב-`fun` משנה את `b` של `main` (האיגוד מועבר by value), ולהדפיס `19 19` בשורה האחרונה.",
+    "לשכוח שאחרי `b.x = 15; b.y = 18;` שני השדות שווים ל-18, ולכן `b.x++` נותן 19 בשני השדות."
+   ],
+   "steps": [
+    {
+     "type": "numeric",
+     "prompt": "אחרי `a.x = b.x = 3; a.y = b.y = 5;` מה ערכו של `b.x`? (`b` הוא האיגוד)",
+     "answer": 5,
+     "tol": 0,
+     "explain": "`b.x` ו-`b.y` חולקים אותו מקום, וההשמה האחרונה היא 5 (ריצה אמיתית: השורה `5 5`)."
+    },
+    {
+     "type": "numeric",
+     "prompt": "אחרי `b.x = 8; b.y = 4; a.x = b.x; a.y = b.y;` מה ערכו של `a.x`? (`a` הוא המבנה)",
+     "answer": 4,
+     "tol": 0,
+     "explain": "`b.x` כבר שווה ל-4 (ההשמה ל-`b.y` דרסה אותו), ולכן גם `a.x` מקבל 4 (ריצה אמיתית: השורה `4 4`)."
+    },
+    {
+     "type": "choice",
+     "prompt": "מה מדפיסה השורה האחרונה בתוכנית (ההדפסה ב-`main` אחרי החזרה מ-`fun`)?",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`18 18`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`19 19`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`15 18`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`19 18`"
+      }
+     ],
+     "correctId": "a",
+     "explain": "`fun` מקבל עותק של האיגוד, ולכן `b` של `main` נשאר עם 18 בשני השדות (ריצה אמיתית: `18 18`)."
+    },
+    {
+     "type": "order",
+     "prompt": "סדרו את חמש שורות הפלט של התוכנית, מהראשונה לאחרונה.",
+     "code": true,
+     "lines": [
+      "3 5",
+      "5 5",
+      "4 4",
+      "19 19",
+      "18 18"
+     ],
+     "explain": "המבנה (3 5), האיגוד (5 5), המבנה אחרי ההעתקה (4 4), `fun` (19 19) ו-`main` (18 18); ריצה אמיתית: אותן חמש שורות."
+    }
+   ],
+   "stepsSource": "ai-draft"
   },
   {
    "num": 5,
@@ -148,7 +620,52 @@
    "solutionSource": "official-pdf",
    "official": true,
    "confidence": "high",
-   "points": 10
+   "points": 10,
+   "rubric": [
+    {
+     "text": "זיהוי סדר הקדימות: ההשוואה `!=` מתבצעת לפני ההשמה, כך ש-`c = (fgetc(fptr) != EOF)`",
+     "points": 4
+    },
+    {
+     "text": "`c` שווה ל-1 בכל אחד משלושת התווים, ו-`printf(\"%d\", c)` מדפיס `1`",
+     "points": 3
+    },
+    {
+     "text": "בסוף הקובץ ההשוואה נותנת 0, הלולאה נעצרת, והפלט הסופי `111`",
+     "points": 3
+    }
+   ],
+   "rubricSource": "ai-draft",
+   "pitfalls": [
+    "לחשוב ש-`c` מקבל את קוד התו, ולהדפיס `979899` (קודי ASCII של `abc`). בגלל הקדימות `c` מקבל את תוצאת ההשוואה.",
+    "לחשוב שהפלט מכיל גם 0 בסוף: בתוצאה 0 הלולאה נעצרת לפני ההדפסה."
+   ],
+   "steps": [
+    {
+     "type": "numeric",
+     "prompt": "בלי סוגריים, מה ערכו של `c` באיטרציה הראשונה (הקובץ מכיל `abc`)?",
+     "answer": 1,
+     "tol": 0,
+     "explain": "`c = (fgetc(fptr) != EOF)`: התנאי נכון, ולכן `c` שווה ל-1 (ריצה אמיתית: הודפס 1)."
+    },
+    {
+     "type": "numeric",
+     "prompt": "כמה איטרציות מבצעת הלולאה על הקובץ `abc`?",
+     "answer": 3,
+     "tol": 0,
+     "explain": "שלושה תווים נקראים בהצלחה; בקריאה הרביעית מתקבל EOF, `c` הופך ל-0 והלולאה נעצרת (ריצה אמיתית: 3 הדפסות)."
+    },
+    {
+     "type": "text",
+     "prompt": "מה הפלט של התוכנית? (רצף ספרות, ללא רווחים)",
+     "accept": [
+      "111"
+     ],
+     "normalize": "none",
+     "explain": "הודפס `1` שלוש פעמים (ריצה אמיתית: `111`)."
+    }
+   ],
+   "stepsSource": "ai-draft"
   }
  ]
 }
