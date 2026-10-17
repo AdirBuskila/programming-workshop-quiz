@@ -261,6 +261,198 @@ questions = [
     Q(5, "code", "c_traps_mcq", Q5_TEXT, Q5_SOL, points=10),
 ]
 
+# ---- rubric / pitfalls / steps (ai-draft). Every expected value comes from a real clang run: tools/verify/22B-B/steps_check.py
+# (probes + order/fillblank/findbug checks through verify/step_lib.py). Lines of order/findbug/fillblank come from the stored solutions.
+def rub(*items):
+    return [{"text": t, "points": p} for t, p in items]
+
+
+def lines_of(src):
+    return [ln for ln in src.strip("\n").split("\n") if ln.strip() and not ln.startswith("```")]
+
+
+def clean(lines):
+    """Drop comment-only lines and trailing // comments (they are not part of the logic being asked about)."""
+    out = []
+    for ln in lines:
+        s = ln.strip()
+        if s.startswith("/*") or s.startswith("//"):
+            continue
+        if "//" in ln:
+            ln = ln[:ln.index("//")].rstrip()
+        out.append(ln)
+    return out
+
+
+def func_lines(src, header_start):
+    """The code lines of the function whose header line starts with header_start, to its closing brace."""
+    ls = clean(lines_of(src))
+    i0 = [i for i, ln in enumerate(ls) if ln.startswith(header_start)]
+    assert len(i0) == 1, header_start
+    i1 = next(i for i in range(i0[0], len(ls)) if ls[i] == "}")
+    return ls[i0[0]:i1 + 1]
+
+
+def swap(lines, old, new, nth=0):
+    idx = [i for i, ln in enumerate(lines) if ln.strip() == old.strip()]
+    assert len(idx) > nth and (nth > 0 or len(idx) == 1), old
+    out = list(lines)
+    out[idx[nth]] = out[idx[nth]].replace(old.strip(), new.strip())
+    return out, idx[nth]
+
+
+def blank(lines, target, nth=0):
+    idx = [i for i, ln in enumerate(lines) if ln.strip() == target]
+    assert len(idx) > nth and (nth > 0 or len(idx) == 1), target
+    return [("___" if i == idx[nth] else ln) for i, ln in enumerate(lines)], idx[nth]
+
+
+def add(num, part=None, **kw):
+    for q in questions:
+        if q["num"] == num and q.get("part") == part:
+            q.update(kw)
+            return
+    raise KeyError(num)
+
+
+# Q1
+F1 = func_lines(Q1_SOL, "int nums_in_halves")
+b1, i1 = swap(F1, "for (i = 0; i < len / 2; i++)", "for (i = 0; i <= len / 2; i++)")
+f1, j1 = blank(F1, "for (i = (len + 1) / 2; str[i] != '\\0'; i++)")
+Q1_BODY = ["int len = strlen(str), i; *num1 = *num2 = 0;",
+           "for (i = 0; i < len / 2; i++) if (islower(str[i])) (*num1)++; for (i = (len + 1) / 2; str[i] != '\\0'; i++) if (isupper(str[i])) (*num2)++;",
+           "if (len % 2 == 0) return 0;",
+           "if (isdigit(str[len / 2])) return 1;",
+           "return -1;"]
+add(1,
+    rubric=rub(("חישוב האורך `len` ואיפוס שני המונים שמועברים by reference", 6),
+               ("מעבר על המחצית הראשונה (`i < len/2`) וספירת אותיות קטנות עם `islower`", 10),
+               ("מעבר על המחצית השנייה, שמתחילה ב-`(len+1)/2` (בלי התו האמצעי באורך אי-זוגי), וספירת אותיות גדולות עם `isupper`", 12),
+               ("ערך ההחזרה: 0 לאורך זוגי, 1 כשהתו האמצעי ספרה, ו-1- בכל מקרה אחר", 12)),
+    rubricSource="ai-draft",
+    pitfalls=["להתחיל את המחצית השנייה ב-`len/2`: באורך אי-זוגי זה כולל את התו האמצעי, שאינו שייך לאף מחצית.",
+              "לבדוק את התו האמצעי בלי לבדוק קודם שהאורך אי-זוגי, ולהחזיר 1 למחרוזת באורך זוגי.",
+              "לשכוח לאפס את `*num1` ו-`*num2` לפני הספירה."],
+    steps=[
+        {"type": "numeric",
+         "prompt": r"המחרוזת `t&u5Y%4as3k\$R` באורך 13. באיזה אינדקס מתחילה המחצית השנייה בקוד, כלומר מה ערך `(len + 1) / 2`?",
+         "answer": 7, "tol": 0,
+         "explain": "(13 + 1) / 2 = 7. התו באינדקס 6 הוא `4`, התו האמצעי, והוא לא נספר באף מחצית (ריצה אמיתית: 7)."},
+        {"type": "choice",
+         "prompt": r"מה מחזירה הפונקציה עבור `t&u5Y%&as3k\$R` (אורך אי-זוגי, והתו האמצעי הוא `&`)?",
+         "options": opts("`-1`", "`0`", "`1`", "`2`"), "correctId": "a",
+         "explain": "האורך אי-זוגי, והתו האמצעי `&` אינו ספרה, ולכן הפונקציה מחזירה -1 (ריצה אמיתית: -1)."},
+        {"type": "fillblank", "prompt": "השלימו את כותרת הלולאה שעוברת על המחצית השנייה.", "code": True,
+         "lines": f1, "blankIndex": j1,
+         "options": opts("for (i = (len + 1) / 2; str[i] != '\\0'; i++)", "for (i = len / 2; str[i] != '\\0'; i++)",
+                         "for (i = len / 2 + 1; str[i] != '\\0'; i++)", "for (i = (len - 1) / 2; str[i] != '\\0'; i++)"),
+         "correctId": "a",
+         "explain": "`(len+1)/2` נותן את תחילת המחצית השנייה גם באורך זוגי וגם באי-זוגי. החלופות האחרות כוללות את התו האמצעי או מדלגות על תו, ונכשלות על מחרוזות מתאימות (ריצה אמיתית)."},
+        {"type": "order", "prompt": "סדרו את גוף הפונקציה `nums_in_halves`. כל שורה היא בלוק לוגי אחד.", "code": True,
+         "lines": Q1_BODY,
+         "explain": "אתחול, ספירה בשתי המחציות, ואז שלוש בדיקות לפי הסדר: אורך זוגי, ספרה באמצע, וברירת המחדל. החלפת שני בלוקים משנה את הפלט או שוברת את הקומפילציה (ריצה אמיתית)."},
+        {"type": "findbug",
+         "prompt": r"בגרסה הבאה שורה אחת שונתה, ועבור `t&u5Y%as3k\$R` נספרות 3 אותיות קטנות במחצית הראשונה במקום 2. מצאו אותה.",
+         "code": True, "lines": b1, "bugIndex": i1,
+         "explain": "`i <= len/2` כולל גם את התו הראשון של המחצית השנייה (`a`), ולכן הוא נספר פעם נוספת (ריצה אמיתית: 3)."},
+    ],
+    stepsSource="ai-draft")
+
+# Q2
+F2 = func_lines(Q2_SOL, "pair* indirect_friends")
+b2, i2 = swap(F2, "if (M[i][j] == 0)", "if (M[i][j] == 1)")
+f2, j2 = blank(F2, "if (M[i][k] == 1 && M[k][j] == 1)")
+add(2,
+    rubric=rub(("הגדרת מבנה `pair` של שני אינדקסים, והקצאת מערך בגודל החסם העליון `N(N-1)/2`", 8),
+               ("מעבר על כל זוג `i > j` פעם אחת, והתחשבות רק בזוגות שאינם חברים ישירים (`M[i][j] == 0`)", 10),
+               ("חיפוש חבר משותף `k` (`M[i][k] == 1` וגם `M[k][j] == 1`) ורישום הזוג פעם אחת בלבד (`break`)", 14),
+               ("עדכון הגודל האמיתי ב-`*new_size`, כיווץ המערך עם `realloc` והחזרתו (`NULL` ו-0 כשאין זוגות)", 8)),
+    rubricSource="ai-draft",
+    pitfalls=["לספור גם חברים ישירים שיש להם חבר משותף: צריך לבדוק `M[i][j] == 0`.",
+              "לרשום את אותו זוג כמה פעמים (בגלל כמה חברים משותפים), או גם כ-`{i,j}` וגם כ-`{j,i}`. הלולאה על `j < i` והפקודה `break` מונעות זאת.",
+              "להקצות מערך בגודל `N*N` ולא לכווץ אותו, ולהחזיר גודל שגוי ב-`*new_size`."],
+    steps=[
+        {"type": "numeric",
+         "prompt": "במטריצת הדוגמה (8 אנשים), כמה זוגות של חברים עקיפים יש?",
+         "answer": 15, "tol": 0,
+         "explain": "זוגות `i > j` שאינם חברים ישירים ויש להם חבר משותף, למשל `{4,1}` (חבר משותף 2) ו-`{2,0}` (חבר משותף 1). ספירה ישירה על המטריצה וגם הרצת הפתרון נותנות 15 זוגות."},
+        {"type": "numeric",
+         "prompt": "מהו החסם העליון על מספר הזוגות, `(size*size - size)/2`, עבור `size = 8`?",
+         "answer": 28, "tol": 0,
+         "explain": "(64 - 8) / 2 = 28: כל זוג `i > j` פעם אחת (ריצה אמיתית: 28)."},
+        {"type": "fillblank", "prompt": "השלימו את תנאי החבר המשותף `k`.", "code": True,
+         "lines": f2, "blankIndex": j2,
+         "options": opts("if (M[i][k] == 1 && M[k][j] == 1)", "if (M[i][k] == 1 || M[k][j] == 1)",
+                         "if (M[i][k] == 1 && M[k][k] == 1)", "if (M[i][k] + M[k][j] == 1)"),
+         "correctId": "a",
+         "explain": "`k` הוא חבר משותף רק אם הוא חבר ישיר של `i` וגם של `j`. `||` ו-`+ == 1` נותנים יותר מדי זוגות, ו-`M[k][k]` תמיד 0 ולכן לא נמצא אף זוג (ריצה אמיתית)."},
+        {"type": "findbug",
+         "prompt": "בגרסה הבאה שורה אחת שונתה, והפונקציה מחזירה 0 זוגות על מטריצת הדוגמה אף שיש בה זוגות עקיפים (למשל 4 ו-1). מצאו אותה.",
+         "code": True, "lines": b2, "bugIndex": i2,
+         "explain": "הבדיקה `M[i][j] == 1` משאירה רק זוגות שהם חברים ישירים, ובדוגמה אין חברים ישירים עם חבר משותף (ריצה אמיתית: 0 זוגות, אבל על משולש של שלושה חברים היא מחזירה 3 זוגות)."},
+    ],
+    stepsSource="ai-draft")
+
+# Q3
+F3 = func_lines(Q3_SOL, "Item* appropriateCar")
+b3, i3 = swap(F3, "if (strcmp(unit.model, desired_model) == 0 && unit.price <= max_price && unit.year >= min_year)",
+              "if (strcmp(unit.model, desired_model) == 0 && unit.price <= max_price && unit.year <= min_year)")
+f3, j3 = blank(F3, "curr = curr->next;")
+add(3,
+    rubric=rub(("פתיחת הקובץ בבינארי והחזרת `NULL` כשהפתיחה נכשלת", 6),
+               ("קריאת רשומות עם `fread` ולולאה עד סוף הקובץ (קריאה ראשונה לפני `feof`)", 8),
+               ("בדיקת שלושת התנאים: `strcmp(...) == 0`, `price <= max_price`, `year >= min_year`", 10),
+               ("יצירת איבר חדש בסוף הרשימה והעתקת מחיר ושנה אליו, בלי לאבד את סדר הקובץ", 10),
+               ("סיום הרשימה ב-`NULL`, הסרת האיבר הפיקטיבי, סגירת הקובץ והחזרת הראש", 6)),
+    rubricSource="ai-draft",
+    pitfalls=["להשוות מחרוזות עם `==` או `desired_model == unit.model` במקום `strcmp`.",
+              "לבדוק `year <= min_year` במקום `year >= min_year`, או `price < max_price` במקום `<=`.",
+              "לא להסיר את האיבר הפיקטיבי, או לשכוח לסיים את הרשימה ב-`NULL`."],
+    steps=[
+        {"type": "numeric",
+         "prompt": "בקובץ הדוגמה קוראים עם `desired_model = \"Subaru\"`, `max_price = 100,000` ו-`min_year = 2005`. כמה איברים יהיו ברשימה?",
+         "answer": 3, "tol": 0,
+         "explain": "שלוש מכוניות Subaru עומדות בתנאים: 90,000 (2019), 10,000 (2009) ו-25,000 (2012). ה-Mazda וה-Toyota נפסלות לפי הדגם (ריצה אמיתית: 3)."},
+        {"type": "numeric",
+         "prompt": "באותה קריאה, מה המחיר באיבר השני של הרשימה?",
+         "answer": 10000, "tol": 0,
+         "explain": "האיברים נוספים בסוף הרשימה לפי סדר הרשומות בקובץ, ולכן השני הוא 10,000 (ריצה אמיתית: 10000)."},
+        {"type": "fillblank", "prompt": "השלימו את השורה החסרה אחרי יצירת האיבר החדש.", "code": True,
+         "lines": f3, "blankIndex": j3,
+         "options": opts("curr = curr->next;", "curr = lst;", "curr->next = NULL;", "lst = curr;"),
+         "correctId": "a",
+         "explain": "`curr` צריך לעבור לאיבר החדש כדי שהמחיר והשנה ייכתבו בו והאיבר הבא יתחבר אחריו. בכל חלופה אחרת הרשימה מתרוקנת או נשברת (ריצה אמיתית: `NULL`)."},
+        {"type": "findbug",
+         "prompt": "בגרסה הבאה שורה אחת שונתה, ועבור הדוגמה (`min_year = 2010`) מתקבל איבר אחד בלבד, `[10,000 | 2009]`, במקום שני האיברים הצפויים. מצאו אותה.",
+         "code": True, "lines": b3, "bugIndex": i3,
+         "explain": "`year <= min_year` מקבל מכוניות ישנות במקום מכוניות מ-`min_year` ואילך (ריצה אמיתית: `[10000 | 2009]`)."},
+    ],
+    stepsSource="ai-draft")
+
+# Q5 (bonus; every intermediate value checked with a probe program; strcmp is -1 on the course toolchain, as in the official solution)
+add(5,
+    rubric=rub(("`strcmp(\"&\",\"&&\")` שלילית (-1), כי המחרוזת הראשונה קצרה והיא קודמת לקסיקוגרפית", 2),
+               ("`&` על סיביות בין שני ערכים שווים נותן את אותו ערך, כלומר -1", 2),
+               ("`&&` בין שתי מחרוזות קבועות (כתובות שונות מ-`NULL`) נותן 1", 3),
+               ("`-1 | 1` נותן -1 (כל הסיביות דולקות), ולכן הפלט `-1`", 3)),
+    rubricSource="ai-draft",
+    pitfalls=["להתבלבל בין `&` (על סיביות) ל-`&&` (לוגי), ולחשב `-1 & -1` כ-1 או 0.",
+              "לחשוב ש-`\"strcmp(&,&&)\" && \"strcmp(&,&&)\"` משווה מחרוזות. זה AND לוגי על שתי כתובות, והתוצאה 1.",
+              "לחשוב ש-`-1 | 1` שווה 1 (או 0) ולא להתייחס לייצוג המשלים ל-2 של -1."],
+    steps=[
+        {"type": "choice", "prompt": "מה סימן התוצאה של `strcmp(\"&\", \"&&\")`?",
+         "options": opts("שלילי: `\"&\"` קודמת ל-`\"&&\"` ולכן קטנה ממנה", "אפס: שתי המחרוזות מתחילות באותו תו",
+                         "חיובי: `\"&\"` קצרה יותר", "לא מוגדר: תלוי באורך המחרוזות"), "correctId": "a",
+         "explain": "מחרוזת שהיא תחילית של אחרת קטנה ממנה (ריצה אמיתית: הערך שלילי, -1)."},
+        {"type": "numeric", "prompt": "מה הערך של `(\"strcmp(&,&&)\"&&\"strcmp(&,&&)\")`?", "answer": 1, "tol": 0,
+         "explain": "AND לוגי של שתי כתובות שאינן `NULL` נותן 1 (ריצה אמיתית: 1)."},
+        {"type": "numeric", "prompt": "בהנחה ש-`strcmp(\"&\",\"&&\")` מחזירה -1 (כמו בפתרון הרשמי), מה מדפיסה התוכנית כולה?",
+         "answer": -1, "tol": 0,
+         "explain": "`-1 & -1 = -1`, ואז `-1 | 1 = -1` (ריצה אמיתית: -1)."},
+    ],
+    stepsSource="ai-draft")
+
+
 exam = {
     "examCode": "22B-B",
     "examLabel": "סדנה מתקדמת בתכנות 61108, סמסטר ב' תשפ\"ב, מועד ב'",
