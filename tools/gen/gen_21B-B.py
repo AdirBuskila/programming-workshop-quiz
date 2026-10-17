@@ -7,7 +7,7 @@ Run: PYTHONUTF8=1 py tools/gen/gen_21B-B.py"""
 import json, pathlib
 
 OUT = pathlib.Path(__file__).resolve().parents[1] / "raw" / "21B-B.json"
-IDS = "abcdef"
+IDS = "abcdefgh"
 
 
 def opts(*vals):
@@ -259,19 +259,10 @@ void main() {
     printf("%d", ++x);
     f();
 }
-```
-(1) `010101`
-(2) `000000`
-(3) `000011`
-(4) `010112`
-(5) `011223`
-(6) התוכנית אינה תקינה
-(7) אף תשובה אינה נכונה"""
+```"""
+Q4A_OPTS = opts("`010101`", "`000000`", "`000011`", "`010112`", "`011223`", "התוכנית אינה תקינה", "אף תשובה אינה נכונה")
 
-Q4A_SOL = r"""**התשובה:** (4) `010112`
-
-**נימוק:**
-כברירת מחדל ערך התחלתי של `static x` הוא 0. לכן בקריאה ראשונה של `f()` מדפיסים 0, מקדמים `x` ומדפיסים 1. אחרי זה מדפיסים ערך התחלתי של `x` גלובלי ששווה ל-0, מקדמים `x` גלובלי ומדפיסים 1. בקריאה שנייה של `f()` מדפיסים `static x` שערכו נשאר 1, מקדמים `x` ומדפיסים 2."""
+Q4A_EXPL = r"""כברירת מחדל ערך התחלתי של `static x` הוא 0. לכן בקריאה ראשונה של `f()` מדפיסים 0, מקדמים `x` ומדפיסים 1. אחרי זה מדפיסים ערך התחלתי של `x` גלובלי ששווה ל-0, מקדמים `x` גלובלי ומדפיסים 1. בקריאה שנייה של `f()` מדפיסים `static x` שערכו נשאר 1, מקדמים `x` ומדפיסים 2."""
 
 Q4B_TEXT = Q4_INTRO + r"""כמה פעמים יודפס `Hi` עקב ביצוע התוכנית הבאה?
 ```c
@@ -328,7 +319,8 @@ questions = [
       confidence="low"),
     Q(2, "code", "structs_unions", Q2_TEXT, Q2_SOL, points=40),
     Q(3, "code", "list_manipulation", Q3_TEXT, Q3_SOL, points=40, image="images/exams/21B-B-Q3.png"),
-    Q(4, "code", "storage_classes", Q4A_TEXT, Q4A_SOL, part="א"),
+    {"num": 4, "part": "א", "kind": "mcq", "topic": "storage_classes", "question": Q4A_TEXT,
+     "options": Q4A_OPTS, "correctId": "d", "explanation": Q4A_EXPL, "official": True, "confidence": "high"},
     {"num": 4, "part": "ב", "kind": "mcq", "topic": "bit_manipulation", "question": Q4B_TEXT,
      "options": Q4B_OPTS, "correctId": "b", "explanation": Q4B_EXPL, "official": True, "confidence": "high"},
     {"num": 4, "part": "ג", "kind": "mcq", "topic": "dynamic_memory", "question": Q4C_TEXT,

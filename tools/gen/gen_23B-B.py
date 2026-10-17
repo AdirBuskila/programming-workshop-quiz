@@ -6,7 +6,7 @@ Code solutions compiled and run with clang: tools/verify/23B-B/. Run: PYTHONUTF8
 import json, pathlib
 
 OUT = pathlib.Path(__file__).resolve().parents[1] / "raw" / "23B-B.json"
-IDS = "abcdef"
+IDS = "abcdefgh"
 
 
 def opts(*vals):
@@ -296,21 +296,17 @@ p2 Print3: 222, ZXb, ZXa
 # ---------------------------------------------------------------- Q5
 Q5_INTRO = "בחרו את התשובה הנכונה **ונמקו** בכל אחד מהסעיפים הבאים (שאלה 5, 10 נק' בסך הכול).\n"
 
-Q5A_TEXT = Q5_INTRO + r"""איזה פעולה לא תיתן פלט `0`?
-```c
-(1) printf("%d\n", 0);
-(2) printf("%.0lf\n", 0.0);
-(3) printf("%d\n", NULL);
-(4) printf("%d\n", '0');
-(5) printf("%d\n", '\0');
-(6) printf("%d\n", EOF + 1);
-(7) כל הפעולות לעיל יתנו פלט 0
-```"""
+Q5A_TEXT = Q5_INTRO + r"""איזה פעולה לא תיתן פלט `0`?"""
+Q5A_OPTS = opts(r"""`printf("%d\n", 0);`""",
+                r"""`printf("%.0lf\n", 0.0);`""",
+                r"""`printf("%d\n", NULL);`""",
+                r"""`printf("%d\n", '0');`""",
+                r"""`printf("%d\n", '\0');`""",
+                r"""`printf("%d\n", EOF + 1);`""",
+                "כל הפעולות לעיל יתנו פלט 0")
 
-Q5A_SOL = r"""**התשובה:** (4) `printf("%d\n", '0');`
 
-**נימוק:**
-(1) מדפיסים מספר שלם 0.
+Q5A_EXPL = r"""(1) מדפיסים מספר שלם 0.
 (2) מדפיסים מספר ממשי 0.0 עם אפס ספרות אחרי הנקודה, ז"א מדפיסים רק 0.
 (3) `NULL` הוא שם של קבוע 0. לכן מדפיסים 0.
 (4) קוד ASCII של תו `'0'` הוא המספר ששונה מ-0. לכן מדפיסים לא 0.
@@ -365,8 +361,8 @@ questions = [
     Q(2, "code", "files", Q2_TEXT, Q2_SOL, points=40),
     Q(3, "code", "strings", Q3_TEXT, Q3_SOL, points=40),
     Q(4, "code", "structs_unions", Q4_TEXT, Q4_SOL, points=10),
-    # Q5 part a has seven options (the mcq engine allows at most six), so it is a "code" item with the key in the solution.
-    Q(5, "code", "c_traps_mcq", Q5A_TEXT, Q5A_SOL, part="א"),
+    {"num": 5, "part": "א", "kind": "mcq", "topic": "c_traps_mcq", "question": Q5A_TEXT,
+     "options": Q5A_OPTS, "correctId": "d", "explanation": Q5A_EXPL, "official": True, "confidence": "high"},
     {"num": 5, "part": "ב", "kind": "mcq", "topic": "pointers", "question": Q5B_TEXT,
      "options": Q5B_OPTS, "correctId": "f", "explanation": Q5B_EXPL, "official": True, "confidence": "high"},
     Q(6, "code", "bit_manipulation", Q6_TEXT, Q6_SOL, points=10),
