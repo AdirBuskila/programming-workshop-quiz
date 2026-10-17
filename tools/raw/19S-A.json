@@ -1,0 +1,218 @@
+{
+ "examCode": "19S-A",
+ "examLabel": "סדנה מתקדמת בתכנות 61108, סמסטר קיץ תשע\"ט, מועד א'",
+ "year": 2019,
+ "examDate": "23.10.19",
+ "sourceFile": "19S-A exam",
+ "solutionFile": "19S-A official solution",
+ "contexts": {},
+ "questions": [
+  {
+   "num": 1,
+   "kind": "code",
+   "topic": "files",
+   "question": "כתוב פונקציה אשר מקבלת מחרוזת `fileName`.\nתוכן של קובץ טקסט ששמו נכלל ב-`fileName` הוא טקסט מוצפן שנוצר מהטקסט המקורי באופן הבא:\nאחרי תו אחרון של כל שורה בטקסט המקורי מוספים רווח (ניתן להניח שאין רווחים בטקסט המקורי);\nאחרי הרווח מוספים מספר ביקורת וצמוד למספר מוספים תו ביקורת;\nמספר הביקורת יהיה מספר ששווה לסכום קודי ASCII של כל תווי השורה;\nתו הביקורת יהיה תו שקוד ASCII שלו הוא שארית החלוקה של מספר הביקורת ב-128;\nתו של סוף השורה אמור להופיע גם בסוף של השורה האחרונה של הקובץ.\n\n**דוגמא:**\nטקסט מקורי:\n```\nabc\n3+2+1=6\nA\n```\nתוכן הקובץ:\n```\nabc 294&\n3+2+1=6 351_\nA 65A\n```\n**הסבר:**\nשורה ראשונה. קודי ASCII של 'a', 'b', 'c' הם 97, 98, 99 בהתאמה. 294=97+98+99, 294%128=38. 38 הוא קוד ה-ASCII של '&'.\nשורה שנייה. סכום קודי ASCII של כל תווי השורה (ספרות ותווים לפעולות אריתמטיות) הוא 351. 351%128=95. 95 הוא קוד ה-ASCII של '_'.\nשורה שלישית. קוד ה-ASCII של 'A' שהוא התו היחיד בשורה שווה ל-65. 65%128=65.\n\nעל הפונקציה לבדוק נכונות של מספר ביקורת ותו ביקורת בכל שורה.\nאם המספר והתו נכונים בכל שורה הפונקציה תחזיר **1**. אם לפחות בשורה אחת המספר או התו לא נכונים, היא תחזיר **0**. אם הקובץ לא נפתח יש להחזיר **-1**.",
+   "solution": "**גרסה 1**\n```c\nint check_controls_in_file_rows (char *fileName)\n{\n      int sum=0, control_num;\n      char c, control_char;\n      FILE *fptr = fopen(fileName, \"r\");\n      if( !fptr )\n            return -1;\n      while ( (c = fgetc(fptr)) != EOF )\n      {\n            if (c != ' ')\n                  sum += c;\n            else\n            {\n                  fscanf(fptr, \"%d%c\", &control_num, &control_char);\n                  if (control_char == '\\n')\n      //real control char is digit that was interpreted as last digit of control number\n                  {\n                         control_char = control_num%10 + '0';\n                         control_num /= 10;\n                  }\n                  else\n                         fgetc(fptr); //input '/n'\n                  if (control_num != sum || control_char != sum%128)\n                  {\n                         fclose(fptr);\n                         return 0;\n                  }\n                  else\n                        sum = 0;\n            } //else\n      } //while\n      fclose(fptr);\n      return 1;\n}\n```\n**גרסה 2**\n```c\nint check_controls_in_file_rows_2 (char *fileName)\n{\n      int sum=0, control_sum;\n      char c, last_char;\n      FILE *fptr = fopen(fileName, \"r\");\n      if( !fptr )\n            return -1;\n      while ( (c = fgetc(fptr)) != EOF )\n      {\n            if (c != ' ')\n                  sum += c;\n            else\n            {\n                  control_sum = fgetc(fptr)-'0'; //first digit\n                  last_char = fgetc(fptr);\n                  while ( (c = fgetc(fptr)) != '\\n' )\n                  {\n                        //last_char is current digit of control_sum\n                        control_sum = control_sum*10 + last_char-'0';\n                        last_char = c;\n                  }\n                  if (control_sum != sum || last_char != sum%128)\n                  {\n                        fclose(fptr);\n                        return 0;\n                  }\n                  else\n                        sum = 0;\n            }\n      }\n      fclose(fptr);\n      return 1;\n}\n```\n**הערת מתמלל (לא חלק מהפתרון הרשמי):** שתי הגרסאות הורצו עם clang (`tools/verify/19S-A/q1.c`) על דוגמת המבחן ועל קבצים עם מספר או תו ביקורת שגויים ועל תו ביקורת שהוא ספרה, וכולן החזירו את הערך הנכון.",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "high",
+   "points": 28
+  },
+  {
+   "num": 2,
+   "kind": "code",
+   "topic": "strings",
+   "question": "נתונה ההגדרה הבאה של הטיפוס:\n```c\ntypedef struct item\n{\n  char *string;\n  struct item *next;\n} Item;\n```\nכתוב פונקציה אשר מקבלת מערך מחרוזות `S` עם גודלו ובונה רשימה מקושרת `L` של **מחרוזות** המורכבת מאיברים מסוג `Item`.\n\nשדה ה-`string` של האיבר ה-`i` (חוליה) ברשימה `L` (מתחילתה) יצביע ל**מחרוזת דינאמית** החדשה המכילה את **המילה הראשונה** במחרוזת `S[i]` (**מילה** היא רצף תווים שאינם רווח המופרדים ממילים אחרות ע\"י רווחים). אם `S[i]` היא מחרוזת ריקה אז המחרוזת המתאימה באיבר ה-`i` של `L` גם תהיה ריקה.\nנתון כי אף מחרוזת ב-`S` אינה מתחילה ברווח. תתכן מחרוזת המורכבת ממילה יחידה בלבד.\n\nהפונקציה תחזיר את **כתובת** ראש הרשימה `L`.\n\nניתן להניח שיש בזיכרון מספיק מקום להקצאות.",
+   "solution": "```c\nItem *array_of_strings_to_list (char **S, int n)\n{\n      Item *lst, *curr_ptr;\n      int i, j;\n      lst = (Item *)malloc(sizeof(Item)); //dummy\n      curr_ptr = lst;\n      for (j=0; j<n; j++)\n      {\n            curr_ptr->next = (Item *)malloc(sizeof(Item));\n            curr_ptr = curr_ptr->next;\n            //initial allocation - for all the string with '\\0'\n            curr_ptr->string = (char *)malloc(strlen(S[j])+1);\n            for (i=0; S[j][i]!='\\0' && S[j][i]!=' '; i++)\n                  curr_ptr->string[i] = S[j][i];\n            curr_ptr->string[i] = '\\0';\n            //reallocation for the first word in a string with '\\0'\n            curr_ptr->string = (char *)realloc(curr_ptr->string, i+1);\n      }\n      curr_ptr->next = NULL;\n      /* deletion of dummy */\n      curr_ptr = lst;\n      lst = lst->next;\n      free (curr_ptr);\n      return lst;\n}\n```",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "high",
+   "points": 28,
+   "image": "images/exams/19S-A-Q2.png"
+  },
+  {
+   "num": 3,
+   "kind": "code",
+   "topic": "dynamic_arrays_2d",
+   "question": "כתוב פונקציה אשר מקבלת שני מערכים דו-ממדיים דינאמיים `A` ו-`B` בעלי אותה כמות שורות `n`. יחד עם `n`, הפונקציה מקבלת מערכים חד-ממדיים `SA` ו-`SB` של גדלי השורות ב-`A` וב-`B` בהתאמה כך ש-`SA[i]` יהיה שווה לגודל שורה `A[i]` ו-`SB[i]` יהיה שווה לגודל שורה `B[i]`.\n\nעל הפונקציה ליצור מערך דו-ממדי דינאמי `C` בעל `n` שורות.\nגודל שורה `C[i]` יהיה שווה למינימום בין גדלי השורות `A[i]` ו-`B[i]` וכל איבר `C[i][j]` יהיה שווה ל-`A[i][j]+B[i][j]`.\n\nהפונקציה תחזיר את הכתובת של מערך `C` ותעביר במצביעים (by reference) מערך דינאמי `SC` המורכב מגדלי שורות של `C` כך ש-`SC[i]` יהיה שווה לגודל שורה `C[i]`.\n\nניתן להניח שיש בזיכרון מקום להקצאות.\n\n**דוגמא:**\n`SA`: `2, 4, 6`\n`A`:\n```\n13 33\n15 17 19 21\n41 43 53 41 17 15\n```\n`SB`: `3, 3, 4`\n`B`:\n```\n20 19 56\n44 11 39\n55 50 27 14\n```\n`SC`: `2, 3, 4`\n`C`:\n```\n33 52\n59 28 58\n96 93 80 55\n```",
+   "solution": "```c\nint **sum_of_2_dim_arrays(int **A, int *SA, int **B, int *SB, int **SC,\nint n)\n{\n      int i, j, **C;\n      C = (int **)calloc(n, sizeof(int *));\n      *SC = (int *)calloc(n, sizeof(int));\n      for (i=0; i<n; i++) {\n            (*SC)[i] = (SA[i]<SB[i])? SA[i] : SB[i];\n            C[i] = (int *)calloc((*SC)[i], sizeof(int));\n            for (j=0; j<(*SC)[i]; j++)\n                  C[i][j] = A[i][j]+B[i][j];\n      }\n      return C;\n}\n```",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "high",
+   "points": 28
+  },
+  {
+   "num": 4,
+   "part": "א",
+   "kind": "mcq",
+   "topic": "structs_unions",
+   "question": "בחר את התשובה הנכונה **ונמק** (חובה לרשום את הבחירה והנימוק במחברת). שאלה 4, 16 נק' בסך הכול.\nאיזה פעולה לא מוגדרת למבנים?",
+   "options": [
+    {
+     "id": "a",
+     "type": "text",
+     "value": "השמה"
+    },
+    {
+     "id": "b",
+     "type": "text",
+     "value": "לקיחת כתובת"
+    },
+    {
+     "id": "c",
+     "type": "text",
+     "value": "גישה לאיבר"
+    },
+    {
+     "id": "d",
+     "type": "text",
+     "value": "השוואה"
+    },
+    {
+     "id": "e",
+     "type": "text",
+     "value": "`sizeof`"
+    },
+    {
+     "id": "f",
+     "type": "text",
+     "value": "כל הפעולות לעיל מוגדרות"
+    }
+   ],
+   "correctId": "d",
+   "explanation": "לפי כללי שפת C, כדי להימנע מהשוואת תכני המרווחים בין איברי המבנה.",
+   "official": true,
+   "confidence": "high"
+  },
+  {
+   "num": 4,
+   "part": "ב",
+   "kind": "mcq",
+   "topic": "bit_manipulation",
+   "question": "בחר את התשובה הנכונה **ונמק** (חובה לרשום את הבחירה והנימוק במחברת). שאלה 4, 16 נק' בסך הכול.\nמהי הטענה הנכונה?",
+   "options": [
+    {
+     "id": "a",
+     "type": "text",
+     "value": "אחרי ביצוע פעולת הזזה שמאלה במספר, מצד ימין המספר מתמלא ב-0-ים"
+    },
+    {
+     "id": "b",
+     "type": "text",
+     "value": "אחרי ביצוע פעולת הזזה שמאלה במספר, מצד ימין המספר מתמלא ב-1-ים"
+    },
+    {
+     "id": "c",
+     "type": "text",
+     "value": "אחרי ביצוע פעולת הזזה שמאלה במספר, מצד ימין המספר מתמלא בסיביות שהלכו לאיבוד מצד שמאל"
+    },
+    {
+     "id": "d",
+     "type": "text",
+     "value": "אחרי ביצוע פעולת הזזה שמאלה במספר, שיטת מילוי המספר מצד ימין תלויה במערכת"
+    },
+    {
+     "id": "e",
+     "type": "text",
+     "value": "אף טענה אינה נכונה"
+    }
+   ],
+   "correctId": "a",
+   "explanation": "לפי כללי שפת C.",
+   "official": true,
+   "confidence": "high"
+  },
+  {
+   "num": 4,
+   "part": "ג",
+   "kind": "mcq",
+   "topic": "storage_classes",
+   "question": "בחר את התשובה הנכונה **ונמק** (חובה לרשום את הבחירה והנימוק במחברת). שאלה 4, 16 נק' בסך הכול.\n```c\nint x, *ptr1;\nconst int y = 5, *ptr2;\n```\nאיזו פעולה תהיה בלתי חוקית?",
+   "options": [
+    {
+     "id": "a",
+     "type": "text",
+     "value": "`ptr1 = &x;`"
+    },
+    {
+     "id": "b",
+     "type": "text",
+     "value": "`ptr2 = &y;`"
+    },
+    {
+     "id": "c",
+     "type": "text",
+     "value": "`ptr1 = &y;`"
+    },
+    {
+     "id": "d",
+     "type": "text",
+     "value": "`ptr2 = &x;`"
+    },
+    {
+     "id": "e",
+     "type": "text",
+     "value": "כל הפעולות לעיל חוקיות"
+    }
+   ],
+   "correctId": "c",
+   "explanation": "כי גישה לקבוע דרך מצביע רגיל תאפשר לשנות את הקבוע.",
+   "official": true,
+   "confidence": "high"
+  },
+  {
+   "num": 4,
+   "part": "ד",
+   "kind": "mcq",
+   "topic": "c_traps_mcq",
+   "question": "בחר את התשובה הנכונה **ונמק** (חובה לרשום את הבחירה והנימוק במחברת). שאלה 4, 16 נק' בסך הכול.\nאיזו מילה היא לא חלק של הנחית קדם-מעבד?",
+   "options": [
+    {
+     "id": "a",
+     "type": "text",
+     "value": "`define`"
+    },
+    {
+     "id": "b",
+     "type": "text",
+     "value": "`ifdef`"
+    },
+    {
+     "id": "c",
+     "type": "text",
+     "value": "`undef`"
+    },
+    {
+     "id": "d",
+     "type": "text",
+     "value": "`ifndef`"
+    },
+    {
+     "id": "e",
+     "type": "text",
+     "value": "`typedef`"
+    },
+    {
+     "id": "f",
+     "type": "text",
+     "value": "כל המילים לעיל הן חלקים של הנחיות קדם-מעבד"
+    }
+   ],
+   "correctId": "e",
+   "explanation": "משתמשים ב-`typedef` להגדרת טיפוס חדש.",
+   "official": true,
+   "confidence": "high"
+  },
+  {
+   "num": 5,
+   "kind": "code",
+   "topic": "c_traps_mcq",
+   "question": "*שאלת בונוס (10 נק').*\nמהו הפלט של התוכנית הבאה?\n```c\n#include <stdio.h>\n\nvoid main()\n{\n  char *s=\"123\";\n  puts( (char *)( ((long long)s*(long long)s+2*(long long)s+1)/(long long)(s+1) ) );\n}\n```\nיש לנמק את התשובה.",
+   "solution": "**הפלט:**\n```\n23\n```\n**נימוק:**\n`Casting` ל-`long long` ממיר כתובת (ערך `s`) למספר שלם. מקבלים\n`(s^2+2s+1)/(s+1)=(s+1)^2/(s+1)=s+1`\n`Casting` ל-`char *` קובע ערך `s+1` ככתובת של תו מס' 1 במחרוזת.\nפלט מתו מס' 1 עד סוף המחרוזת: `23`\n\n**הערת מתמלל (לא חלק מהפתרון הרשמי):** הנימוק מניח שכתובת ו-`s*s` נכנסים בטווח של `long long` ללא גלישה. בהרצה אמיתית (`tools/verify/19S-A/q5.c`) הקומפילציה ל-32 סיביות מדפיסה `23`, ואילו בקומפילציה ל-64 סיביות ריבוע הכתובת גולש והתוכנית קורסת.",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "high",
+   "points": 10
+  }
+ ]
+}

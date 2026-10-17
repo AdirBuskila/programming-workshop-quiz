@@ -1,0 +1,213 @@
+{
+ "examCode": "19B-B",
+ "examLabel": "סדנה מתקדמת בתכנות 61108, סמסטר ב' תשע\"ט, מועד ב'",
+ "year": 2019,
+ "examDate": "14.08.19",
+ "sourceFile": "19B-B exam",
+ "solutionFile": "19B-B official solution",
+ "contexts": {},
+ "questions": [
+  {
+   "num": 1,
+   "kind": "code",
+   "topic": "files",
+   "question": "כתוב פונקציה אשר מקבלת מחרוזות `infile` ו-`outfile` המהוות שמות של שני קבצי טקסט.\nקובץ `infile` מורכב משורות טקסט.\n\nעל הפונקציה להעתיק את התוכן של קובץ `infile` לקובץ `outfile` ולהוסיף מספר ביקורת ותו ביקורת בסוף כל שורה באופן הבא:\nמספר הביקורת יהיה מספר ששווה לסכום קודי ASCII של כל תווי השורה;\nתו הביקורת יהיה תו שקוד ASCII שלו הוא שארית החלוקה של מספר הביקורת ב-128;\nבחישוב מספר הביקורת ותו הביקורת נא **לא להתחשב** בתו של סוף השורה;\nיש להכניס רווח בין התו האחרון של השורה המקורית למספר הביקורת, וצמוד למספר הביקורת לכתוב את תו הביקורת.\n\nתו של סוף השורה אמור להופיע גם בסוף של **השורה האחרונה** בקובץ `infile` ובקובץ `outfile`.\n\n**דוגמא:**\n`infile`:\n```\nabc\n3+2+1=6\nA\n```\n`outfile`:\n```\nabc 294&\n3+2+1=6 351_\nA 65A\n```\n**הסבר:**\nשורה ראשונה. קודי ASCII של 'a', 'b', 'c' הם 97, 98, 99 בהתאמה. 294=97+98+99, 294%128=38. 38 הוא קוד ה-ASCII של '&'.\nשורה שנייה. סכום קודי ASCII של כל תווי השורה (ספרות ותווים לפעולות אריתמטיות) הוא 351. 351%128=95. 95 הוא קוד ה-ASCII של '_'.\nשורה שלישית. קוד ה-ASCII של 'A' שהוא התו היחיד בשורה שווה ל-65. 65%128=65.",
+   "solution": "```c\nvoid add_controls_in_file_rows (char *infile, char *outfile)\n{\n      int sum=0;\n      char c;\n      FILE *in = fopen(infile, \"r\"),\n             *out = fopen(outfile, \"w\");\n      if( !in || !out )\n            exit(1);\n      while ( (c = fgetc(in)) != EOF )\n            if (c != '\\n')\n            {\n                  fputc(c, out);\n                  sum += c;\n            }\n            else\n            {\n                  fprintf(out, \" %d%c\\n\", sum, sum%128);\n                  sum = 0;\n            }\n      fclose(in);\n      fclose(out);\n}\n```",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "high",
+   "points": 28
+  },
+  {
+   "num": 2,
+   "kind": "code",
+   "topic": "list_manipulation",
+   "question": "נתונה הגדרת הטיפוס הבאה:\n```c\ntypedef struct item {\n  char *string;\n  struct item *next;\n} Item;\n```\nכתוב פונקציית `void` אשר מקבלת מערך מחרוזות `S` עם גודלו, וגם רשימה מקושרת `L` של מחרוזות המורכבת מאיברים מסוג `Item`.\nשדה ה-`string` של כל איבר (חוליה) ב-`L` מצביע למחרוזת דינאמית.\nכל המחרוזות של `L` הן שונות וממוינות בסדר לקסיקוגרפי (מילולי) עולה כך שמחרוזת באיבר מס' `i` מתחילת הרשימה גדולה לקסיקוגרפית ממחרוזת באיבר מס' `i-1`.\n\nעל הפונקציה להכניס ל-`L` את כל המחרוזות של `S` אשר **עוד לא נמצאות** ב-`L` (יש להקצות מקום גם לאיברים החדשים וגם למחרוזות). האיברים יוכנסו במקומות הנכונים כך שהמחרוזות ב-`L` יהיו ממוינות גם אחרי ההכנסתם.\n\nאין ב-`L` איבר דמה. לכן המצביע לאיבר הראשון של הרשימה יכול להשתנות אחרי ההכנסות. מסיבה זו יש להעביר את המצביע by reference.\n\nניתן להניח שיש בזיכרון מספיק מקום להקצאות.",
+   "solution": "```c\nvoid insert_string_in_sort_list (char* str, Item **plist)\n{\n    Item *curr_point = *plist, *prev_point, *temp;\n\n      //search place for insert into sorting list\n      while ( curr_point && strcmp(str, curr_point->string)==1 )\n      {\n            prev_point = curr_point;\n            curr_point = curr_point->next;\n      }\n\n      //check whether string is already in list\n      if ( curr_point && strcmp(str, curr_point->string)==0 )\n            return;\n\n      //allocation place for new item and string\n      temp = (Item *)malloc(sizeof(Item));\n      temp->string = (char *)malloc(strlen(str)+1);\n      strcpy(temp->string, str);\n\n      if (curr_point != *plist) // inserting in the middle or in the end\n      {\n            temp->next = curr_point;\n            prev_point->next = temp;\n      }\n      else  // inserting before first item\n      {\n            temp->next = *plist;\n            *plist = temp;\n      }\n}\n\nvoid insert_strings_from_array_in_sort_list (char** str, int n, Item\n**plist)\n{\n      int i;\n      for (i=0; i<n; i++)\n            insert_string_in_sort_list (str[i], plist);\n}\n```\n\n**הערת מתמלל (לא חלק מהפתרון הרשמי):** הבדיקה `strcmp(...)==1` מניחה ש-`strcmp` מחזירה בדיוק 1 או -1. בהרצה עם clang (`tools/verify/19B-B/q2.c`) זה מתקיים והדוגמה של המבחן מתקבלת נכון; בספריות שבהן `strcmp` מחזירה הפרש בין תווים הבדיקה לא תעבוד.",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "high",
+   "points": 28,
+   "image": "images/exams/19B-B-Q2.png"
+  },
+  {
+   "num": 3,
+   "kind": "code",
+   "topic": "dynamic_arrays_2d",
+   "question": "כתוב פונקציה אשר מקבלת מערך `A` של מספרים שלמים.\n\nעל הפונקציה ליצור מערך דו-ממדי דינאמי `B` בו מספר השורות יהיה שווה למספר הרצפים של מספרים זוגיים ושל מספרים אי-זוגיים ב-`A`. שורה מס' `i` ב-`B` תהיה זהה (אותם איברים באותו סדר) לרצף מס' `i` ב-`A` (כאשר הרצפים ב-`A` ממוספרים החל מ-0).\n\nהפונקציה תחזיר את הכתובת של מערך `B` ותעביר by reference את מספר השורות בתוכו. בנוסף הפונקציה תעביר by reference מערך דינאמי `S` המורכב מגדלי השורות של מערך `B`. איבר מס' `i` של מערך `S` יהיה שווה לגודל שורה מס' `i` של `B`.\n\nניתן להניח שיש בזיכרון מספיק מקום להקצאות.\n\n**דוגמא:**\n`A` (משמאל לימין):\n```\n3 7 20 12 6 9 13 1 2 7 55 31 9\n```\n`B`:\n```\n3 7\n20 12 6\n9 13 1\n2\n7 55 31 9\n```\n`S`:\n```\n2\n3\n3\n1\n4\n```\nהפונקציה גם תעביר by reference 5 כמספר השורות במערך `B`.",
+   "solution": "```c\nint **array_to_array_of_sequences (int *A, int n, int **S, int *prows)\n{\n      int i, j=0, k, **B;\n      *prows = 0;\n      *S = (int *)calloc(n, sizeof(int));\n      (*S)[0] = 1;\n      for (i=1; i<n; i++)\n            if (A[i]%2 == A[i-1]%2) //the same sequence\n                  (*S)[j]++;\n            else //new sequence\n            {\n                  j++;\n                  (*S)[j] = 1;\n            }\n            *prows = j+1;\n\n      B = (int **)calloc(*prows, sizeof(int *));\n\n      i=j=0;\n      while (i<n)\n      {\n            B[j] = (int *)calloc((*S)[j], sizeof(int));\n            for (k=0; k<(*S)[j]; k++)\n                  B[j][k] = A[i++];\n            j++;\n      }\n      *S = (int *)realloc(*S, *prows*sizeof(int));\n      return B;\n}\n```",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "high",
+   "points": 28
+  },
+  {
+   "num": 4,
+   "part": "א",
+   "kind": "mcq",
+   "topic": "pointers",
+   "question": "בחר את התשובה הנכונה **ונמק** (חובה לרשום את הבחירה והנימוק במחברת). שאלה 4, 16 נק' בסך הכול.\nאיזה סוג של מצביע **לא מוגדר** בשפת C?",
+   "options": [
+    {
+     "id": "a",
+     "type": "text",
+     "value": "מצביע לפונקציה"
+    },
+    {
+     "id": "b",
+     "type": "text",
+     "value": "מצביע לקובץ"
+    },
+    {
+     "id": "c",
+     "type": "text",
+     "value": "מצביע למצביע"
+    },
+    {
+     "id": "d",
+     "type": "text",
+     "value": "מצביע לסיבית"
+    },
+    {
+     "id": "e",
+     "type": "text",
+     "value": "מצביע להכל"
+    },
+    {
+     "id": "f",
+     "type": "text",
+     "value": "כל הסוגים לעיל מוגדרים"
+    }
+   ],
+   "correctId": "d",
+   "explanation": "לפי כללי שפת C.",
+   "official": true,
+   "confidence": "high"
+  },
+  {
+   "num": 4,
+   "part": "ב",
+   "kind": "mcq",
+   "topic": "structs_unions",
+   "question": "בחר את התשובה הנכונה **ונמק** (חובה לרשום את הבחירה והנימוק במחברת). שאלה 4, 16 נק' בסך הכול.\nמהי כמות הזיכרון שצריך מבנה כלשהו?",
+   "options": [
+    {
+     "id": "a",
+     "type": "text",
+     "value": "היא שווה לסך הזיכרון שדורשים כל השדות שלו"
+    },
+    {
+     "id": "b",
+     "type": "text",
+     "value": "היא גדולה או שווה לסך הזיכרון שדורשים כל השדות שלו"
+    },
+    {
+     "id": "c",
+     "type": "text",
+     "value": "היא שווה לגודל מקסימלי בין גדלים של כל השדות שלו"
+    },
+    {
+     "id": "d",
+     "type": "text",
+     "value": "אף תשובה אינה נכונה"
+    }
+   ],
+   "correctId": "b",
+   "explanation": "סוגים בסיסיים של הנתונים מאוחסנים בכתובות שהן כפולות של הגדלים שלהם. לכן בין שדות של מבנה יכולים להיות פערים.",
+   "official": true,
+   "confidence": "high"
+  },
+  {
+   "num": 4,
+   "part": "ג",
+   "kind": "mcq",
+   "topic": "storage_classes",
+   "question": "בחר את התשובה הנכונה **ונמק** (חובה לרשום את הבחירה והנימוק במחברת). שאלה 4, 16 נק' בסך הכול.\nנתונה התוכנית הבאה:\n```c\n#include <stdio.h>\n\nint x;\nvoid main()\n{\n     x++;\n     printf(\"%d\",x);\n}\n```\nמהי הטענה הנכונה?",
+   "options": [
+    {
+     "id": "a",
+     "type": "text",
+     "value": "התכנית שגויה כי `x` לא מאותחל"
+    },
+    {
+     "id": "b",
+     "type": "text",
+     "value": "התכנית שגויה כי אסור להצהיר על משתנה מעל פונקציות"
+    },
+    {
+     "id": "c",
+     "type": "text",
+     "value": "התכנית שגויה משתי הסיבות לעיל"
+    },
+    {
+     "id": "d",
+     "type": "text",
+     "value": "התכנית תקינה"
+    },
+    {
+     "id": "e",
+     "type": "text",
+     "value": "התכנית תקינה אבל לא מומלץ להשתמש בסגנון ללא סיבה מוצדקת"
+    },
+    {
+     "id": "f",
+     "type": "text",
+     "value": "אף טענה אינה נכונה"
+    }
+   ],
+   "correctId": "e",
+   "explanation": "`x` הוא משתנה גלובלי (לא מומלץ להשתמש) וברירת המחדל ערך התחלתי שלו הוא 0.",
+   "official": true,
+   "confidence": "high"
+  },
+  {
+   "num": 4,
+   "part": "ד",
+   "kind": "mcq",
+   "topic": "pointers",
+   "question": "בחר את התשובה הנכונה **ונמק** (חובה לרשום את הבחירה והנימוק במחברת). שאלה 4, 16 נק' בסך הכול.\nנתונה התוכנית הבאה:\n```c\n#include <stdio.h>\n\nint size (double arr[])\n{\n     return sizeof(arr);\n}\n\nvoid main()\n{\n     double arr[10];\n     printf (\"%d\\n\", size(arr));\n}\n```\nמהו פלט התוכנית?",
+   "options": [
+    {
+     "id": "a",
+     "type": "text",
+     "value": "`4`"
+    },
+    {
+     "id": "b",
+     "type": "text",
+     "value": "`8`"
+    },
+    {
+     "id": "c",
+     "type": "text",
+     "value": "`10`"
+    },
+    {
+     "id": "d",
+     "type": "text",
+     "value": "`80`"
+    },
+    {
+     "id": "e",
+     "type": "text",
+     "value": "אף תשובה אינה נכונה"
+    }
+   ],
+   "correctId": "a",
+   "explanation": "כי `arr` הוא מצביע וגודל של מצביע שווה ל-4.\n\n**הערת מתמלל (לא חלק מהפתרון הרשמי):** התשובה מניחה מערכת של 32 סיביות. בהרצה אמיתית (`tools/verify/19B-B/q4.c`) הקומפילציה ל-32 סיביות מדפיסה `4`, ואילו ל-64 סיביות `8`.",
+   "official": true,
+   "confidence": "high"
+  },
+  {
+   "num": 5,
+   "kind": "code",
+   "topic": "c_traps_mcq",
+   "question": "*שאלת בונוס (10 נק').*\nמהו הפלט של התוכנית הבאה?\n```c\n#include <stdio.h>\nvoid main()\n{\n     char *s=\"ab\";\n     printf(\"%d\\n\",sizeof s[0]+sizeof s[1]-sizeof'a'-sizeof'b');\n}\n```\nיש לנמק את התשובה.",
+   "solution": "**הפלט:**\n```\n-6\n```\n**נימוק:**\nגודל של משתנה מסוג `char` הוא 1. תו קבוע הוא פשוט ייצוג של מספר שלם בקוד ASCII שלו וגודל של קבוע שלם הוא 4. לכן `1+1-4-4=-6`.",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "high",
+   "points": 10
+  }
+ ]
+}
