@@ -16,7 +16,157 @@
    "solutionSource": "official-pdf",
    "official": true,
    "confidence": "high",
-   "points": 28
+   "points": 28,
+   "rubric": [
+    {
+     "text": "פתיחת הקובץ לכתיבה (`\"w\"`) ויציאה אם לא נפתח",
+     "points": 4
+    },
+    {
+     "text": "שורות `1` עד `n-1` נכתבות מהמחרוזות `str[1]` עד `str[n-1]`, עם ספרה חדשה `i+'0'` בתחילת כל שורה",
+     "points": 6
+    },
+    {
+     "text": "דילוג על התו הראשון הישן של המחרוזת (`str[i]+1`), כדי שהמספור הישן לא יופיע בקובץ",
+     "points": 6
+    },
+    {
+     "text": "כל שורה מסתיימת ב-`'\\n'`",
+     "points": 4
+    },
+    {
+     "text": "`str[0]` נכתבת אחרונה, כשורה מספר `n` (`n+'0'`)",
+     "points": 6
+    },
+    {
+     "text": "סגירת הקובץ",
+     "points": 2
+    }
+   ],
+   "rubricSource": "ai-draft",
+   "pitfalls": [
+    "לכתוב את המחרוזת כולה (`str[i]`) ולא מהתו השני: בתחילת השורה יופיעו שתי ספרות, החדשה והישנה.",
+    "לשכוח את `n+'0'` או לכתוב `n` ולא `n+'0'`: נכתב תו בקרה במקום הספרה.",
+    "לכתוב את `str[0]` ראשונה ולא אחרונה, כך שההיסט המחזורי לא מתקבל."
+   ],
+   "steps": [
+    {
+     "type": "choice",
+     "prompt": "במערך מהדוגמה (`n = 4`, `str[0]` היא `\"1 Bill Johns, 28\"`), מהי השורה האחרונה שנכתבת לקובץ?",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`4 Bill Johns, 28`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`1 Bill Johns, 28`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`41 Bill Johns, 28`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`4 Eduard Stone, 17`"
+      }
+     ],
+     "correctId": "a",
+     "explain": "השורה האחרונה נבנית מ-`str[0]` בלי התו הראשון שלה, עם הספרה `n+'0'` בתחילתה. `1 Bill...` הוא ללא מספור מחדש, ו-`41 Bill...` נובע משכחת `+1` (ריצה אמיתית: `4 Bill Johns, 28`)."
+    },
+    {
+     "type": "fillblank",
+     "prompt": "השלימו את השורה שכותבת את שאר המחרוזת `str[i]` אחרי הספרה החדשה.",
+     "code": true,
+     "lines": [
+      "void cyclic_shift_to_file (char **str, int n, char *fileName)",
+      "{",
+      "    int i;",
+      "    FILE *fptr = fopen(fileName, \"w\");",
+      "    if (!fptr)",
+      "        exit(1);",
+      "    for (i=1; i<n; i++)",
+      "    {",
+      "        fputc(i+'0', fptr);",
+      "        ___",
+      "        fputc('\\n', fptr);",
+      "    }",
+      "    fputc(n+'0', fptr);",
+      "    fputs(str[0]+1, fptr);",
+      "    fputc('\\n', fptr);",
+      "    fclose(fptr);",
+      "}"
+     ],
+     "blankIndex": 9,
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "fputs(str[i]+1, fptr);"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "fputs(str[i], fptr);"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "fputs(str[i-1]+1, fptr);"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "fputs(str[i]+2, fptr);"
+      }
+     ],
+     "correctId": "a",
+     "explain": "`str[i]+1` מדלגת על הספרה הישנה ושומרת את הרווח והטקסט. `str[i]` משאירה את הספרה הישנה, `str[i-1]+1` כותבת את המחרוזת הלא נכונה, ו-`str[i]+2` מוחקת גם את הרווח (ריצה אמיתית)."
+    },
+    {
+     "type": "order",
+     "prompt": "סדרו את גושי הפונקציה `cyclic_shift_to_file`.",
+     "code": true,
+     "lines": [
+      "void cyclic_shift_to_file (char **str, int n, char *fileName)\n{\n    int i;\n    FILE *fptr = fopen(fileName, \"w\");\n    if (!fptr)\n        exit(1);",
+      "    for (i=1; i<n; i++)\n    {\n        fputc(i+'0', fptr);\n        fputs(str[i]+1, fptr);\n        fputc('\\n', fptr);\n    }",
+      "    fputc(n+'0', fptr);\n    fputs(str[0]+1, fptr);\n    fputc('\\n', fptr);",
+      "    fclose(fptr);\n}"
+     ],
+     "explain": "קודם פותחים את הקובץ, אחר כך כותבים את `str[1]` עד `str[n-1]`, אחריהן את `str[0]` כשורה האחרונה, ובסוף סוגרים."
+    },
+    {
+     "type": "findbug",
+     "prompt": "בגרסה הבאה שורה אחת שונתה, והשורה האחרונה בקובץ אינה מתחילה בספרה. מצאו אותה.",
+     "code": true,
+     "lines": [
+      "void cyclic_shift_to_file (char **str, int n, char *fileName)",
+      "{",
+      "    int i;",
+      "    FILE *fptr = fopen(fileName, \"w\");",
+      "    if (!fptr)",
+      "        exit(1);",
+      "    for (i=1; i<n; i++)",
+      "    {",
+      "        fputc(i+'0', fptr);",
+      "        fputs(str[i]+1, fptr);",
+      "        fputc('\\n', fptr);",
+      "    }",
+      "    fputc(n, fptr);",
+      "    fputs(str[0]+1, fptr);",
+      "    fputc('\\n', fptr);",
+      "    fclose(fptr);",
+      "}"
+     ],
+     "bugIndex": 12,
+     "explain": "`fputc(n, fptr)` כותבת את התו שקודו `n` (תו בקרה) ולא את הספרה. צריך `n+'0'`."
+    }
+   ],
+   "stepsSource": "ai-draft"
   },
   {
    "num": 2,
@@ -28,7 +178,171 @@
    "official": true,
    "confidence": "high",
    "points": 28,
-   "image": "images/exams/19B-A-Q2.png"
+   "image": "images/exams/19B-A-Q2.png",
+   "rubric": [
+    {
+     "text": "בניית הרשימה `R` באיבר דמה (`dummy`) ובמצביע זנב `curr_ptr`, כך שאין טיפול מיוחד באיבר הראשון",
+     "points": 6
+    },
+    {
+     "text": "מעבר על כל איברי `L`, ויצירת איבר אחד חדש ב-`R` לכל איבר, גם כשהרשימה הפנימית ריקה",
+     "points": 8
+    },
+    {
+     "text": "איפוס `data` של האיבר החדש ל-0 ואז צבירת כל איברי הרשימה הפנימית אליו",
+     "points": 8
+    },
+    {
+     "text": "סיום הרשימה: `curr_ptr->next = NULL`",
+     "points": 3
+    },
+    {
+     "text": "מחיקת איבר הדמה (`free`) והחזרת האיבר הראשון האמיתי",
+     "points": 3
+    }
+   ],
+   "rubricSource": "ai-draft",
+   "pitfalls": [
+    "לדלג על רשימה פנימית ריקה ולא ליצור לה איבר ב-`R`, כך שמספר האיברים ב-`R` קטן ממספר הרשימות.",
+    "לא לאפס את `data` של האיבר החדש (`malloc` לא מאפס) ולצבור על ערך זבל.",
+    "לשכוח `next = NULL` בסוף, או להחזיר את איבר הדמה עצמו."
+   ],
+   "steps": [
+    {
+     "type": "choice",
+     "prompt": "הרשימות הפנימיות ב-`L` הן $[3,2,4]$, $[6]$, רשימה ריקה ו-$[1,7]$. מה הערכים של `data` באיברי `R` לפי הסדר?",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`9, 6, 0, 8`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`9, 6, 8`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`3, 6, 0, 1`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`9, 6, 0, 7`"
+      }
+     ],
+     "correctId": "a",
+     "explain": "לכל רשימה איבר אחד: $3+2+4=9$, $6$, רשימה ריקה נותנת $0$, ו-$1+7=8$ (ריצה אמיתית: 9, 6, 0, 8). `9, 6, 8` מדלג על הרשימה הריקה."
+    },
+    {
+     "type": "fillblank",
+     "prompt": "השלימו את השורה שמאתחלת את `data` של האיבר החדש לפני צבירת הרשימה הפנימית.",
+     "code": true,
+     "lines": [
+      "DataItem *list_of_lists_to_list (PtrItem *L)",
+      "{",
+      "    DataItem *data_item_list, *curr_ptr,",
+      "        *lst = (DataItem *)malloc(sizeof(DataItem)); //dummy",
+      "    PtrItem *temp = L;",
+      "    curr_ptr = lst;",
+      "    while (temp) // scan list of lists",
+      "    {",
+      "        data_item_list = temp->ptr;",
+      "        curr_ptr->next = (DataItem *)malloc(sizeof(DataItem));",
+      "        curr_ptr = curr_ptr->next;",
+      "        ___",
+      "        while (data_item_list) // scan internal list",
+      "        {",
+      "            curr_ptr->data += data_item_list->data;",
+      "            data_item_list = data_item_list->next;",
+      "        }",
+      "        temp = temp->next;",
+      "    }",
+      "    curr_ptr->next = NULL;",
+      "    /* deletion of dummy */",
+      "    curr_ptr = lst;",
+      "    lst = lst->next;",
+      "    free (curr_ptr);",
+      "    return lst;",
+      "}"
+     ],
+     "blankIndex": 11,
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "curr_ptr->data = 0;"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "curr_ptr->data = 1;"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "curr_ptr->data = -1;"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "curr_ptr->data = data_item_list ? data_item_list->data : 0;"
+      }
+     ],
+     "correctId": "a",
+     "explain": "הסכום מתחיל מאפס. כל התחלה אחרת מוסיפה קבוע לכל סכום, והתחלה מהאיבר הראשון סופרת אותו פעמיים כי הלולאה הפנימית מוסיפה גם אותו (ריצה אמיתית)."
+    },
+    {
+     "type": "order",
+     "prompt": "סדרו את גושי הפונקציה `list_of_lists_to_list`.",
+     "code": true,
+     "lines": [
+      "DataItem *list_of_lists_to_list (PtrItem *L)\n{\n    DataItem *data_item_list, *curr_ptr,\n        *lst = (DataItem *)malloc(sizeof(DataItem)); //dummy\n    PtrItem *temp = L;\n    curr_ptr = lst;",
+      "    while (temp) // scan list of lists\n    {\n        data_item_list = temp->ptr;\n        curr_ptr->next = (DataItem *)malloc(sizeof(DataItem));\n        curr_ptr = curr_ptr->next;\n        curr_ptr->data = 0;\n        while (data_item_list) // scan internal list\n        {\n            curr_ptr->data += data_item_list->data;\n            data_item_list = data_item_list->next;\n        }\n        temp = temp->next;\n    }",
+      "    curr_ptr->next = NULL;\n    /* deletion of dummy */\n    curr_ptr = lst;\n    lst = lst->next;\n    free (curr_ptr);",
+      "    return lst;\n}"
+     ],
+     "explain": "מכינים את איבר הדמה, בונים את `R` בסריקת `L`, מסיימים אותה ב-`NULL`, ורק אחר כך מוחקים את הדמה ומחזירים את הראש."
+    },
+    {
+     "type": "findbug",
+     "prompt": "בגרסה הבאה שורה אחת שונתה, והערכים ב-`R` אינם הסכומים. מצאו אותה.",
+     "code": true,
+     "lines": [
+      "DataItem *list_of_lists_to_list (PtrItem *L)",
+      "{",
+      "    DataItem *data_item_list, *curr_ptr,",
+      "        *lst = (DataItem *)malloc(sizeof(DataItem)); //dummy",
+      "    PtrItem *temp = L;",
+      "    curr_ptr = lst;",
+      "    while (temp) // scan list of lists",
+      "    {",
+      "        data_item_list = temp->ptr;",
+      "        curr_ptr->next = (DataItem *)malloc(sizeof(DataItem));",
+      "        curr_ptr = curr_ptr->next;",
+      "        curr_ptr->data = 0;",
+      "        while (data_item_list) // scan internal list",
+      "        {",
+      "            curr_ptr->data = data_item_list->data;",
+      "            data_item_list = data_item_list->next;",
+      "        }",
+      "        temp = temp->next;",
+      "    }",
+      "    curr_ptr->next = NULL;",
+      "    /* deletion of dummy */",
+      "    curr_ptr = lst;",
+      "    lst = lst->next;",
+      "    free (curr_ptr);",
+      "    return lst;",
+      "}"
+     ],
+     "bugIndex": 14,
+     "explain": "`=` במקום `+=`: כל איבר ברשימה הפנימית דורס את הקודם, ולכן נשאר רק האיבר האחרון ולא הסכום."
+    }
+   ],
+   "stepsSource": "ai-draft"
   },
   {
    "num": 3,
@@ -39,7 +353,191 @@
    "solutionSource": "official-pdf",
    "official": true,
    "confidence": "high",
-   "points": 28
+   "points": 28,
+   "rubric": [
+    {
+     "text": "הקצאת מערך המצביעים `B` ומערך הגדלים `S` (בגודל `rows` לכל היותר), והעברת `S` ו-`*prows` by reference",
+     "points": 4
+    },
+    {
+     "text": "לכל שורה: חישוב סכום השורה וספירת האיברים האי-זוגיים (עם איפוס בכל שורה)",
+     "points": 6
+    },
+    {
+     "text": "תנאי העתקה: הסכום זוגי **וגם** יש לפחות איבר אי-זוגי אחד",
+     "points": 6
+    },
+    {
+     "text": "הקצאת שורה ב-`B` בגודל מספר האי-זוגיים, והעתקת האי-זוגיים בלבד לפי הסדר המקורי",
+     "points": 8
+    },
+    {
+     "text": "עדכון `S` ו-`*prows`",
+     "points": 2
+    },
+    {
+     "text": "כיווץ `B` ו-`S` (`realloc`) לגודל האמיתי והחזרת `B`",
+     "points": 2
+    }
+   ],
+   "rubricSource": "ai-draft",
+   "pitfalls": [
+    "לבדוק רק שהסכום זוגי: שורה שכולה זוגית (כמו השורה האחרונה בדוגמה) תיכנס ל-`B` כשורה ריקה.",
+    "להעתיק גם איברים זוגיים, או לשכוח לאפס `sum`, `odd_count`, `k` בין שורות.",
+    "לא להעביר את `S` ו-`*prows` by reference (מצביע-למצביע), כך שהקורא לא מקבל את המערך והגודל."
+   ],
+   "steps": [
+    {
+     "type": "numeric",
+     "prompt": "עבור המטריצה $A$ מהדוגמה (5 שורות, 6 עמודות), מה הערך ש-`*prows` מכיל בסוף?",
+     "answer": 3,
+     "tol": 0,
+     "explain": "שורות 0, 2, 3 עומדות בתנאי: הסכום זוגי ויש בהן איבר אי-זוגי. שורה 1 בעלת סכום אי-זוגי, ושורה 4 זוגית לחלוטין (ריצה אמיתית: 3)."
+    },
+    {
+     "type": "choice",
+     "prompt": "אילו שורות של $A$ (מ-0) מועתקות ל-$B$ בדוגמה?",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`0, 2, 3`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`0, 3, 4`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`0, 1, 2, 3, 4`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`0, 2, 3, 4`"
+      }
+     ],
+     "correctId": "a",
+     "explain": "הסכומים הם 170, 141, 106, 210, 212. שורה 1 (141) אי-זוגית, ושורה 4 (212) זוגית אבל כל איבריה זוגיים ולכן לא מועתקת (ריצה אמיתית: השורות 0, 2, 3)."
+    },
+    {
+     "type": "fillblank",
+     "prompt": "השלימו את תנאי ההעתקה של השורה.",
+     "code": true,
+     "lines": [
+      "#define COLS 6 //example",
+      "int **even_sums_odd_numbers (int A[][COLS], int rows, int cols, int **S,",
+      "                             int *prows)",
+      "{",
+      "    int i, j, k, sum, odd_count, **B;",
+      "    *prows = 0;",
+      "    B = (int **)calloc(rows, sizeof(int *));",
+      "    *S = (int *)calloc(rows, sizeof(int));",
+      "    for (i=0; i<rows; i++)",
+      "    {",
+      "        sum = odd_count = k = 0;",
+      "        for (j=0; j<cols; j++)",
+      "        {",
+      "            sum += A[i][j];",
+      "            odd_count += A[i][j]%2;",
+      "        }",
+      "        ___",
+      "        {",
+      "            B[*prows] = (int *)calloc(odd_count, sizeof(int));",
+      "            for (j=0; j<cols; j++)",
+      "                if (A[i][j]%2 == 1)",
+      "                    B[*prows][k++] = A[i][j];",
+      "            (*S)[*prows] = odd_count;",
+      "            (*prows)++;",
+      "        }",
+      "    }",
+      "    B = (int **)realloc(B, *prows*sizeof(int *));",
+      "    *S = (int *)realloc(*S, *prows*sizeof(int));",
+      "    return B;",
+      "}"
+     ],
+     "blankIndex": 16,
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "if (sum%2 == 0 && odd_count>0)"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "if (sum%2 == 0)"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "if (odd_count>0)"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "if (sum%2 == 0 || odd_count>0)"
+      }
+     ],
+     "correctId": "a",
+     "explain": "צריך את שני התנאים יחד. בלי `odd_count>0` נכנסת שורה 4 כשורה ריקה, בלי הסכום הזוגי נכנסת שורה 1, ועם `||` נכנסות שתיהן (ריצה אמיתית)."
+    },
+    {
+     "type": "order",
+     "prompt": "סדרו את גושי הפונקציה `even_sums_odd_numbers`.",
+     "code": true,
+     "lines": [
+      "#define COLS 6 //example",
+      "int **even_sums_odd_numbers (int A[][COLS], int rows, int cols, int **S,\n                             int *prows)\n{\n    int i, j, k, sum, odd_count, **B;",
+      "    *prows = 0;\n    B = (int **)calloc(rows, sizeof(int *));\n    *S = (int *)calloc(rows, sizeof(int));",
+      "    for (i=0; i<rows; i++)\n    {\n        sum = odd_count = k = 0;\n        for (j=0; j<cols; j++)\n        {\n            sum += A[i][j];\n            odd_count += A[i][j]%2;\n        }\n        if (sum%2 == 0 && odd_count>0)\n        {\n            B[*prows] = (int *)calloc(odd_count, sizeof(int));\n            for (j=0; j<cols; j++)\n                if (A[i][j]%2 == 1)\n                    B[*prows][k++] = A[i][j];\n            (*S)[*prows] = odd_count;\n            (*prows)++;\n        }\n    }",
+      "    B = (int **)realloc(B, *prows*sizeof(int *));\n    *S = (int *)realloc(*S, *prows*sizeof(int));\n    return B;\n}"
+     ],
+     "explain": "הקבוע לפני הפונקציה, אחריו הכנת `B`, `S` ו-`*prows`, אחר כך הלולאה על השורות, ורק בסוף כיווץ המערכים והחזרה."
+    },
+    {
+     "type": "findbug",
+     "prompt": "בגרסה הבאה שורה אחת שונתה, והפונקציה מעתיקה גם את השורה הזוגית לחלוטין. מצאו אותה.",
+     "code": true,
+     "lines": [
+      "#define COLS 6 //example",
+      "int **even_sums_odd_numbers (int A[][COLS], int rows, int cols, int **S,",
+      "                             int *prows)",
+      "{",
+      "    int i, j, k, sum, odd_count, **B;",
+      "    *prows = 0;",
+      "    B = (int **)calloc(rows, sizeof(int *));",
+      "    *S = (int *)calloc(rows, sizeof(int));",
+      "    for (i=0; i<rows; i++)",
+      "    {",
+      "        sum = odd_count = k = 0;",
+      "        for (j=0; j<cols; j++)",
+      "        {",
+      "            sum += A[i][j];",
+      "            odd_count += 1;",
+      "        }",
+      "        if (sum%2 == 0 && odd_count>0)",
+      "        {",
+      "            B[*prows] = (int *)calloc(odd_count, sizeof(int));",
+      "            for (j=0; j<cols; j++)",
+      "                if (A[i][j]%2 == 1)",
+      "                    B[*prows][k++] = A[i][j];",
+      "            (*S)[*prows] = odd_count;",
+      "            (*prows)++;",
+      "        }",
+      "    }",
+      "    B = (int **)realloc(B, *prows*sizeof(int *));",
+      "    *S = (int *)realloc(*S, *prows*sizeof(int));",
+      "    return B;",
+      "}"
+     ],
+     "bugIndex": 14,
+     "explain": "`odd_count += 1` סופר כל איבר, לא רק אי-זוגי, ולכן `odd_count>0` תמיד נכון ושורה 4 נכנסת (ריצה אמיתית: `*prows` יוצא 4)."
+    }
+   ],
+   "stepsSource": "ai-draft"
   },
   {
    "num": 4,
@@ -182,7 +680,56 @@
    "solutionSource": "official-pdf",
    "official": true,
    "confidence": "high",
-   "points": 10
+   "points": 10,
+   "rubric": [
+    {
+     "text": "`sizeof\"sizeof\"[i]` הוא `sizeof` של התו `\"sizeof\"[i]` (ולא של כל המחרוזת)",
+     "points": 3
+    },
+    {
+     "text": "גודל תו הוא 1 בית, ולכן תנאי הלולאה הוא `i < 1`",
+     "points": 2
+    },
+    {
+     "text": "הלולאה רצה רק עבור `i = 0`",
+     "points": 3
+    },
+    {
+     "text": "מודפס `1`",
+     "points": 2
+    }
+   ],
+   "rubricSource": "ai-draft",
+   "pitfalls": [
+    "לקרוא את הביטוי כגודל המחרוזת כולה (7 בתים, כולל `\\0`) ולחשוב שהלולאה רצה 7 פעמים.",
+    "לשכוח ש-`sizeof` היא אופרטור שחל על הביטוי `\"sizeof\"[i]`, ולא על `\"sizeof\"`."
+   ],
+   "steps": [
+    {
+     "type": "numeric",
+     "prompt": "מה ערך הביטוי `sizeof\"sizeof\"[i]` (בית אחד לכל תו)?",
+     "answer": 1,
+     "tol": 0,
+     "explain": "האינדקס חל קודם על המחרוזת, ו-`sizeof` של תו הוא 1 (ריצה אמיתית: 1). לעומת זאת `sizeof(\"sizeof\")` הוא 7."
+    },
+    {
+     "type": "numeric",
+     "prompt": "כמה פעמים מתבצע גוף הלולאה?",
+     "answer": 1,
+     "tol": 0,
+     "explain": "עבור `i = 0` התנאי `0 < 1` נכון, ועבור `i = 1` התנאי `1 < 1` שקרי (ריצה אמיתית: איטרציה אחת)."
+    },
+    {
+     "type": "text",
+     "prompt": "מה הפלט של התוכנית?",
+     "accept": [
+      "1"
+     ],
+     "normalize": "none",
+     "explain": "באיטרציה היחידה מודפס הערך `1` (ריצה אמיתית: `1`)."
+    }
+   ],
+   "stepsSource": "ai-draft"
   }
  ]
 }

@@ -28,7 +28,146 @@
    "solutionSource": "official-pdf",
    "official": true,
    "confidence": "high",
-   "points": 40
+   "points": 40,
+   "rubric": [
+    {
+     "text": "מעבר על המערך מהאיבר השני ואילך והשוואת כל איבר לקודם לו (זוגות סמוכים)",
+     "points": 8
+    },
+    {
+     "text": "השוואת שמות משפחה עם `strcmp` (ולא עם `<` על מערכי תווים); ערך שלילי מחזיר `0`",
+     "points": 10
+    },
+    {
+     "text": "כששמות המשפחה זהים (`cmp == 0`) משווים שמות פרטיים באותו אופן",
+     "points": 10
+    },
+    {
+     "text": "רק כששני השמות זהים משווים מספרי זהות, ואיבר עם `id` קטן מהקודם מחזיר `0`",
+     "points": 8
+    },
+    {
+     "text": "אם לא נמצאה הפרה בכל הזוגות מחזירים `1`",
+     "points": 4
+    }
+   ],
+   "rubricSource": "ai-draft",
+   "pitfalls": [
+    "להשוות מחרוזות עם `<` או `==` במקום `strcmp`: מושווים כתובות המערכים ולא התוכן.",
+    "להחזיר `0` גם כששמות המשפחה זהים (תנאי `<= 0`), ובכך לפסול מערך תקין שבו יש כמה אנשים עם אותו שם משפחה.",
+    "להשוות את מספר הזהות כבר כששמות המשפחה זהים אבל השמות הפרטיים שונים, במקום רק כששני השמות זהים."
+   ],
+   "steps": [
+    {
+     "type": "numeric",
+     "prompt": "במערך הדוגמה השני (שני ה-`Levi Omri` מוחלפים זה בזה, כך שהמספרים `245689436` ו-`245689432` מופיעים בסדר הפוך) הפונקציה מחזירה `0`. באיזה אינדקס `i` מתגלה ההפרה, כלומר איזה איבר גורם ל-`return 0`?",
+     "answer": 7,
+     "tol": 0,
+     "explain": "האיברים 0 עד 6 עוברים את כל ההשוואות, ובאיבר 7 (`id` קטן מזה של איבר 6 עם אותם שמות) מתקבל `return 0` (ריצה אמיתית: 7)."
+    },
+    {
+     "type": "choice",
+     "prompt": "מה משמעות התנאי `strcmp(person_arr[i].last_name, person_arr[i - 1].last_name) < 0` בפונקציה?",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "שם המשפחה של איבר `i` קודם לקסיקוגרפית לשם המשפחה של איבר `i-1`, ולכן הסדר מופר"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "שם המשפחה של איבר `i` מאוחר לקסיקוגרפית לשם המשפחה של איבר `i-1`, ולכן הסדר מופר"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "שני שמות המשפחה זהים, ולכן עוברים להשוות שמות פרטיים"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "הכתובת של `last_name` באיבר `i` נמוכה מהכתובת באיבר `i-1`"
+      }
+     ],
+     "correctId": "a",
+     "explain": "`strcmp(x, y) < 0` אומר ש-`x` קודם ל-`y`. כאן `x` הוא שם המשפחה של האיבר המאוחר במערך, ולכן הוא צריך להיות לא קטן מהקודם, וערך שלילי הוא הפרה (ריצה אמיתית: `strcmp(\"Asher\", \"Bern\") < 0`). שוויון הוא `cmp == 0`, ואין כאן השוואת כתובות."
+    },
+    {
+     "type": "fillblank",
+     "prompt": "השלימו את השורה החסרה: מתי מחזירים `0` לפי מספרי הזהות? (הנחה: שני האיברים בעלי אותו שם משפחה ואותו שם פרטי.)",
+     "code": true,
+     "lines": [
+      "int ordered_person_array(person* person_arr, int n)",
+      "{",
+      "    int i, cmp;",
+      "    for (i = 1; i < n; i++)",
+      "        if ( (cmp = strcmp(person_arr[i].last_name, person_arr[i - 1].last_name)) < 0 )",
+      "            return 0;",
+      "        else",
+      "            if (cmp == 0)",
+      "                if ((cmp=strcmp(person_arr[i].first_name, person_arr[i-1].first_name))<0)",
+      "                    return 0;",
+      "                else",
+      "                    if (cmp == 0)",
+      "                        ___",
+      "                            return 0;",
+      "    return 1;",
+      "}"
+     ],
+     "blankIndex": 12,
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "if (person_arr[i].id < person_arr[i - 1].id)"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "if (person_arr[i].id <= person_arr[i - 1].id)"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "if (person_arr[i].id > person_arr[i - 1].id)"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "if (person_arr[i].id != person_arr[i - 1].id)"
+      }
+     ],
+     "correctId": "a",
+     "explain": "הסדר לפי `id` עולה לא ממש, ולכן הפרה היא רק `id` קטן מהקודם. עם `<=` נפסל מערך עם שני איברים זהים לחלוטין, ועם `>` או `!=` נפסל מערך ממוין תקין (בדוגמה הראשונה `245689432 < 245689436`)."
+    },
+    {
+     "type": "findbug",
+     "prompt": "בגרסה הבאה שורה אחת שונתה והפונקציה נכשלת על המערך התקין מהדוגמה הראשונה. מצאו אותה.",
+     "code": true,
+     "lines": [
+      "int ordered_person_array(person* person_arr, int n)",
+      "{",
+      "    int i, cmp;",
+      "    for (i = 1; i < n; i++)",
+      "        if ( (cmp = strcmp(person_arr[i].last_name, person_arr[i - 1].last_name)) <= 0 )",
+      "            return 0;",
+      "        else",
+      "            if (cmp == 0)",
+      "                if ((cmp=strcmp(person_arr[i].first_name, person_arr[i-1].first_name))<0)",
+      "                    return 0;",
+      "                else",
+      "                    if (cmp == 0)",
+      "                        if (person_arr[i].id < person_arr[i - 1].id)",
+      "                            return 0;",
+      "    return 1;",
+      "}"
+     ],
+     "bugIndex": 4,
+     "explain": "`<= 0` במקום `< 0`: כששני שמות משפחה זהים (`Cohen`, `Levi`) הפונקציה מחזירה `0` מיד ולא עוברת להשוואת שמות פרטיים."
+    }
+   ],
+   "stepsSource": "ai-draft"
   },
   {
    "num": 3,
@@ -40,7 +179,147 @@
    "official": true,
    "confidence": "high",
    "points": 40,
-   "image": "images/exams/21B-B-Q3.png"
+   "image": "images/exams/21B-B-Q3.png",
+   "rubric": [
+    {
+     "text": "הגדרת טיפוס איבר הרשימה מעל הפונקציה: שדה ערך, שדה מספר עמודה ומצביע לאיבר הבא",
+     "points": 6
+    },
+    {
+     "text": "הקצאת מערך של `rows` מצביעים לשורות (`int**`)",
+     "points": 8
+    },
+    {
+     "text": "הקצאת כל שורה בגודל `cols` עם איפוס (`calloc`), כך שהאיברים החסרים ברשימה הם 0",
+     "points": 10
+    },
+    {
+     "text": "מעבר על רשימה `i` כולה והצבת `data` של כל איבר בעמודה `col` שלו בשורה `i`",
+     "points": 13
+    },
+    {
+     "text": "החזרת כתובת המערך הדו-ממדי",
+     "points": 3
+    }
+   ],
+   "rubricSource": "ai-draft",
+   "pitfalls": [
+    "להקצות שורות עם `malloc` בלי לאפס: האיברים שאינם ברשימה יישארו עם ערכי זבל במקום 0.",
+    "להחליף בין השדות: `arr[i][ptr->data] = ptr->col` במקום `arr[i][ptr->col] = ptr->data`.",
+    "לעצור אחרי האיבר הראשון של כל רשימה (`if` במקום `while`), או להקצות את המערך החיצוני עם `sizeof(int)` במקום `sizeof(int*)`."
+   ],
+   "steps": [
+    {
+     "type": "numeric",
+     "prompt": "מטריצה דלילה בת 3 שורות ו-5 עמודות נתונה כמערך רשימות: רשימה 0 מכילה את הזוגות (ערך 5, עמודה 2) ו-(ערך 7, עמודה 4), רשימה 1 ריקה, ורשימה 2 מכילה את (ערך 3, עמודה 0). כמה איברים במטריצה המשוחזרת שווים ל-0?",
+     "answer": 12,
+     "tol": 0,
+     "explain": "יש 15 איברים ו-3 מהם מגיעים מהרשימות, ולכן 12 איברים נשארים 0 (ריצה אמיתית: 12). אלה האיברים שחייבים להיות מאופסים בהקצאה."
+    },
+    {
+     "type": "fillblank",
+     "prompt": "השלימו את השורה החסרה: מה מציבים בתא של האיבר הנוכחי ברשימה? (נניח שכל הערכים והעמודות קטנים מ-4 במטריצה 4 על 4.)",
+     "code": true,
+     "lines": [
+      "typedef struct element",
+      "{",
+      "    int data;",
+      "    int col;",
+      "    struct element* ptr_next;",
+      "} element;",
+      "int** lists_to_sparse_matrix(element** list_row, int rows, int cols)",
+      "{",
+      "    int** arr, i;",
+      "    element* ptr;",
+      "    arr = (int**)calloc(rows, sizeof(int*));",
+      "    for (i = 0; i < rows; i++)",
+      "        arr[i] = (int*)calloc(cols, sizeof(int));",
+      "    for (i = 0; i < rows; i++)",
+      "    {",
+      "        ptr = list_row[i];",
+      "        while (ptr)",
+      "        {",
+      "            ___",
+      "            ptr = ptr->ptr_next;",
+      "        }",
+      "    } // for i",
+      "    return arr;",
+      "}"
+     ],
+     "blankIndex": 18,
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "arr[i][ptr->col] = ptr->data;"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "arr[i][ptr->data] = ptr->col;"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "arr[ptr->col][i] = ptr->data;"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "arr[i][ptr->col] = ptr->col;"
+      }
+     ],
+     "correctId": "a",
+     "explain": "השורה היא `i` והעמודה היא `col`, והערך שנכתב הוא `data`. החלפת השדות, החלפת השורה והעמודה (שחלוף) או כתיבת `col` במקום `data` נותנים מטריצה שונה."
+    },
+    {
+     "type": "order",
+     "prompt": "סדרו את גושי הקוד של הפתרון (הגדרת הטיפוס, פתיחת הפונקציה והצהרות, הקצאות, מילוי, החזרה).",
+     "code": true,
+     "lines": [
+      "typedef struct element\n{\n    int data;\n    int col;\n    struct element* ptr_next;\n} element;",
+      "int** lists_to_sparse_matrix(element** list_row, int rows, int cols)\n{\n    int** arr, i;\n    element* ptr;",
+      "    arr = (int**)calloc(rows, sizeof(int*));\n    for (i = 0; i < rows; i++)\n        arr[i] = (int*)calloc(cols, sizeof(int));",
+      "    for (i = 0; i < rows; i++)\n    {\n        ptr = list_row[i];\n        while (ptr)\n        {\n            arr[i][ptr->col] = ptr->data;\n            ptr = ptr->ptr_next;\n        }\n    } // for i",
+      "    return arr;\n}"
+     ],
+     "explain": "הטיפוס חייב להופיע לפני הפונקציה שמשתמשת בו, ההקצאה של מערך השורות לפני הקצאת השורות, ושתיהן לפני המילוי; ההחזרה בסוף."
+    },
+    {
+     "type": "findbug",
+     "prompt": "בגרסה הבאה שורה אחת שונתה והמטריצה המשוחזרת חסרה איברים. מצאו את השורה.",
+     "code": true,
+     "lines": [
+      "typedef struct element",
+      "{",
+      "    int data;",
+      "    int col;",
+      "    struct element* ptr_next;",
+      "} element;",
+      "int** lists_to_sparse_matrix(element** list_row, int rows, int cols)",
+      "{",
+      "    int** arr, i;",
+      "    element* ptr;",
+      "    arr = (int**)calloc(rows, sizeof(int*));",
+      "    for (i = 0; i < rows; i++)",
+      "        arr[i] = (int*)calloc(cols, sizeof(int));",
+      "    for (i = 0; i < rows; i++)",
+      "    {",
+      "        ptr = list_row[i];",
+      "        if (ptr)",
+      "        {",
+      "            arr[i][ptr->col] = ptr->data;",
+      "            ptr = ptr->ptr_next;",
+      "        }",
+      "    } // for i",
+      "    return arr;",
+      "}"
+     ],
+     "bugIndex": 16,
+     "explain": "`if (ptr)` במקום `while (ptr)`: רק האיבר הראשון בכל רשימה נכתב למטריצה, ושאר איברי הרשימה אובדים."
+    }
+   ],
+   "stepsSource": "ai-draft"
   },
   {
    "num": 4,
@@ -223,7 +502,56 @@
    "solutionSource": "official-pdf",
    "official": true,
    "confidence": "high",
-   "points": 10
+   "points": 10,
+   "rubric": [
+    {
+     "text": "שני ה-`printf(\"%d\", 11)` הפנימיים מדפיסים `11` כל אחד, ולכן `1111`",
+     "points": 3
+    },
+    {
+     "text": "`printf` מחזירה את מספר התווים שהודפסו, ולכן כל אחד מהפנימיים מחזיר `2`",
+     "points": 3
+    },
+    {
+     "text": "ה-`printf(\"%d%d\", ...)` האמצעי מדפיס `22` ומחזיר `2`",
+     "points": 2
+    },
+    {
+     "text": "ה-`printf` החיצוני מדפיס את `2`, והפלט הכולל הוא `1111222`",
+     "points": 2
+    }
+   ],
+   "rubricSource": "ai-draft",
+   "pitfalls": [
+    "לחשוב ש-`printf` מחזירה את הערך שהודפס (`11`) או `1`, ולא את מספר התווים.",
+    "לשכוח שהפרמטרים הפנימיים מודפסים לפני הפלט של ה-`printf` שעוטף אותם, ולכן הפלט מתחיל ב-`1111`."
+   ],
+   "steps": [
+    {
+     "type": "numeric",
+     "prompt": "מה מחזירה הקריאה `printf(\"%d\", 11)`?",
+     "answer": 2,
+     "tol": 0,
+     "explain": "`printf` מחזירה את מספר התווים שנכתבו, ו-`11` הם שני תווים (ריצה אמיתית: 2)."
+    },
+    {
+     "type": "numeric",
+     "prompt": "מה מחזירה הקריאה האמצעית `printf(\"%d%d\", printf(\"%d\",11), printf(\"%d\",11))`?",
+     "answer": 2,
+     "tol": 0,
+     "explain": "היא מקבלת `2` ו-`2`, מדפיסה `22` ולכן מחזירה 2 (ריצה אמיתית: 2). הערך הזה הוא מה שהקריאה החיצונית מדפיסה."
+    },
+    {
+     "type": "text",
+     "prompt": "מה הפלט המלא של התוכנית? (רצף תווים אחד, בלי רווחים)",
+     "accept": [
+      "1111222"
+     ],
+     "normalize": "none",
+     "explain": "`11` ו-`11` מהקריאות הפנימיות, אחר כך `22` מהאמצעית, ולבסוף `2` מהחיצונית: `1111222` (ריצה אמיתית)."
+    }
+   ],
+   "stepsSource": "ai-draft"
   }
  ]
 }

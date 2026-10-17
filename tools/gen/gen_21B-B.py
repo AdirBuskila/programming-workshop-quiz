@@ -330,6 +330,161 @@ questions = [
     Q(5, "code", "c_basics_output", Q5_TEXT, Q5_SOL, points=10),
 ]
 
+# ---------------------------------------------------------------- steps / rubric / pitfalls (ai-draft)
+# Every expected value below was produced by a real clang run: tools/verify/<CODE>/steps_check.py
+import re
+
+
+def rub(*items):
+    return [{"text": t, "points": p} for t, p in items]
+
+
+def code_of(sol, n=0):
+    return re.findall(r"```c\n(.*?)\n```", sol, re.S)[n]
+
+
+def lines_of(src):
+    return [ln for ln in src.strip("\n").split("\n") if ln.strip()]
+
+
+def ix(lines, text, nth=None):
+    idx = [i for i, ln in enumerate(lines) if ln.strip() == text.strip()]
+    if nth is None:
+        assert len(idx) == 1, (text, idx)
+        return idx[0]
+    return idx[nth]
+
+
+def blocks(lines, *starts):
+    """Logical blocks: each start is the (unique) first line of a block; block 0 begins at line 0."""
+    cuts = [0] + sorted(ix(lines, *(s if isinstance(s, tuple) else (s,))) for s in starts)
+    assert len(set(cuts)) == len(cuts), starts
+    return ["\n".join(lines[a:b]) for a, b in zip(cuts, cuts[1:] + [len(lines)])]
+
+
+def swap1(lines, old, new):
+    """The lines with exactly one line changed (asserted)."""
+    i = ix(lines, old)
+    out = list(lines)
+    out[i] = out[i].replace(old.strip(), new.strip())
+    assert out[i] != lines[i]
+    return out, i
+
+
+def blank(lines, target):
+    i = ix(lines, target)
+    out = list(lines)
+    out[i] = out[i][:len(out[i]) - len(out[i].lstrip())] + "___"
+    return out, i
+
+
+def add(num, part=None, **kw):
+    for q in questions:
+        if q["num"] == num and q.get("part") == part:
+            assert "hold" not in q and q["kind"] != "mcq", (num, part)
+            q.update(kw)
+            return
+    raise KeyError((num, part))
+
+
+def step(type_, **kw):
+    s = {"type": type_}
+    s.update(kw)
+    return s
+
+S2 = lines_of(code_of(Q2_SOL))
+S2_bug, S2_bi = swap1(S2, "if ( (cmp = strcmp(person_arr[i].last_name, person_arr[i - 1].last_name)) < 0 )",
+                      "if ( (cmp = strcmp(person_arr[i].last_name, person_arr[i - 1].last_name)) <= 0 )")
+S2_fb, S2_bl = blank(S2, "if (person_arr[i].id < person_arr[i - 1].id)")
+
+add(2,
+    rubric=rub(("מעבר על המערך מהאיבר השני ואילך והשוואת כל איבר לקודם לו (זוגות סמוכים)", 8),
+               ("השוואת שמות משפחה עם `strcmp` (ולא עם `<` על מערכי תווים); ערך שלילי מחזיר `0`", 10),
+               ("כששמות המשפחה זהים (`cmp == 0`) משווים שמות פרטיים באותו אופן", 10),
+               ("רק כששני השמות זהים משווים מספרי זהות, ואיבר עם `id` קטן מהקודם מחזיר `0`", 8),
+               ("אם לא נמצאה הפרה בכל הזוגות מחזירים `1`", 4)),
+    rubricSource="ai-draft",
+    pitfalls=["להשוות מחרוזות עם `<` או `==` במקום `strcmp`: מושווים כתובות המערכים ולא התוכן.",
+              "להחזיר `0` גם כששמות המשפחה זהים (תנאי `<= 0`), ובכך לפסול מערך תקין שבו יש כמה אנשים עם אותו שם משפחה.",
+              "להשוות את מספר הזהות כבר כששמות המשפחה זהים אבל השמות הפרטיים שונים, במקום רק כששני השמות זהים."],
+    steps=[
+        step("numeric", prompt="במערך הדוגמה השני (שני ה-`Levi Omri` מוחלפים זה בזה, כך שהמספרים `245689436` ו-`245689432` מופיעים בסדר הפוך) הפונקציה מחזירה `0`. באיזה אינדקס `i` מתגלה ההפרה, כלומר איזה איבר גורם ל-`return 0`?",
+             answer=7, tol=0,
+             explain="האיברים 0 עד 6 עוברים את כל ההשוואות, ובאיבר 7 (`id` קטן מזה של איבר 6 עם אותם שמות) מתקבל `return 0` (ריצה אמיתית: 7)."),
+        step("choice", prompt="מה משמעות התנאי `strcmp(person_arr[i].last_name, person_arr[i - 1].last_name) < 0` בפונקציה?",
+             options=opts("שם המשפחה של איבר `i` קודם לקסיקוגרפית לשם המשפחה של איבר `i-1`, ולכן הסדר מופר",
+                          "שם המשפחה של איבר `i` מאוחר לקסיקוגרפית לשם המשפחה של איבר `i-1`, ולכן הסדר מופר",
+                          "שני שמות המשפחה זהים, ולכן עוברים להשוות שמות פרטיים",
+                          "הכתובת של `last_name` באיבר `i` נמוכה מהכתובת באיבר `i-1`"),
+             correctId="a",
+             explain="`strcmp(x, y) < 0` אומר ש-`x` קודם ל-`y`. כאן `x` הוא שם המשפחה של האיבר המאוחר במערך, ולכן הוא צריך להיות לא קטן מהקודם, וערך שלילי הוא הפרה (ריצה אמיתית: `strcmp(\"Asher\", \"Bern\") < 0`). שוויון הוא `cmp == 0`, ואין כאן השוואת כתובות."),
+        step("fillblank", prompt="השלימו את השורה החסרה: מתי מחזירים `0` לפי מספרי הזהות? (הנחה: שני האיברים בעלי אותו שם משפחה ואותו שם פרטי.)",
+             code=True, lines=S2_fb, blankIndex=S2_bl,
+             options=opts("if (person_arr[i].id < person_arr[i - 1].id)", "if (person_arr[i].id <= person_arr[i - 1].id)",
+                          "if (person_arr[i].id > person_arr[i - 1].id)", "if (person_arr[i].id != person_arr[i - 1].id)"),
+             correctId="a",
+             explain="הסדר לפי `id` עולה לא ממש, ולכן הפרה היא רק `id` קטן מהקודם. עם `<=` נפסל מערך עם שני איברים זהים לחלוטין, ועם `>` או `!=` נפסל מערך ממוין תקין (בדוגמה הראשונה `245689432 < 245689436`)."),
+        step("findbug", prompt="בגרסה הבאה שורה אחת שונתה והפונקציה נכשלת על המערך התקין מהדוגמה הראשונה. מצאו אותה.",
+             code=True, lines=S2_bug, bugIndex=S2_bi,
+             explain="`<= 0` במקום `< 0`: כששני שמות משפחה זהים (`Cohen`, `Levi`) הפונקציה מחזירה `0` מיד ולא עוברת להשוואת שמות פרטיים."),
+    ],
+    stepsSource="ai-draft")
+
+
+S3 = lines_of(code_of(Q3_SOL))
+S3_ord = blocks(S3, "int** lists_to_sparse_matrix(element** list_row, int rows, int cols)",
+                "arr = (int**)calloc(rows, sizeof(int*));", ("for (i = 0; i < rows; i++)", 1), "return arr;")
+S3_bug, S3_bi = swap1(S3, "while (ptr)", "if (ptr)")
+S3_fb, S3_bl = blank(S3, "arr[i][ptr->col] = ptr->data;")
+
+add(3,
+    rubric=rub(("הגדרת טיפוס איבר הרשימה מעל הפונקציה: שדה ערך, שדה מספר עמודה ומצביע לאיבר הבא", 6),
+               ("הקצאת מערך של `rows` מצביעים לשורות (`int**`)", 8),
+               ("הקצאת כל שורה בגודל `cols` עם איפוס (`calloc`), כך שהאיברים החסרים ברשימה הם 0", 10),
+               ("מעבר על רשימה `i` כולה והצבת `data` של כל איבר בעמודה `col` שלו בשורה `i`", 13),
+               ("החזרת כתובת המערך הדו-ממדי", 3)),
+    rubricSource="ai-draft",
+    pitfalls=["להקצות שורות עם `malloc` בלי לאפס: האיברים שאינם ברשימה יישארו עם ערכי זבל במקום 0.",
+              "להחליף בין השדות: `arr[i][ptr->data] = ptr->col` במקום `arr[i][ptr->col] = ptr->data`.",
+              "לעצור אחרי האיבר הראשון של כל רשימה (`if` במקום `while`), או להקצות את המערך החיצוני עם `sizeof(int)` במקום `sizeof(int*)`."],
+    steps=[
+        step("numeric", prompt="מטריצה דלילה בת 3 שורות ו-5 עמודות נתונה כמערך רשימות: רשימה 0 מכילה את הזוגות (ערך 5, עמודה 2) ו-(ערך 7, עמודה 4), רשימה 1 ריקה, ורשימה 2 מכילה את (ערך 3, עמודה 0). כמה איברים במטריצה המשוחזרת שווים ל-0?",
+             answer=12, tol=0,
+             explain="יש 15 איברים ו-3 מהם מגיעים מהרשימות, ולכן 12 איברים נשארים 0 (ריצה אמיתית: 12). אלה האיברים שחייבים להיות מאופסים בהקצאה."),
+        step("fillblank", prompt="השלימו את השורה החסרה: מה מציבים בתא של האיבר הנוכחי ברשימה? (נניח שכל הערכים והעמודות קטנים מ-4 במטריצה 4 על 4.)",
+             code=True, lines=S3_fb, blankIndex=S3_bl,
+             options=opts("arr[i][ptr->col] = ptr->data;", "arr[i][ptr->data] = ptr->col;",
+                          "arr[ptr->col][i] = ptr->data;", "arr[i][ptr->col] = ptr->col;"),
+             correctId="a",
+             explain="השורה היא `i` והעמודה היא `col`, והערך שנכתב הוא `data`. החלפת השדות, החלפת השורה והעמודה (שחלוף) או כתיבת `col` במקום `data` נותנים מטריצה שונה."),
+        step("order", prompt="סדרו את גושי הקוד של הפתרון (הגדרת הטיפוס, פתיחת הפונקציה והצהרות, הקצאות, מילוי, החזרה).",
+             code=True, lines=S3_ord,
+             explain="הטיפוס חייב להופיע לפני הפונקציה שמשתמשת בו, ההקצאה של מערך השורות לפני הקצאת השורות, ושתיהן לפני המילוי; ההחזרה בסוף."),
+        step("findbug", prompt="בגרסה הבאה שורה אחת שונתה והמטריצה המשוחזרת חסרה איברים. מצאו את השורה.",
+             code=True, lines=S3_bug, bugIndex=S3_bi,
+             explain="`if (ptr)` במקום `while (ptr)`: רק האיבר הראשון בכל רשימה נכתב למטריצה, ושאר איברי הרשימה אובדים."),
+    ],
+    stepsSource="ai-draft")
+
+add(5,
+    rubric=rub(("שני ה-`printf(\"%d\", 11)` הפנימיים מדפיסים `11` כל אחד, ולכן `1111`", 3),
+               ("`printf` מחזירה את מספר התווים שהודפסו, ולכן כל אחד מהפנימיים מחזיר `2`", 3),
+               ("ה-`printf(\"%d%d\", ...)` האמצעי מדפיס `22` ומחזיר `2`", 2),
+               ("ה-`printf` החיצוני מדפיס את `2`, והפלט הכולל הוא `1111222`", 2)),
+    rubricSource="ai-draft",
+    pitfalls=["לחשוב ש-`printf` מחזירה את הערך שהודפס (`11`) או `1`, ולא את מספר התווים.",
+              "לשכוח שהפרמטרים הפנימיים מודפסים לפני הפלט של ה-`printf` שעוטף אותם, ולכן הפלט מתחיל ב-`1111`."],
+    steps=[
+        step("numeric", prompt="מה מחזירה הקריאה `printf(\"%d\", 11)`?", answer=2, tol=0,
+             explain="`printf` מחזירה את מספר התווים שנכתבו, ו-`11` הם שני תווים (ריצה אמיתית: 2)."),
+        step("numeric", prompt="מה מחזירה הקריאה האמצעית `printf(\"%d%d\", printf(\"%d\",11), printf(\"%d\",11))`?", answer=2, tol=0,
+             explain="היא מקבלת `2` ו-`2`, מדפיסה `22` ולכן מחזירה 2 (ריצה אמיתית: 2). הערך הזה הוא מה שהקריאה החיצונית מדפיסה."),
+        step("text", prompt="מה הפלט המלא של התוכנית? (רצף תווים אחד, בלי רווחים)", accept=["1111222"], normalize="none",
+             explain="`11` ו-`11` מהקריאות הפנימיות, אחר כך `22` מהאמצעית, ולבסוף `2` מהחיצונית: `1111222` (ריצה אמיתית)."),
+    ],
+    stepsSource="ai-draft")
+
+
 exam = {
     "examCode": "21B-B",
     "examLabel": "סדנה מתקדמת בתכנות 61108, סמסטר ב' תשפ\"א, מועד ב'",

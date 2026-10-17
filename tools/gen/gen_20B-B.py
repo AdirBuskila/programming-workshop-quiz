@@ -258,6 +258,203 @@ questions = [
     Q(5, "code", "c_basics_output", Q5_TEXT, Q5_SOL, points=10),
 ]
 
+# ---------------------------------------------------------------- steps / rubric / pitfalls (ai-draft)
+# Every expected value below was produced by a real clang run: tools/verify/<CODE>/steps_check.py
+import re
+
+
+def rub(*items):
+    return [{"text": t, "points": p} for t, p in items]
+
+
+def code_of(sol, n=0):
+    return re.findall(r"```c\n(.*?)\n```", sol, re.S)[n]
+
+
+def lines_of(src):
+    return [ln for ln in src.strip("\n").split("\n") if ln.strip()]
+
+
+def ix(lines, text, nth=None):
+    idx = [i for i, ln in enumerate(lines) if ln.strip() == text.strip()]
+    if nth is None:
+        assert len(idx) == 1, (text, idx)
+        return idx[0]
+    return idx[nth]
+
+
+def blocks(lines, *starts):
+    """Logical blocks: each start is the (unique) first line of a block; block 0 begins at line 0."""
+    cuts = [0] + sorted(ix(lines, *(s if isinstance(s, tuple) else (s,))) for s in starts)
+    assert len(set(cuts)) == len(cuts), starts
+    return ["\n".join(lines[a:b]) for a, b in zip(cuts, cuts[1:] + [len(lines)])]
+
+
+def swap1(lines, old, new):
+    """The lines with exactly one line changed (asserted)."""
+    i = ix(lines, old)
+    out = list(lines)
+    out[i] = out[i].replace(old.strip(), new.strip())
+    assert out[i] != lines[i]
+    return out, i
+
+
+def blank(lines, target):
+    i = ix(lines, target)
+    out = list(lines)
+    out[i] = out[i][:len(out[i]) - len(out[i].lstrip())] + "___"
+    return out, i
+
+
+def add(num, part=None, **kw):
+    for q in questions:
+        if q["num"] == num and q.get("part") == part:
+            assert "hold" not in q and q["kind"] != "mcq", (num, part)
+            q.update(kw)
+            return
+    raise KeyError((num, part))
+
+
+def step(type_, **kw):
+    s = {"type": type_}
+    s.update(kw)
+    return s
+
+# ---- Q1: group_sort
+S1 = lines_of(code_of(Q1_SOL))
+S1_bug, S1_bi = swap1(S1, "if (islower(str[i]))", "if (isupper(str[i]))")
+S1_fb, S1_bl = blank(S1, "if (str[i] < last_capital)")
+
+add(1,
+    rubric=rub(("שלושה משתנים `last_capital`, `last_small`, `last_digit` שמחזיקים את התו האחרון שנראה בכל קבוצה, מאותחלים ל-`'\\0'`", 8),
+               ("סיווג כל תו עם `isupper` / `islower` / `isdigit`; תווים אחרים מתעלמים מהם", 8),
+               ("השוואת התו רק לתו האחרון מאותה קבוצה: אם הוא קטן ממנו מחזירים `0`", 12),
+               ("עדכון התו האחרון של הקבוצה כשאין הפרה (שוויון מותר)", 6),
+               ("החזרת `1` רק אחרי שהמחרוזת נסרקה כולה", 6)),
+    rubricSource="ai-draft",
+    pitfalls=["להשוות כל תו לתו הקודם במחרוזת כולה: התווים מקבוצות אחרות שמשובצים ביניהם גורמים לפסילה שגויה.",
+              "להשתמש ב-`<=` במקום `<` ולפסול תו שחוזר פעמיים באותה קבוצה (כמו `P` פעמיים בדוגמה התקינה).",
+              "לא להתעלם מתווים שאינם אות או ספרה (כמו `$` או `#`) ולהשוות גם אותם."],
+    steps=[
+        step("numeric", prompt="במחרוזת השנייה בדוגמה, `\"B4$Ca#%ds5P8P&9rY\"`, באיזה אינדקס (מ-0) נמצא התו שגורם לפונקציה להחזיר `0`?",
+             answer=15, tol=0,
+             explain="התו `'r'` באינדקס 15 קטן מהאות הקטנה הקודמת `'s'` (אינדקס 8). עד אינדקס 14 כל הקבוצות ממוינות (ריצה אמיתית: הקידומת באורך 15 מחזירה 1 והקידומת באורך 16 מחזירה 0)."),
+        step("choice", prompt="לאיזו מהמחרוזות הבאות הפונקציה מחזירה `0`?",
+             options=opts("`\"a1Ab2B\"`", "`\"Ba1\"`", "`\"c9Ab0B\"`", "`\"A1a2B\"`"), correctId="c",
+             explain="ב-`\"c9Ab0B\"` הספרות הן 9 ואז 0, כלומר ירידה בקבוצת הספרות. בשאר המחרוזות כל קבוצה עולה (אותיות קטנות, אותיות גדולות וספרות בנפרד), ולכן מוחזר `1` (ריצה אמיתית)."),
+        step("fillblank", prompt="השלימו את הבדיקה של האותיות הגדולות. שימו לב שאות גדולה יכולה לחזור פעמיים, כמו `P` בדוגמה התקינה.",
+             code=True, lines=S1_fb, blankIndex=S1_bl,
+             options=opts("if (str[i] < last_capital)", "if (str[i] <= last_capital)",
+                          "if (str[i] > last_capital)", "if (str[i] != last_capital)"),
+             correctId="a",
+             explain="הפרה היא רק אות קטנה יותר מהאחרונה בקבוצה. עם `<=` נפסלת המחרוזת התקינה בגלל `P` פעמיים, ועם `>` או `!=` נפסלת כל סדרה עולה של אותיות גדולות (ריצה אמיתית)."),
+        step("findbug", prompt="בגרסה הבאה שורה אחת שונתה והפונקציה מחזירה `1` על המחרוזת השנייה בדוגמה, שאינה ממוינת בקבוצות. מצאו אותה.",
+             code=True, lines=S1_bug, bugIndex=S1_bi,
+             explain="`isupper` במקום `islower`: האותיות הקטנות אף פעם לא נבדקות, ולכן ההפרה `'r'` אחרי `'s'` לא מתגלה."),
+    ],
+    stepsSource="ai-draft")
+
+# ---- Q2: arr_of_lists_to_list_of_prefixes
+S2 = lines_of(code_of(Q2_SOL))
+_i0 = ix(S2, "int is_prefix(Item *L1, Item *L2)")
+_i1 = ix(S2, "return 1;") + 1
+S2_ord = blocks(S2[_i0:_i1 + 1], "while (L1 && L2)", "if (L1)", "return 1;")
+S2_bug, S2_bi = swap1(S2, "if (L1->data != L2->data)", "if (L1->data == L2->data)")
+S2_fb, S2_bl = blank(S2, "if (L1)")
+
+add(2,
+    rubric=rub(("פונקציית עזר שסורקת שתי רשימות במקביל ומחזירה `0` ברגע ששדות `data` שונים", 10),
+               ("אם בסוף הסריקה `L` (הרשימה הנבדקת) עדיין לא נגמרה, היא ארוכה מהרשימה במערך ולכן אינה תחילית, מחזירים `0`", 6),
+               ("רשימה ריקה היא תחילית של כל רשימה (הלולאה לא רצה ומחזירים `1`)", 4),
+               ("בניית איבר חדש עם `malloc` שמכיל את האינדקס `i` (ולא מצביע לרשימה) והוספתו לרשימה החדשה", 8),
+               ("מעבר על כל איברי המערך `A`", 6),
+               ("החזרת ראש הרשימה החדשה, או `NULL` כשהיא ריקה", 6)),
+    rubricSource="ai-draft",
+    pitfalls=["להתעלם מהמקרה ש-`L` ארוכה מהרשימה במערך: אחרי הלולאה הרשימה הקצרה נגמרת ו-`L` עדיין לא, אבל הפונקציה מחזירה `1`.",
+              "להשוות כתובות איברים (`L1 == L2`) במקום את שדות `data`.",
+              "לשמור ברשימה החדשה מצביעים לרשימות ולא את האינדקסים שלהן."],
+    steps=[
+        step("numeric", prompt="המערך `A` מכיל ארבע רשימות: $[1,2,3]$, $[1,2]$, $[4,1,2]$, $[1,2,3,4]$, והרשימה הנבדקת היא $L=[1,2,3]$. כמה איברים יש ברשימה החדשה?",
+             answer=2, tol=0,
+             explain="$L$ היא תחילית של $[1,2,3]$ (אינדקס 0) ושל $[1,2,3,4]$ (אינדקס 3). ב-$[1,2]$ היא ארוכה מדי, וב-$[4,1,2]$ האיבר הראשון שונה (ריצה אמיתית: האינדקסים 0 ו-3)."),
+        step("numeric", prompt="מה מחזירה `is_prefix(L, A[1])` עבור $L=[1,2,3]$ ו-$A[1]=[1,2]$?",
+             answer=0, tol=0,
+             explain="הלולאה נעצרת כש-`A[1]` נגמרת, אבל ב-`L` נשאר האיבר 3, ולכן `if (L1) return 0` מחזירה `0` (ריצה אמיתית: 0)."),
+        step("fillblank", prompt="השלימו את הבדיקה שאחרי הלולאה ב-`is_prefix`.",
+             code=True, lines=S2_fb, blankIndex=S2_bl,
+             options=opts("if (L1)", "if (L2)", "if (!L1)", "if (L1 && L2)"), correctId="a",
+             explain="אם `L1` (הרשימה הנבדקת) לא נגמרה, היא ארוכה מ-`L2` ואינה תחילית. עם `L2` נפסלות רשימות ארוכות יותר שבהן `L` היא תחילית, עם `!L1` נפסלות התחיליות התקינות, ועם `L1 && L2` (תמיד שקר אחרי הלולאה) כל רשימה קצרה מדי תתקבל בטעות."),
+        step("order", prompt="סדרו את גושי הפונקציה `is_prefix`.",
+             code=True, lines=S2_ord,
+             explain="קודם סורקים את שתי הרשימות במקביל, אחר כך בודקים אם `L1` נשארה, ורק אם כל הבדיקות עברו מחזירים `1`."),
+        step("findbug", prompt="בגרסה הבאה שורה אחת שונתה והפונקציה פוסלת תחיליות תקינות. מצאו אותה.",
+             code=True, lines=S2_bug, bugIndex=S2_bi,
+             explain="`==` במקום `!=`: הפונקציה מחזירה `0` דווקא כשהערכים שווים, כלומר מקבלת רק רשימות שאינן תחילית."),
+    ],
+    stepsSource="ai-draft")
+
+# ---- Q3: file_to_sparse_matrix
+S3 = lines_of(code_of(Q3_SOL))
+S3_ord = blocks(S3, "void file_to_sparse_matrix(char *filename, int A[][COLS], int", "if (!fptr)",
+                ("for (i = 0; i < rows; i++)", 1), "fclose(fptr);")
+S3_bug, S3_bi = swap1(S3, "for (j = 0; j < cols; j++)", "for (j = 1; j < cols; j++)")
+S3_fb, S3_bl = blank(S3, "A[i][j] = num;")
+
+add(3,
+    rubric=rub(("הגדרת הקבוע `COLS` לפני הפונקציה, ופרמטר מערך סטטי `int A[][COLS]`", 6),
+               ("פתיחת הקובץ לקריאה ויציאה (`exit(1)`) אם לא נפתח", 4),
+               ("איפוס כל איברי `A` (`rows` על `cols`) לפני הקריאה", 8),
+               ("בכל שורה: קריאת מספר השורה בהתחלה, ואחריו קריאת זוגות עד תו סוף השורה (`fgetc` שמזהה `'\\n'`)", 12),
+               ("כל זוג הוא (ערך, עמודה): קריאה עם `\"%d%d\"` והצבת `A[i][j] = num`", 8),
+               ("סגירת הקובץ", 2)),
+    rubricSource="ai-draft",
+    pitfalls=["לא לאפס את `A` לפני הקריאה: האיברים שאינם בקובץ יישארו עם ערכים ישנים.",
+              "להחליף בין סדר הערך והעמודה בקובץ (הזוג הוא ערך ואז עמודה), או לשכוח לקרוא את מספר השורה שבתחילת כל שורה.",
+              "לקרוא עד סוף הקובץ ללא זיהוי סוף שורה, ולכן לא לדעת איזה זוג שייך לאיזו שורה (שורה בלי זוגות, כמו השורה האחרונה בדוגמה)."],
+    steps=[
+        step("numeric", prompt="תוכן הקובץ בדוגמה: שורה 2 היא `2 9 0 1 1 6 3`. מה הערך של `A[2][3]` אחרי הקריאה?",
+             answer=6, tol=0,
+             explain="אחרי מספר השורה 2 באים הזוגות (9, עמודה 0), (1, עמודה 1), (6, עמודה 3). הערך 6 נכתב ב-`A[2][3]` (ריצה אמיתית: 6)."),
+        step("numeric", prompt="כמה איברים שאינם אפס יש במטריצה המשוחזרת מהקובץ בדוגמה (ארבע שורות: `0 4 2 7 4`, `1 3 0`, `2 9 0 1 1 6 3`, `3`)?",
+             answer=6, tol=0,
+             explain="בשורה 0 שני זוגות, בשורה 1 זוג אחד, בשורה 2 שלושה זוגות ובשורה 3 אין זוגות: $2+1+3+0=6$ (ריצה אמיתית: 6)."),
+        step("fillblank", prompt="השלימו את ההצבה בתוך הלולאה שקוראת זוג (ערך, עמודה).",
+             code=True, lines=S3_fb, blankIndex=S3_bl,
+             options=opts("A[i][j] = num;", "A[j][i] = num;", "A[i][j] = 1;", "A[i][i] = num;"), correctId="a",
+             explain="`i` הוא מספר השורה ו-`j` העמודה שנקראה מהקובץ, ו-`num` הערך. החלפת השורה והעמודה, כתיבת `1` במקום הערך או כתיבה על האלכסון נותנות מטריצה שונה (ריצה אמיתית)."),
+        step("order", prompt="סדרו את גושי הפונקציה `file_to_sparse_matrix`.",
+             code=True, lines=S3_ord,
+             explain="הקבוע לפני הפונקציה, אחריו פתיחת הקובץ, ואיפוס המטריצה לפני שמציבים בה ערכים; בסוף סוגרים את הקובץ."),
+        step("findbug", prompt="בגרסה הבאה שורה אחת שונתה, ועמודה 0 במטריצה לא תמיד מאופסת. מצאו אותה.",
+             code=True, lines=S3_bug, bugIndex=S3_bi,
+             explain="הלולאה מתחילה מ-`j = 1`, ולכן `A[i][0]` נשאר עם הערך שהיה בו קודם כשאין בקובץ איבר בעמודה 0 של השורה."),
+    ],
+    stepsSource="ai-draft")
+
+add(5,
+    rubric=rub(("אורכי המחרוזות: `strlen(\"\\\\\\\\\")` הוא 2, `strlen(\"\\n\\n\\0\\n\")` הוא 2 (נעצרים ב-`\\0`) ו-`strlen(\"////\")` הוא 4", 4),
+               ("`x = s + m = s + 2`", 2),
+               ("$(x^2-4)/(x+2) = x-2$, ולכן מקבלים `x - 2 = s`", 2),
+               ("`puts` מקבלת את `s` ומדפיסה `Ah!`", 2)),
+    rubricSource="ai-draft",
+    pitfalls=["לספור את `\"\\\\\\\\\"` כארבעה תווים: כל `\\\\` הוא תו אחד.",
+              "לספור את התו שאחרי `\\0` ב-`\"\\n\\n\\0\\n\"`: `strlen` נעצרת ב-`\\0`.",
+              "לשכוח שהפתרון הרשמי מניח כתובת בגודל `int` (32 סיביות): ב-64 סיביות ההמרה `(int)x` חותכת את הכתובת."],
+    steps=[
+        step("numeric", prompt="מה ערך `strlen(\"\\\\\\\\\")`, כלומר אורך המחרוזת שמורכבת מארבעה תווי `\\` בקוד המקור?",
+             answer=2, tol=0,
+             explain="כל `\\\\` בקוד המקור הוא תו `\\` אחד, ולכן יש 2 תווים (ריצה אמיתית: 2)."),
+        step("numeric", prompt="מה ערך `strlen(\"\\n\\n\\0\\n\")`?", answer=2, tol=0,
+             explain="`strlen` סופרת עד התו `\\0` הראשון: שני התווים `\\n` לפניו בלבד (ריצה אמיתית: 2)."),
+        step("choice", prompt="נסמן `x = s + 2`, כש-`n = 2`, `m = 2`, `k = 4`. למה שווה $(x^n - k)/(x + m)$?",
+             options=opts("$x-2$", "$x+2$", "$x$", "$x-4$"), correctId="a",
+             explain="$(x^2-4)/(x+2)=(x-2)(x+2)/(x+2)=x-2$ (אומת ב-sympy). אחרי הצבת $x=s+2$ מתקבל $s$."),
+        step("text", prompt="מה מודפס? (בהנחה, כמו בפתרון הרשמי, שכתובת נכנסת בתוך `int`)", accept=["Ah!"], normalize="none",
+             explain="התוצאה היא הכתובת `s` של המחרוזת `\"Ah!\"`, ו-`puts` מדפיסה אותה: `Ah!` (אומת בריצה עם כתובת בטווח של 32 סיביות)."),
+    ],
+    stepsSource="ai-draft")
+
+
 exam = {
     "examCode": "20B-B",
     "examLabel": "סדנה מתקדמת בתכנות 61108, סמסטר ב' תש\"ף, מועד ב'",
