@@ -1,0 +1,4 @@
+*.exe
+t_*.bin
+t_*.txt
+mut_*
