@@ -17,7 +17,134 @@
    "official": true,
    "confidence": "high",
    "points": 40,
-   "image": "images/exams/24B-B-Q1.png"
+   "image": "images/exams/24B-B-Q1.png",
+   "rubric": [
+    {
+     "text": "פונקציית עזר `digitsNumber` שסופרת ספרות של מספר, כולל מספר שלילי (ערך מוחלט) ואת המספר 0 (ספרה אחת)",
+     "points": 8
+    },
+    {
+     "text": "חישוב כמות הספרות של כל איבר ב-`A` (במערך עזר או בחישוב חוזר) והכמות המקסימלית `n`",
+     "points": 8
+    },
+    {
+     "text": "הקצאת מערך `L` של `n` מצביעים עם איפוס (`calloc`), כך שרשימה ריקה היא `NULL`",
+     "points": 8
+    },
+    {
+     "text": "הכנסת כל איבר לראש הרשימה המתאימה `L[digits-1]` ללא סריקה, עם איבר `Item` חדש לכל מספר",
+     "points": 10
+    },
+    {
+     "text": "העברת הגודל `n` דרך `p_size`, שחרור מערך העזר והחזרת `L`",
+     "points": 6
+    }
+   ],
+   "rubricSource": "ai-draft",
+   "pitfalls": [
+    "לחשב את מספר הספרות של מספר שלילי בלי ערך מוחלט, כך ש-`-78` נספר כספרה אחת.",
+    "להשתמש ב-`malloc` במקום ב-`calloc` ולהשאיר ב-`L[m]` ערך לא מאותחל כשאין מספרים בעלי `m+1` ספרות (צריך `NULL`).",
+    "להכניס ל-`L[digits]` במקום ל-`L[digits-1]`, ולחרוג מגבולות המערך."
+   ],
+   "steps": [
+    {
+     "type": "numeric",
+     "prompt": "מה מחזירה `digitsNumber(-185)`?",
+     "answer": 3,
+     "tol": 0,
+     "explain": "בלי הסימן יש ב-185 שלוש ספרות (ריצה אמיתית: 3)."
+    },
+    {
+     "type": "numeric",
+     "prompt": "עבור `A = {23, 4, -78, 34578, 79, -185, 0, 998, 9, 36}`, מה ערך `*p_size` (הגודל של `L`) בסוף הפונקציה?",
+     "answer": 5,
+     "tol": 0,
+     "explain": "הכמות המקסימלית של ספרות היא 5 (המספר `34578`), ולכן `L` בגודל 5 (ריצה אמיתית: size=5; `L[3]` ריק)."
+    },
+    {
+     "type": "fillblank",
+     "prompt": "השלימו את שורת ההכנסה: לאיזו רשימה מכניסים את `A[i]`?",
+     "code": true,
+     "lines": [
+      "Item** numSeparation(int* A, int sz, int* p_size)",
+      "{",
+      "       int i, max_dig_num = 1,",
+      "              *dig_num = (int *)calloc(sz, sizeof(int));",
+      "       Item** L;",
+      "       for (i = 0; i < sz; i++)",
+      "       {",
+      "              dig_num[i] = digitsNumber(A[i]);",
+      "              if (dig_num[i] > max_dig_num)",
+      "                     max_dig_num = dig_num[i];",
+      "       }",
+      "       L = (Item**)calloc(max_dig_num, sizeof(Item*));",
+      "       for (i = sz - 1; i >= 0; i--)",
+      "___",
+      "       free(dig_num);",
+      "       *p_size = max_dig_num;",
+      "       return L;",
+      "}"
+     ],
+     "blankIndex": 13,
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "headInsert(L + dig_num[i] - 1, A[i]);"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "headInsert(L + max_dig_num - 1, A[i]);"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "headInsert(L + dig_num[i] % max_dig_num, A[i]);"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "headInsert(L, A[i]);"
+      }
+     ],
+     "correctId": "a",
+     "explain": "מספר בעל `d` ספרות שייך לרשימה `L[d-1]`, והכתובת שמועברת ל-`headInsert` היא `L + d - 1`. ב' מכניס הכול לרשימה האחרונה, ג' מזיז כל רשימה בצעד אחד (ו-5 ספרות חוזרות ל-0) וד' מכניס הכול לרשימה הראשונה (ריצה אמיתית: רשימות שגויות בכל אחת מהן)."
+    },
+    {
+     "type": "order",
+     "prompt": "סדרו את הפקודות של `numSeparation` (כל שורה היא בלוק לוגי אחד).",
+     "code": true,
+     "lines": [
+      "int i, max_dig_num = 1, *dig_num = (int *)calloc(sz, sizeof(int)); Item** L;",
+      "for (i = 0; i < sz; i++) { dig_num[i] = digitsNumber(A[i]); if (dig_num[i] > max_dig_num) max_dig_num = dig_num[i]; }",
+      "L = (Item**)calloc(max_dig_num, sizeof(Item*));",
+      "for (i = sz - 1; i >= 0; i--) headInsert(L + dig_num[i] - 1, A[i]);",
+      "free(dig_num); *p_size = max_dig_num; return L;"
+     ],
+     "explain": "קודם הצהרות, אחר כך חישוב הכמות המקסימלית, רק אז הקצאת `L` בגודל הנכון, אחר כך ההכנסה, ובסוף שחרור, עדכון הגודל והחזרה. כל החלפה נכשלת בבנייה, קורסת או נותנת תוצאה שגויה (נבדק בריצה)."
+    },
+    {
+     "type": "findbug",
+     "prompt": "בגרסה הבאה של `digitsNumber` שורה אחת שונתה, והמספרים השליליים (`-78`, `-185`) נכנסים לרשימה שגויה. מצאו את השורה.",
+     "code": true,
+     "lines": [
+      "int digitsNumber(int num)",
+      "{",
+      "       int count = 1, abs_num = num;",
+      "       while (abs_num > 9)",
+      "       {",
+      "              count++;",
+      "              abs_num /= 10;",
+      "       }",
+      "       return count;",
+      "}"
+     ],
+     "bugIndex": 2,
+     "explain": "בלי `abs`, הערך השלילי אינו גדול מ-9 והלולאה לא רצה: `-78` נספר כספרה אחת (ריצה אמיתית: `-78` ו-`-185` ב-`L[0]`)."
+    }
+   ],
+   "stepsSource": "ai-draft"
   },
   {
    "num": 2,
@@ -29,7 +156,123 @@
    "official": true,
    "confidence": "high",
    "points": 40,
-   "image": "images/exams/24B-B-Q2.png"
+   "image": "images/exams/24B-B-Q2.png",
+   "rubric": [
+    {
+     "text": "הקצאת מערך מצביעים בגודל `rows+2` והקצאת כל שורה בגודל `cols+2` עם איפוס (`calloc`), כך שהמסגרת כולה אפסים",
+     "points": 14
+    },
+    {
+     "text": "העתקת `M[i][j]` ל-`F[i+1][j+1]` לכל `i < rows` ו-`j < cols`",
+     "points": 14
+    },
+    {
+     "text": "שחרור `M` במלואו: כל שורה ואחר כך מערך המצביעים (אחרי ההעתקה)",
+     "points": 8
+    },
+    {
+     "text": "החזרת הכתובת של `F`",
+     "points": 4
+    }
+   ],
+   "rubricSource": "ai-draft",
+   "pitfalls": [
+    "להקצות את `F` בגודל `rows × cols` או לשכוח את תוספת 2 בכל מימד.",
+    "להעתיק ל-`F[i][j]` במקום ל-`F[i+1][j+1]`, כך שהמסגרת לא נוצרת ותוכן `M` מוזז.",
+    "לשחרר את `M` לפני ההעתקה, או לשחרר רק את מערך המצביעים בלי השורות."
+   ],
+   "steps": [
+    {
+     "type": "numeric",
+     "prompt": "המטריצה `M` בעלת 3 שורות ו-4 עמודות, ואף איבר בה אינו 0. כמה איברים שווים ל-0 במטריצה `F` שמתקבלת?",
+     "answer": 18,
+     "tol": 0,
+     "explain": "ל-`F` יש 5 × 6 = 30 איברים, 12 מהם מ-`M`, ולכן 18 איברי המסגרת הם 0 (ריצה אמיתית: 18)."
+    },
+    {
+     "type": "numeric",
+     "prompt": "המטריצה היא `M = {{1,2,3,4},{5,6,7,8},{9,10,11,12}}`. מה ערך `F[2][3]`?",
+     "answer": 7,
+     "tol": 0,
+     "explain": "`F[2][3] = M[1][2] = 7` (ריצה אמיתית: 7)."
+    },
+    {
+     "type": "fillblank",
+     "prompt": "השלימו את שורת ההעתקה.",
+     "code": true,
+     "lines": [
+      "int** matrixToFrame(int** M, int rows, int cols)",
+      "{",
+      "       int rows2 = rows + 2, cols2 = cols + 2, ** F = (int**)calloc(rows2, sizeof(int*)), i, j;",
+      "       for (i = 0; i < rows2; i++)",
+      "              F[i] = (int*)calloc(cols2, sizeof(int));",
+      "       for (i = 0; i < rows; i++)",
+      "              for (j = 0; j < cols; j++)",
+      "___",
+      "       freeMatrix(M, rows);",
+      "       return F;",
+      "}"
+     ],
+     "blankIndex": 7,
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "F[i + 1][j + 1] = M[i][j];"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "F[i][j] = M[i][j];"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "F[i + 1][j] = M[i][j];"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "F[i][j + 1] = M[i][j];"
+      }
+     ],
+     "correctId": "a",
+     "explain": "המסגרת מוסיפה שורה אחת למעלה ועמודה אחת משמאל, ולכן `M[i][j]` נכנס ל-`F[i+1][j+1]`. שאר האפשרויות מזיזות את התוכן לתאים שגויים ומשאירות אפס במקום שבו צריך להיות ערך (ריצה אמיתית: מטריצות שונות)."
+    },
+    {
+     "type": "order",
+     "prompt": "סדרו את הפקודות של `matrixToFrame` (כל שורה היא בלוק לוגי אחד).",
+     "code": true,
+     "lines": [
+      "int rows2 = rows + 2, cols2 = cols + 2, ** F = (int**)calloc(rows2, sizeof(int*)), i, j;",
+      "for (i = 0; i < rows2; i++) F[i] = (int*)calloc(cols2, sizeof(int));",
+      "for (i = 0; i < rows; i++) for (j = 0; j < cols; j++) F[i + 1][j + 1] = M[i][j]; freeMatrix(M, rows);",
+      "return F;"
+     ],
+     "explain": "הצהרת המשתנים והקצאת מערך השורות, הקצאת כל שורה, העתקה ושחרור `M` ולבסוף החזרה. כל החלפה נכשלת בבנייה, קורסת או נותנת מטריצה שגויה (נבדק בריצה)."
+    },
+    {
+     "type": "findbug",
+     "prompt": "בגרסה הבאה שורה אחת שונתה, והעמודה האחרונה של `M` אינה מועתקת (במקומה אפסים). מצאו אותה.",
+     "code": true,
+     "lines": [
+      "int** matrixToFrame(int** M, int rows, int cols)",
+      "{",
+      "       int rows2 = rows + 2, cols2 = cols + 2, ** F = (int**)calloc(rows2, sizeof(int*)), i, j;",
+      "       for (i = 0; i < rows2; i++)",
+      "              F[i] = (int*)calloc(cols2, sizeof(int));",
+      "       for (i = 0; i < rows; i++)",
+      "              for (j = 0; j < cols - 1; j++)",
+      "                     F[i + 1][j + 1] = M[i][j];",
+      "       freeMatrix(M, rows);",
+      "       return F;",
+      "}"
+     ],
+     "bugIndex": 6,
+     "explain": "`j < cols - 1` מדלג על העמודה האחרונה (ריצה אמיתית: העמודה `4, 8, 12` יצאה 0)."
+    }
+   ],
+   "stepsSource": "ai-draft"
   },
   {
    "num": 3,
@@ -40,7 +283,151 @@
    "solutionSource": "official-pdf",
    "official": true,
    "confidence": "high",
-   "points": 40
+   "points": 40,
+   "rubric": [
+    {
+     "text": "`reverseString`: החלפת תווים מהקצוות פנימה עם שני אינדקסים (או מערך עזר) עד המפגש",
+     "points": 8
+    },
+    {
+     "text": "`hasUniqueLetters`: דחיית כל תו שאינו אות, והתעלמות מהבדל בין אות קטנה לגדולה (`tolower`) ובדיקת חזרה במערך מונים בן 26 תאים",
+     "points": 12
+    },
+    {
+     "text": "פתיחת שני הקבצים (קלט לקריאה, פלט לכתיבה) ובדיקת הצלחה",
+     "points": 6
+    },
+    {
+     "text": "קריאת שורה אחר שורה עם מערך עזר בגודל 101, והסרת תו השורה החדשה לפני הבדיקה",
+     "points": 8
+    },
+    {
+     "text": "כתיבת השורה ההפוכה לקובץ הפלט רק כשהיא עברה את הבדיקה, וסגירת שני הקבצים",
+     "points": 6
+    }
+   ],
+   "rubricSource": "ai-draft",
+   "pitfalls": [
+    "לשכוח להסיר את `'\\n'` לפני `hasUniqueLetters`: התו אינו אות, והפונקציה דוחה כל שורה.",
+    "להתייחס ל-`A` ול-`a` כאותיות שונות: `Alisa` נכנסת לפלט בטעות.",
+    "להשתמש ב-`str[i] - 'a'` כאינדקס, ולגשת מחוץ לגבולות מערך המונים כשהאות גדולה."
+   ],
+   "steps": [
+    {
+     "type": "numeric",
+     "prompt": "כמה שורות יש בקובץ הפלט עבור קובץ הקלט מהדוגמה (`abc#xyz`, `table`, `Alisa`, `Walla`, `Michael`)?",
+     "answer": 2,
+     "tol": 0,
+     "explain": "רק `table` ו-`Michael` מורכבות מאותיות שונות בלבד (ריצה אמיתית: `elbat` ו-`leahciM`)."
+    },
+    {
+     "type": "choice",
+     "prompt": "איזו שורה מהדוגמה נדחית **רק** כי `A` ו-`a` נחשבות לאותה אות?",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`Alisa`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`Walla`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`table`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`abc#xyz`"
+      }
+     ],
+     "correctId": "a",
+     "explain": "ב-`Alisa` האות היחידה החוזרת היא `A` / `a`. ב-`Walla` יש גם `ll`, ב-`abc#xyz` יש תו שאינו אות, ו-`table` מתקבלת (ריצה אמיתית: רק `Alisa` נכנסת לפלט כשמשווים בלי הבדל בין אותיות)."
+    },
+    {
+     "type": "fillblank",
+     "prompt": "השלימו את חישוב האינדקס של האות במערך המונים.",
+     "code": true,
+     "lines": [
+      "int hasUniqueLetters(const char* str)",
+      "{",
+      "       char temp[26] = { 0 };",
+      "       int i, index;",
+      "       for (i = 0; str[i] != '\\0'; i++)",
+      "       {",
+      "              if (!isalpha(str[i]))",
+      "                     return 0;",
+      "___",
+      "              if (temp[index] > 0)",
+      "                     return 0;",
+      "              temp[index]++;",
+      "       }",
+      "       return 1;",
+      "}"
+     ],
+     "blankIndex": 8,
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "index = tolower(str[i]) - 'a';"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "index = str[i] % 26;"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "index = (tolower(str[i]) - 'a') / 2;"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "index = 0;"
+      }
+     ],
+     "correctId": "a",
+     "explain": "האינדקס הוא מקום האות באלפבית אחרי המרה לאות קטנה. ב' מבחין בין `A` ל-`a` ולכן `Alisa` נכנסת לפלט, ג' מאחד אותיות סמוכות ולכן `table` נדחית, וד' דוחה כל שורה שיש בה יותר מאות אחת (ריצה אמיתית: פלט שונה בכל אחת מהן)."
+    },
+    {
+     "type": "order",
+     "prompt": "סדרו את הפקודות של `processFiles` (כל שורה היא בלוק לוגי אחד).",
+     "code": true,
+     "lines": [
+      "char str[101]; FILE* fin = fopen(inputFilename, \"r\"), *fout = fopen(outputFilename, \"w\"); if (!fin || !fout) exit(1);",
+      "while (fgets(str, 101, fin)) { str[strlen(str) - 1] = '\\0'; if (hasUniqueLetters(str)) { reverseString(str); fprintf(fout, \"%s\\n\", str); } }",
+      "fclose(fin); fclose(fout);"
+     ],
+     "explain": "פתיחת הקבצים, קריאה וכתיבה בלולאה, ובסוף סגירה. כל החלפה נכשלת בבנייה או משנה את הפלט (נבדק בריצה)."
+    },
+    {
+     "type": "findbug",
+     "prompt": "בגרסה הבאה של `reverseString` שורה אחת שונתה, ובקובץ הפלט מופיעות שורות ריקות במקום השורות ההפוכות. מצאו אותה.",
+     "code": true,
+     "lines": [
+      "void reverseString(char* str)",
+      "{",
+      "       int i = 0, j = strlen(str);",
+      "       char temp;",
+      "       for (; i < j; i++, j--)",
+      "       {",
+      "              temp = str[i];",
+      "              str[i] = str[j];",
+      "              str[j] = temp;",
+      "       }",
+      "}"
+     ],
+     "bugIndex": 2,
+     "explain": "`j = strlen(str)` מצביע על תו הסיום, ולכן הוא מוחלף עם התו הראשון והמחרוזת הופכת לריקה (ריצה אמיתית: שורות ריקות)."
+    }
+   ],
+   "stepsSource": "ai-draft"
   },
   {
    "num": 4,
@@ -51,7 +438,89 @@
    "solutionSource": "official-pdf",
    "official": true,
    "confidence": "high",
-   "points": 10
+   "points": 10,
+   "rubric": [
+    {
+     "text": "זיהוי ש-`x` ב-`fun` הוא `static` ולכן ערכו נשמר בין הקריאות (2, 3, 4, ...), ו-`y` המקומי מאותחל ל-1 מחדש בכל קריאה ולכן תמיד 2",
+     "points": 3
+    },
+    {
+     "text": "זיהוי ש-`fun` מחזירה את הכתובת של ה-`static` ולכן הפעולה `++(*fun(...))` מקדמת אותו",
+     "points": 2
+    },
+    {
+     "text": "שלוש השורות הראשונות: `2 2`, `4 2`, `2 6`",
+     "points": 3
+    },
+    {
+     "text": "שתי השורות האחרונות: `8 6` ו-`8 10`",
+     "points": 2
+    }
+   ],
+   "rubricSource": "ai-draft",
+   "pitfalls": [
+    "לחשוב ש-`x` של `fun` מאותחל ל-1 בכל קריאה, ולהדפיס `2 2` בכל השורות.",
+    "לבלבל בין `x`,`y` של `main` לבין אלה של `fun`; הפרמטר `q` מצביע לעתים על `x` או `y` של `main`.",
+    "לשכוח שההשמה ב-`x = ++(*fun(&x))` דורסת את `x` של `main`, ושאחרי `fun` ה-`y` של `main` נשאר 6."
+   ],
+   "steps": [
+    {
+     "type": "numeric",
+     "prompt": "מה ערך `x` של `main` אחרי ההשמה `x = ++(*fun(&y))` בקריאה השנייה?",
+     "answer": 4,
+     "tol": 0,
+     "explain": "אחרי הקריאה השנייה ה-`static x` הוא 3, והקידום נותן 4 (ריצה אמיתית: השורה `4 2`)."
+    },
+    {
+     "type": "choice",
+     "prompt": "מה מדפיסה השורה השלישית של הפלט?",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`2 6`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`2 2`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`6 2`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`3 6`"
+      }
+     ],
+     "correctId": "a",
+     "explain": "בקריאה השלישית `*q = 2` נכתב ל-`x` של `main`, וה-`static x` שווה 5 ומקודם ל-6 ונכנס ל-`y` (ריצה אמיתית: `2 6`)."
+    },
+    {
+     "type": "numeric",
+     "prompt": "מה הערך השני (של `y`) בשורה האחרונה של הפלט?",
+     "answer": 10,
+     "tol": 0,
+     "explain": "בקריאה החמישית ה-`static x` מגיע ל-9 ואחרי הקידום ל-10, והוא נכנס ל-`y` (ריצה אמיתית: `8 10`)."
+    },
+    {
+     "type": "order",
+     "prompt": "סדרו את חמש שורות הפלט של התוכנית, מהראשונה לאחרונה.",
+     "code": true,
+     "lines": [
+      "2 2",
+      "4 2",
+      "2 6",
+      "8 6",
+      "8 10"
+     ],
+     "explain": "ריצה אמיתית: אותן חמש שורות."
+    }
+   ],
+   "stepsSource": "ai-draft"
   },
   {
    "num": 5,
@@ -138,7 +607,57 @@
    "solutionSource": "official-pdf",
    "official": true,
    "confidence": "high",
-   "points": 10
+   "points": 10,
+   "rubric": [
+    {
+     "text": "חישוב הביטוי הפנימי `1 << (1 << 1) = 4`, ואחריו `4 + 1 = 5` ו-`1 << 5 = 32`",
+     "points": 4
+    },
+    {
+     "text": "זיהוי ש-`(long long)1 << 32` שווה ל-$2^{32}$ ושההפחתה של 1 נותנת $2^{32}-1$ בטיפוס של 64 סיביות",
+     "points": 3
+    },
+    {
+     "text": "ההמרה ל-`int` חותכת ל-32 סיביות שכולן 1, ולכן הפלט `-1`",
+     "points": 3
+    }
+   ],
+   "rubricSource": "ai-draft",
+   "pitfalls": [
+    "לחשב `1 << 32` ב-`int` (שמוגבל ל-32 סיביות) ולהגיע להתנהגות לא מוגדרת; ההמרה ל-`long long` קודמת להזזה.",
+    "לחשוב שהתוצאה היא `4294967295`, ולשכוח שההמרה ל-`int` והדפסה עם `%d` נותנות `-1`."
+   ],
+   "steps": [
+    {
+     "type": "numeric",
+     "prompt": "מה ערך `1 << (1 << 1)`?",
+     "answer": 4,
+     "tol": 0,
+     "explain": "`1 << 1` הוא 2, ו-`1 << 2` הוא 4 (ריצה אמיתית: 4)."
+    },
+    {
+     "type": "numeric",
+     "prompt": "מה ערך `1 << ((1 << (1 << 1)) + 1)`, כלומר כמה סיביות מזיזים את `(long long)1`?",
+     "answer": 32,
+     "tol": 0,
+     "explain": "`(1 << (1 << 1)) + 1 = 5`, ו-`1 << 5 = 32` (ריצה אמיתית: 32)."
+    },
+    {
+     "type": "numeric",
+     "prompt": "מה ערך הביטוי `((long long)1 << 32) - 1` לפני ההמרה ל-`int`?",
+     "answer": 4294967295,
+     "tol": 0,
+     "explain": "$2^{32}-1 = 4294967295$ (ריצה אמיתית: 4294967295)."
+    },
+    {
+     "type": "numeric",
+     "prompt": "מה מודפס בסוף (אחרי ההמרה ל-`int` והדפסה עם `%d`)?",
+     "answer": -1,
+     "tol": 0,
+     "explain": "32 הסיביות התחתונות כולן 1, שזה `-1` בייצוג משלים ל-2 (ריצה אמיתית: -1)."
+    }
+   ],
+   "stepsSource": "ai-draft"
   }
  ]
 }
