@@ -1,0 +1,154 @@
+{
+ "examCode": "25B-A",
+ "examLabel": "סדנה מתקדמת בתכנות 61108, סמסטר ב' תשפ\"ה, מועד א'",
+ "year": 2025,
+ "examDate": "11.06.2025",
+ "sourceFile": "25B-A exam",
+ "solutionFile": "25B-A official solution",
+ "contexts": {},
+ "questions": [
+  {
+   "num": 1,
+   "kind": "code",
+   "topic": "linked_lists",
+   "question": "נגדיר מבנה המייצג איבר ברשימה מקושרת:\n```c\ntypedef struct node {\n  char value;\n  struct node* next;\n} node;\n```\nכתבו פונקציה `void removeExtraSpaces(node** head)` אשר מקבלת פוינטר `head` המצביע על ראש רשימה מקושרת חד כיוונית של איברים מסוג `node` המייצגת משפט כלשהו.\nעל הפונקציה להסיר איברים מתוך הרשימה המהווים תווי רווח (`' '`) **מיותרים**. תו רווח נחשב **מיותר** אם הוא מופיע **מיד אחרי תו רווח אחר**, או נמצא **בתחילת הרשימה**, או נמצא **בסוף הרשימה**.\n\n**הערות:**\n- הפונקציה לא אמורה לייצר איברים חדשים.\n- אם הרשימה מכילה רק רווחים, הפונקציה תהפוך אותה לרשימה ריקה.\n- במידה והרשימה ריקה, היא תישאר ריקה לאחר סיום הפונקציה.\n\n**דוגמאות:** עבור הרשימה המייצגת את המשפט `\"  No  way! \"` הפונקציה תעדכן את הרשימה כך שתייצג `\"No way!\"`. עבור רשימה המכילה ארבעה רווחים בלבד ישוחררו כל איברי הרשימה ויתקבל `head` המצביע על `NULL`.",
+   "solution": "```c\nvoid deleteHead(node** head)\n{\n       node* temp = *head;\n       *head = temp->next;\n       free(temp);\n}\n\nvoid deleteNext(node* pos)\n{\n       node* temp = pos->next;\n       pos->next = temp->next;\n       free(temp);\n}\n\nvoid removeExtraSpaces(node** head)\n{\n       node* curr, *prev;\n       while (*head && (*head)->value == ' ')\n              deleteHead(head); //remove first spaces\n       if (*head == NULL)\n              return;\n       prev = *head;\n       curr = prev->next;\n       while (curr)\n       {\n              if (curr->value == ' ' && (!curr->next || curr->next->value == ' '))\n                     deleteNext(prev); //remove space if no next or the next is space too\n              else\n                     prev = curr;\n              curr = prev->next;\n       }\n}\n```",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "high",
+   "points": 40,
+   "image": "images/exams/25B-A-Q1.png"
+  },
+  {
+   "num": 2,
+   "kind": "code",
+   "topic": "dynamic_arrays_2d",
+   "question": "**שימו לב:** בחלק זה יש לענות על שאלה אחת מתוך שתיים (שאלה 2 או שאלה 3).\n\n**האלכסון הראשי** של מטריצה ריבועית הוא האלכסון שמתחיל מהפינה השמאלית העליונה של המטריצה עד לפינה הימנית התחתונה.\n**האלכסון המשני** של מטריצה ריבועית הוא האלכסון שמתחיל מהפינה השמאלית התחתונה של המטריצה עד לפינה הימנית העליונה.\nכל איברי המטריצה הריבועית הנמצאים באלכסון הראשי שלה ומתחתיו מרכיבים את **המשולש השמאלי התחתון** של המטריצה.\nכל איברי המטריצה הריבועית הנמצאים באלכסון המשני שלה ומעליו מרכיבים את **המשולש השמאלי העליון** של המטריצה.\n\n**דוגמא:** (איור: המטריצה, המשולש השמאלי התחתון והמשולש השמאלי העליון)\n\nכתבו פונקציה `void triangles(int A[][N], int n, int ***tr_low, int ***tr_up)` אשר מקבלת מטריצה ריבועית של מספרים שלמים המיושמת כ**מערך דו-ממדי סטטי** (לא דינאמי) `A` בגודל `n×n`. המספר הפיסי של השורות (העמודות) יינתן ע\"י קבוע בשם `N`. יש להגדיר אותו לפני הפונקציה.\nעל הפונקציה ליצור שני **מערכים דו-ממדיים דינאמיים** (בעלי שורות בגדלים שונים) המיישמים את המשולש השמאלי התחתון ואת המשולש השמאלי העליון של המטריצה. גדלי השורות במערכים יהיו שווים לכמויות האיברים בשורות המתאימות של המשולשים. יש להעביר את המערכים by reference באמצעות מצביעים `tr_up` ו-`tr_low` בהתאמה.\n\nניתן להניח שיש בזיכרון מספיק מקום להקצאה.",
+   "solution": "```c\n#define N 4\n\nvoid triangles(int A[][N], int n, int*** tr_low, int*** tr_up)\n{\n       int i, j, ** low, ** up;\n\n       low = (int**)calloc(n, sizeof(int*));\n       for (i = 0; i < n; i++)\n       {\n              low[i] = (int*)calloc(i + 1, sizeof(int));\n              for (j = 0; j <= i; j++)\n                     low[i][j] = A[i][j];\n       }\n\n       up = (int**)calloc(n, sizeof(int*));\n       for (i = 0; i < n; i++)\n       {\n              up[i] = (int*)calloc(n - i, sizeof(int));\n              for (j = 0; j < n - i; j++)\n                     up[i][j] = A[i][j];\n       }\n\n       *tr_low = low;\n       *tr_up = up;\n}\n```",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "high",
+   "points": 40,
+   "image": "images/exams/25B-A-Q2.png"
+  },
+  {
+   "num": 3,
+   "kind": "code",
+   "topic": "files",
+   "question": "**שימו לב:** שאלה זו היא חלופה לשאלה 2 (יש לענות על שאלה אחת מתוך שתיים).\n\nכתבו פונקציה `int wordAppearanceNum(char *file_name, char *word)` אשר מקבלת מחרוזת `file_name` המהווה שם של קובץ טקסט ומחרוזת `word`.\nתוכן הקובץ מורכב משורות. ידוע שאורך השורה (כולל `'\\n'`) לא עולה על 100. השורה האחרונה גם מסתיימת ב-`'\\n'`.\nעל הפונקציה להחזיר את **כמות המופעים** של המילה `word` בקובץ (**מילה** היא רצף תווים שאינם רווח או `'\\n'` המופרדים ממילים אחרות ע\"י רווחים או תווי `'\\n'`). אם הקובץ לא נפתח, הפונקציה תחזיר `-1`.\n\n**שימו לב:** יש להתייחס רק למילה שלמה. אין להתייחס לרצף שהוא תת-מילה במילה אחרת.\n\n**דוגמא:** עבור הקובץ הבא והמילה `live`\n```\nI believe that they live here and who does not live here\nMike lives in this house\nAnd who does live here ? We live\n10 alive creatures live in this lived place\n```\nהפונקציה תחזיר 5.\n\nאפשר (אבל לא חובה) להשתמש במערך עזר של תווים בגודל שאינו עולה על 101.\n\n**רמז:** ניתן להשתמש בפונקציות סטנדרטיות.",
+   "solution": "**גרסה 1:**\n```c\nint wordAppearanceNum(char* file_name, char* word)\n{\n       FILE* fptr = fopen(file_name, \"r\");\n       char str[101], *sub_str, *p;\n       int count = 0, len = strlen(word);\n       if (!fptr)\n              return -1;\n       while (fgets(str, 101, fptr))\n       {\n              sub_str = str;\n              while ((p = strstr(sub_str, word)) != NULL) //p - the first occurrence of word in substring\n              {\n                     //checking edges: is the found word complete or subword\n                     if ((p == str || *(p - 1) == ' ') && (*(p + len) == ' ' || *(p + len) == '\\n'))\n                            count++;\n                     sub_str = p + len + 1; //the next substring\n              }\n       }\n       fclose(fptr);\n       return count;\n}\n```\n**גרסה 2:**\n```c\nint wordAppearanceNum(char* file_name, char* word)\n{\n       FILE* fptr = fopen(file_name, \"r\");\n       char str[100], *separators = \" \\n\", *token;\n       int count = 0;\n       if (!fptr)\n              return -1;\n       while (fgets(str, 100, fptr))\n       {\n              token = strtok(str, separators); //the first token\n              while (token != NULL)\n              {\n                     if (strcmp(token, word) == 0) //comparison of token with word\n                            count++;\n                     token = strtok(NULL, separators); //the next token\n              }\n       }\n       fclose(fptr);\n       return count;\n}\n```",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "high",
+   "points": 40
+  },
+  {
+   "num": 4,
+   "kind": "code",
+   "topic": "structs_unions",
+   "question": "מהו הפלט של התוכנית הבאה?\n```c\n#include <stdio.h>\ntypedef struct\n{\n    int x;\n    int y;\n} type1;\ntypedef union\n{\n    int x;\n    int y;\n} type2;\nvoid fun(type2 b) {\n    b.x++;\n    printf(\"%d %d\\n\", b.x, b.y);\n}\nvoid main() {\n    type1 a;\n    type2 b;\n    a.x = b.x = 3;\n    a.y = b.y = 5;\n    printf(\"%d %d\\n\", a.x, a.y);\n    printf(\"%d %d\\n\", b.x, b.y);\n    b.x = 8;\n    b.y = 4;\n    a.x = b.x;\n    a.y = b.y;\n    printf(\"%d %d\\n\", a.x, a.y);\n    b.x = 15;\n    b.y = 18;\n    fun(b);\n    printf(\"%d %d\\n\", b.x, b.y);\n}\n```\nיש לנמק את התשובה.",
+   "solution": "**הפלט:**\n```\n3 5\n5 5\n4 4\n19 19\n18 18\n```\n**נימוק:**\nשדות `x,y` של המבנה מקבלים ערכים 3,5 בהתאמה.\nשדות `x,y` של האיגוד מקבלים ערכים 3,5 בהתאמה. השדות תופסים אותו מקום בזיכרון ולכן שניהם שווים לערך 5 של העדכון האחרון.\nלכן שני הפלטים הראשונים\n`3 5`\n`5 5`\nשדות `x,y` של האיגוד מקבלים ערכים 8,4 בהתאמה. השדות תופסים אותו מקום בזיכרון ולכן שניהם שווים לערך 4 של העדכון האחרון. שדות `x,y` של המבנה מקבלים ערכי שדות `x,y` של האיגוד בהתאמה. לכן שניהם גם שווים ל-4. לכן הפלט השלישי הוא\n`4 4`\nשדות `x,y` של האיגוד מקבלים ערכים 15,18 בהתאמה. השדות תופסים אותו מקום בזיכרון ולכן שניהם שווים לערך 18 של העדכון האחרון.\nהאיגוד מועבר לפונקציה `fun` והאיגוד מועתק לאיגוד שהוא פרמטר פורמאלי של `fun`. שדה `x` שלו (ובהתאם שדה `y`) מתקדם ב-1 וכך שני השדות שלו יהיו שווים ל-19. לכן הפלט הרביעי הוא\n`19 19`\nאחרי יציאה מהפונקציה חוזרים לאיגוד המקורי בו שני השדות שווים ל-18. לכן הפלט החמישי הוא\n`18 18`",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "high",
+   "points": 10
+  },
+  {
+   "num": 5,
+   "part": "א",
+   "kind": "mcq",
+   "topic": "c_traps_mcq",
+   "question": "בחרו את התשובה הנכונה **ונמקו** בכל אחד מהסעיפים הבאים (שאלה 5, 10 נק' בסך הכול).\nמהו פלט (משמאל לימין) של התוכנית הבאה?\n```c\n#include <stdio.h>\n\nvoid main()\n{\n     printf(\"%d%d%d\", sizeof(char*), sizeof(double*), sizeof(void*));\n}\n```",
+   "options": [
+    {
+     "id": "a",
+     "type": "text",
+     "value": "184"
+    },
+    {
+     "id": "b",
+     "type": "text",
+     "value": "444"
+    },
+    {
+     "id": "c",
+     "type": "text",
+     "value": "180"
+    },
+    {
+     "id": "d",
+     "type": "text",
+     "value": "440"
+    },
+    {
+     "id": "e",
+     "type": "text",
+     "value": "לא יהיה פלט כי גודל של מצביע ל-`void` לא מוגדר"
+    },
+    {
+     "id": "f",
+     "type": "text",
+     "value": "אף תשובה אינה נכונה"
+    }
+   ],
+   "correctId": "b",
+   "explanation": "גדלי כל המצביעים ללא קשר לטיפוס (גם של מצביע כללי) הם 4 בתים. (המפתח הרשמי מניח מצביעים של 4 בתים; במהדר של 64 סיביות הגודל הוא 8 והפלט 888.)",
+   "official": true,
+   "confidence": "high"
+  },
+  {
+   "num": 5,
+   "part": "ב",
+   "kind": "mcq",
+   "topic": "bit_manipulation",
+   "question": "בחרו את התשובה הנכונה **ונמקו** בכל אחד מהסעיפים הבאים (שאלה 5, 10 נק' בסך הכול).\nבחרו מהו ערך של הביטוי `24 << 1`",
+   "options": [
+    {
+     "id": "a",
+     "type": "text",
+     "value": "240"
+    },
+    {
+     "id": "b",
+     "type": "text",
+     "value": "2"
+    },
+    {
+     "id": "c",
+     "type": "text",
+     "value": "2.4"
+    },
+    {
+     "id": "d",
+     "type": "text",
+     "value": "48"
+    },
+    {
+     "id": "e",
+     "type": "text",
+     "value": "12"
+    },
+    {
+     "id": "f",
+     "type": "text",
+     "value": "אף תשובה אינה נכונה"
+    }
+   ],
+   "correctId": "d",
+   "explanation": "הזזת סיבית אחת שמאלה במספר בה הסיבית בשמאלית היא 0 שווה ערך להוספת סיבית 0 לימין, כלומר הכפלת המספר ב-2. 24×2=48.",
+   "official": true,
+   "confidence": "high"
+  },
+  {
+   "num": 6,
+   "kind": "code",
+   "topic": "c_traps_mcq",
+   "question": "**שאלת בונוס.** בהינתן קובץ הטקסט `file.dat` (שנפתח בהצלחה) בעל התוכן `abc` מהו הפלט למסך של התוכנית הבאה?\n```c\n#include <stdio.h>\nvoid main()\n{\n     char c;\n     FILE* fptr = fopen(\"file.dat\", \"r\");\n     if (!fptr) return;\n     while (c = fgetc(fptr) != EOF)\n          printf(\"%d\", c);\n     fclose(fptr);\n}\n```\nיש לנמק את התשובה.",
+   "solution": "**הפלט:** `111`\n\n**נימוק:**\nבהיעדר סוגריים, לפי סדר הקדימות, פעולת השוואה מבוצעת לפני פעולת השמה. עבור תווי `'a'`, `'b'`, `'c'` התנאי `fgetc(fptr) != EOF` מתקיים ולכן ערך הביטוי יהיה 1. כלומר `c` בשלוש האיטרציות יהיה 1, תנאי המשך הלולאה יתקיים ובהתאם 1 יודפס שלוש פעמים. עבור `EOF` התנאי `fgetc(fptr) != EOF` לא מתקיים ולכן ערך הביטוי יהיה 0. כלומר `c` יהיה 0 ותנאי המשך הלולאה לא יתקיים.\n`111`",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "high",
+   "points": 10
+  }
+ ]
+}

@@ -1,0 +1,182 @@
+{
+ "examCode": "23B-A",
+ "examLabel": "סדנה מתקדמת בתכנות 61108, סמסטר ב' תשפ\"ג, מועד א'",
+ "year": 2023,
+ "examDate": "08.06.2023",
+ "sourceFile": "23B-A exam",
+ "solutionFile": "23B-A official solution",
+ "contexts": {
+  "c1": {
+   "kind": "text",
+   "title": "שאלה 3 - הגדרות",
+   "text": "**שימו לב:** שאלה זו היא חלופה לשאלה 2 (יש לענות על שאלה אחת מתוך שתיים).\n\nנגדיר כמה תווים מסוימים כ**מפרידים**. במיוחד, תווי פסיק, נקודה, רווח, סימן קריאה, סימן שאלה, נקודתיים וכו' ניתן להגדיר כמפרידים. **מילה** היא רצף של תווים שאינם מפרידים. **משפט** הוא מחרוזת המכילה שרשור של מילים ומפרידים. המילים יכולות להיות מופרדות ע\"י מפריד אחד או יותר. משפט לא ריק תמיד מתחיל במילה.\n\nבכל השאלות הבאות אסור להשתמש בפונקציה סטנדרטית `strtok`."
+  }
+ },
+ "questions": [
+  {
+   "num": 1,
+   "kind": "code",
+   "topic": "list_manipulation",
+   "question": "בפולינום $P(x)=\\sum_{i=0}^{n-1} a_i x^i$ כל איבר $a_i x^i$ ($a_i$ הוא מקדם ממשי) נקרא **מונום** $i$.\n\nנגדיר מבנה הבא המייצג מונום:\n```c\ntypedef struct monom {\n        double coefficient;\n        int power;\n} Monom;\n```\nוגם נגדיר מבנה המייצג איבר ברשימה מקושרת:\n```c\ntypedef struct item {\n        Monom mon;\n        struct item * next;\n} Item;\n```\nכתבו פונקציה `Item * createPolynom(Item * L)` המקבלת רשימה מקושרת חד-כיוונית של איברים מטיפוס `Item`.\nעל הפונקציה ליצור ולהחזיר רשימה חדשה `P` (של איברים מטיפוס `Item`) המייצגת פולינום כך שאיברי הרשימה יהיו ממוינים לפי חזקות המונומים שהם מכילים (עבור $i < j$, מונום $j$ יהיה יותר קרוב לראש הרשימה מאשר מונום $i$). רשימת `P` תיווצר ע\"י **סיכום המונומים** המרכיבים את `L`. ב-`P` לא יהיו מונומים עם מקדמים אפס. הרשימה הריקה (המקורית והחדשה) תייצג מספר 0.\n\n**לדוגמא,** עבור הרשימה `L` הבאה (המספר השמאלי הוא מקדם והמספר הימני הוא חזקה): `(2,4) (-5,1) (3,6) (6,4) (-8,0) (-3,6) (7.5,3)` הפונקציה תיצור את הרשימה `P` הבאה: `(8,4) (7.5,3) (-5,1) (-8,0)` אשר מייצגת את הפולינום `8x^4+7.5x^3-5x-8`.\n\n**שימו לב.** כדי לייעל את העיבוד של הרשימה המקורית יש להשתמש במערך עזר שגודלו תלוי בחזקה המקסימלית ברשימה הזאת. **זוהי דרישה מחייבת!**\n\nניתן להניח שיש בזיכרון מספיק מקום להקצאה.",
+   "solution": "```c\nItem* createPolynom(Item* L)\n{\n       Item* curr = L, * P = NULL;\n       int max_power = 0, power;\n       double *arr;\n\n       /* Search of maximum power */\n       while (curr)\n       {\n              if (curr->mon.power > max_power)\n                     max_power = curr->mon.power;\n              curr = curr->next;\n       }\n\n       /* Calculation of coefficients */\n       arr = (double*)calloc(max_power + 1, sizeof(double));\n       curr = L;\n       while (curr)\n       {\n              arr[curr->mon.power] += curr->mon.coefficient;\n              curr = curr->next;\n       }\n\n       /* Creation of polynomial list */\n       curr = L;\n       for (power = 0; power <= max_power; power++)\n              if (arr[power] != 0)\n              {\n                     curr = (Item*)malloc(sizeof(Item));\n                     curr->next = P;\n                     P = curr;\n                     P->mon.coefficient = arr[power];\n                     P->mon.power = power;\n              }\n\n       free(arr);\n       return P;\n}\n```",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "high",
+   "points": 40,
+   "image": "images/exams/23B-A-Q1.png"
+  },
+  {
+   "num": 2,
+   "kind": "code",
+   "topic": "dynamic_arrays_2d",
+   "question": "**שימו לב:** בחלק זה יש לענות על שאלה אחת מתוך שתיים (שאלה 2 או שאלה 3).\n\nכתבו פונקציה **יעילה** בשם `sortedRowsCols` המקבלת מערך דו-ממדי דינאמי `ar` של מספרים שלמים בעל `m` שורות ו-`n` עמודות.\nעל הפונקציה ליצור שני מערכים חד-ממדיים. אחד מהם (בשם `ar_s_rows`) יהיה מורכב ממספרי השורות במערך הדו-ממדי ממוינות בסדר עולה ממש והשני (בשם `ar_s_cols`) יהיה מורכב ממספרי העמודות ממוינות בסדר יורד ממש.\nהפונקציה תעביר by reference את המערכים החדשים ואת הגדלים שלהם. במידה ומערך נוצר ריק, הפונקציה תעביר `NULL` ככתובתו ו-0 כגודלו.\n\n**לדוגמא:** עבור המערך `ar` (משמאל לימין, מלמעלה למטה)\n```\n10  13  56  99\n23  57  59  93\n36  19  74  89\n30  75  80  85\n25  73  84  84\n```\nהפונקציה תעביר מערך `ar_s_rows`: `{0,1,3}` עם גודלו 3 ומערך `ar_s_cols`: `{3}` עם גודלו 1.\n\nהחתימה של הפונקציה `sortedRowsCols` תהיה:\n```c\nvoid sortedRowsCols(int **ar, int m, int n,\nint **ar_s_rows, int *num_s_rows, int **ar_s_cols, int *num_s_cols)\n```\nלבדיקה האם השורה ממוינת יש להשתמש בפונקציית עזר `int arrSorted(int *a, int n)` המקבלת את השורה כמערך `a` בגודל `n`. הפונקציה תחזיר 1 אם המערך ממוין בסדר עולה ממש ו-0 אחרת.\nלבדיקה האם העמודה ממוינת יש להשתמש בפונקציית עזר `columnSorted`. הפונקציה תקבל מערך דו-ממדי `ar`, מספר שורותיו `m`, ומספר העמודה הנבדקת `col`. על הפונקציה להחזיר 1 אם העמודה ממוינת בסדר יורד ממש ו-0 אחרת. חתימת הפונקציה תהיה `int columnSorted(int **ar, int m, int col)`.\n\nניתן להניח שיש בזיכרון מספיק מקום להקצאה.",
+   "solution": "```c\nint arrSorted(int* a, int n)\n{\n       int i;\n       for (i = 1; i < n; i++)\n              if (a[i] <= a[i - 1])\n                     return 0;\n       return 1;\n}\n\nint columnSorted(int** ar, int m, int col)\n{\n       int i;\n       for (i = 1; i < m; i++)\n              if (ar[i][col] >= ar[i - 1][col])\n                     return 0;\n       return 1;\n}\n\nvoid sortedRowsCols(int** ar, int m, int n, int** ar_s_rows, int* num_s_rows, int** ar_s_cols, int* num_s_cols)\n{\n       int i, j;\n       *num_s_rows = *num_s_cols = 0;\n       *ar_s_rows = (int*)calloc(m, sizeof(int)); // max size - number of rows\n       *ar_s_cols = (int*)calloc(n, sizeof(int)); // max size - number of columns\n       for (i = 0; i < m; i++)\n              if (arrSorted(ar[i], n))\n                     (*ar_s_rows)[(*num_s_rows)++] = i;\n       for (j = 0; j < n; j++)\n              if (columnSorted(ar, m, j))\n                     (*ar_s_cols)[(*num_s_cols)++] = j;\n       *ar_s_rows = (int*)realloc(*ar_s_rows, *num_s_rows * sizeof(int));\n       *ar_s_cols = (int*)realloc(*ar_s_cols, *num_s_cols * sizeof(int));\n}\n```",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "high",
+   "points": 40
+  },
+  {
+   "num": 3,
+   "kind": "code",
+   "topic": "strings",
+   "question": "**סעיף א (15 נק').**\nכתבו פונקציה עם החתימה `char * nextWord(char * sentence, char * separators, char * word)` אשר מקבלת מחרוזת `sentence` המהווה את המשפט ומחרוזת `separators` המורכבת מכל המפרידים שעשויים להופיע במשפט.\nעל הפונקציה לעדכן את `word` להיות המחרוזת המכילה העתק של המילה הראשונה ב-`sentence` המוגדרת עד למפריד הראשון (ניתן להניח שגודל של מערך `word` יהיה מספיק).\nהפונקציה תחזיר מצביע לתחילת המילה הבאה ב-`sentence` או `NULL` אם המשפט לא מכיל מילים נוספות.\n\nלדוגמא: עבור `sentence = \"Why?! That's why.\"` ו-`separators = \"? !.\"` תוכן של `word` יהיה `\"Why\"` והפונקציה תחזיר מצביע לתת-מחרוזת `\"That's why.\"` מתוך `sentence`.",
+   "solution": "```c\nchar* nextWord(char* sentence, char* separators, char* word)\n{\n       int i = 0;\n       while ( sentence[i] && !strchr(separators, sentence[i]) ) // scan word\n              word[i++] = sentence[i];\n       word[i] = '\\0';\n       while (sentence[i] && strchr(separators, sentence[i])) // scan separators\n              i++;\n       return sentence[i] ? sentence + i : NULL;\n}\n```",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "high",
+   "points": 15,
+   "part": "א",
+   "contextId": "c1"
+  },
+  {
+   "num": 3,
+   "kind": "code",
+   "topic": "files",
+   "question": "**סעיף ב (15 נק').**\nכתבו פונקציה עם החתימה `int breakSentence(char * sentence, char * separators, char * file_name)` אשר מקבלת אותן מחרוזות `sentence` ו-`separators` שבסעיף א' וגם מחרוזת `file_name` המהווה שם של קובץ טקסט.\nעל הפונקציה לשמור את המילים של המשפט בקובץ שנוצר (כל מילה בשורה נפרדת) ולהחזיר את כמות המילים במשפט.\n\nלדוגמא: עבור `sentence = \"But why?! That's why.\"` ו-`separators = \"? !.\"` הפונקציה תחזיר 4 ותוכן הקובץ יהיה\n```\nBut\nwhy\nThat's\nwhy\n```\nיש להשתמש בפונקציה `nextWord` כפונקציית עזר.\nאפשר להשתמש במערך עזר. במקרה זה, ניתן להניח שיש בזיכרון מספיק מקום להקצאה.",
+   "solution": "```c\nint breakSentence(char* sentence, char* separators, char* file_name)\n{\n       FILE* fptr = fopen(file_name, \"w\");\n       char* word;\n       int count = 0;\n       if (!fptr)\n              return -1;\n       word = (char*)malloc(strlen(sentence) + 1);\n       while ( (sentence = nextWord(sentence, separators, word)) != NULL )\n       {\n              fprintf(fptr, \"%s\\n\", word);\n              count++;\n       }\n       if (*word) // sentence isn't empty\n       {\n              fprintf(fptr, \"%s\\n\", word); // last word\n              count++;\n       }\n       free(word);\n       fclose(fptr);\n       return count;\n}\n```",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "high",
+   "points": 15,
+   "part": "ב",
+   "contextId": "c1"
+  },
+  {
+   "num": 3,
+   "kind": "code",
+   "topic": "strings",
+   "question": "**סעיף ג (10 נק').**\nכתבו פונקציה עם החתימה `int countWordOccur(char * sentence, char * separators, char * query)` אשר מקבלת אותן מחרוזות `sentence` ו-`separators` שבסעיף א' וגם מחרוזת `query` המהווה מילה כלשהי.\nעל הפונקציה להחזיר את כמות המופעים של המילה `query` ב-`sentence`.\n\nלדוגמא, עבור `sentence = \"But why?! That's why. And don't ask me why.\"`, `separators = \"? !.\"` ו-`query = \"why\"` הפונקציה תחזיר 3.\nיש להשתמש בפונקציה `nextWord` כפונקציית עזר.\nאפשר להשתמש במערך עזר. במקרה זה, ניתן להניח שיש בזיכרון מספיק מקום להקצאה.",
+   "solution": "```c\nint countWordOccur(char* sentence, char* separators, char* query)\n{\n       char* word;\n       int count = 0;\n       word = (char*)malloc(strlen(sentence) + 1);\n       while ( (sentence = nextWord(sentence, separators, word)) != NULL )\n              if (strcmp(word, query) == 0)\n                     count++;\n       if (strcmp(word, query) == 0) // last word\n              count++;\n       free(word);\n       return count;\n}\n```",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "high",
+   "points": 10,
+   "part": "ג",
+   "contextId": "c1"
+  },
+  {
+   "num": 4,
+   "kind": "code",
+   "topic": "storage_classes",
+   "question": "מהו הפלט של התוכנית הבאה?\n```c\n#include <stdio.h>\nint x = 30, y = 0;\nvoid f1(int x)\n{\n    printf(\"x=%d,y=%d\\n\", x, y);\n    x = y = 10;\n}\nvoid f2(int y)\n{\n    printf(\"x=%d,y=%d\\n\", x, y);\n    x = y = 15;\n}\nint main()\n{\n    y = 5;\n    f1(20);\n    f2(y);\n    printf(\"x=%d,y=%d\\n\", x, y);\n    return 0;\n}\n```\nיש לנמק את התשובה.",
+   "solution": "**הפלט:**\n```\nx=20,y=5\nx=30,y=10\nx=15,y=10\n```\n**נימוק:**\nאין משתנים `x,y` ב-`main`. לכן ב-`main` עובדים עם משתנים גלובליים. `y` שמאותחל ב-0 יקבל ערך חדש 5.\nאחרי קריאה ל-`f1(20)` פרמטר פורמלי `x` של `f1` יקבל ערך 20. אין משתנה `y` ב-`f1` ולכן הפונקציה עובדת עם `y` גלובלי אשר שווה ל-5. לכן `printf` ב-`f1` מדפיסה\n`x=20,y=5`\nלאחר מכן `x` פורמלי ו-`y` גלובלי משתנים ב-10.\nאחרי קריאה ל-`f2(y)` פרמטר פורמלי `y` של `f2` יקבל ערך 10 של `y` גלובלי. אין משתנה `x` ב-`f2` ולכן הפונקציה עובדת עם `x` גלובלי אשר מאותחל ב-30. לכן `printf` ב-`f2` מדפיסה\n`x=30,y=10`\nלאחר מכן `x` גלובלי ו-`y` פורמלי משתנים ב-15.\nואז לאחר חזרה ל-`main`, `x` גלובלי שווה ל-15 ו-`y` גלובלי שווה ל-10. לכן `printf` ב-`main` מדפיסה\n`x=15,y=10`",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "high",
+   "points": 10
+  },
+  {
+   "num": 5,
+   "part": "א",
+   "kind": "mcq",
+   "topic": "files",
+   "question": "בחרו את התשובה הנכונה **ונמקו** בכל אחד מהסעיפים הבאים (שאלה 5, 10 נק' בסך הכול).\nמהי הטענה הנכונה?",
+   "options": [
+    {
+     "id": "a",
+     "type": "text",
+     "value": "הקריאות `puts(\"abc\")` ו-`fputs(\"abc\",stdout)` הן שקולות"
+    },
+    {
+     "id": "b",
+     "type": "text",
+     "value": "הקריאות `puts(\"abc\")` ו-`fputs(\"abc\\n\",stdout)` הן שקולות"
+    },
+    {
+     "id": "c",
+     "type": "text",
+     "value": "הקריאות `puts(\"abc\\n\")` ו-`fputs(\"abc\",stdout)` הן שקולות"
+    },
+    {
+     "id": "d",
+     "type": "text",
+     "value": "הקריאות `puts(\"abc\")` ו-`fputs(\"\\nabc\",stdout)` הן שקולות"
+    },
+    {
+     "id": "e",
+     "type": "text",
+     "value": "אף טענה אינה נכונה"
+    }
+   ],
+   "correctId": "b",
+   "explanation": "לעומת `puts`, `fputs` לא מוסיפה `'\\n'` בסוף המחרוזת. לכן `fputs(\"abc\",stdout)` מציגה במסך `abc` ללא הורדת שורה. בזאת `fputs(\"abc\\n\",stdout)` מציגה במסך `abc` ומורידה סמן לשורה הבאה, בדיוק כמו `puts(\"abc\")`.",
+   "official": true,
+   "confidence": "high"
+  },
+  {
+   "num": 5,
+   "part": "ב",
+   "kind": "mcq",
+   "topic": "pointers",
+   "question": "בחרו את התשובה הנכונה **ונמקו** בכל אחד מהסעיפים הבאים (שאלה 5, 10 נק' בסך הכול).\nאיזה פעולה היא בלתי חוקית?",
+   "options": [
+    {
+     "id": "a",
+     "type": "text",
+     "value": "חיבור של מספר שלם למצביע"
+    },
+    {
+     "id": "b",
+     "type": "text",
+     "value": "חיסור של מספר שלם ממצביע"
+    },
+    {
+     "id": "c",
+     "type": "text",
+     "value": "חיבור של מצביע למצביע"
+    },
+    {
+     "id": "d",
+     "type": "text",
+     "value": "חיסור של מצביע ממצביע"
+    },
+    {
+     "id": "e",
+     "type": "text",
+     "value": "השוואת מצביעים"
+    },
+    {
+     "id": "f",
+     "type": "text",
+     "value": "כל הפעולות לעיל הן חוקיות"
+    }
+   ],
+   "correctId": "c",
+   "explanation": "בשפת C מוגדרות הפעולות הבאות על מצביעים: חיבור (חיסור) מספר שלם למצביע (התוצאה היא כתובת), חיסור מצביעים (התוצאה היא מספר שלם), השוואת מצביעים. פעולת חיבור מצביעים לא מוגדרת.",
+   "official": true,
+   "confidence": "high"
+  },
+  {
+   "num": 6,
+   "kind": "code",
+   "topic": "c_traps_mcq",
+   "question": "**שאלת בונוס.** מהו הפלט של התוכנית הבאה?\n```c\n#include <stdio.h>\n#include <string.h>\nvoid main()\n{\n    puts(\"puts\"-strlen(\"strlen\")+sizeof\"sizeof\");\n}\n```\nיש לנמק את התשובה.",
+   "solution": "**הפלט:** `uts`\n\n**נימוק:**\nהפונקציה `strlen` מחזירה מספר תווים במחרוזת עד לתו אפסי לא כולל תו אפסי. לכן `strlen(\"strlen\")` מחזירה 6.\nאופרטור `sizeof` מחזיר את גודל האופרנד בבתים. מחרוזת `\"sizeof\"` מהווה 7 תווים כולל תו אפסי. לכן `sizeof\"sizeof\"` מחזיר 7.\nואז המשפט שקול ל-`puts(\"puts\"-6+7)` ז\"א ל-`puts(\"puts\"+1)`.\nלמחרוזת קבועה במשפט צריך להתייחס כמו לכתובת התו הראשון שלה. בזאת מקבלים למעשה `puts(\"uts\")`. לכן הפלט יהיה\n`uts`",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "high",
+   "points": 10
+  }
+ ]
+}

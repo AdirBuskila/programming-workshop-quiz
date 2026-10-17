@@ -1,0 +1,144 @@
+{
+ "examCode": "24B-B",
+ "examLabel": "סדנה מתקדמת בתכנות 61108, סמסטר ב' תשפ\"ד, מועד ב'",
+ "year": 2024,
+ "examDate": "30.07.2024",
+ "sourceFile": "24B-B exam",
+ "solutionFile": "24B-B official solution",
+ "contexts": {},
+ "questions": [
+  {
+   "num": 1,
+   "kind": "code",
+   "topic": "list_manipulation",
+   "question": "נגדיר את המבנה הבא המייצג איבר ברשימה מקושרת חד-כיוונית:\n```c\ntypedef struct item {\n        int number;\n        struct item* next;\n} Item;\n```\nכתבו פונקציה `Item ** numSeparation(int * A, int sz, int * p_size)` המקבלת מערך `A` של מספרים שלמים עם גודלו `sz`.\nעל הפונקציה **לסווג** את האיברים של `A` לרשימות של איברים מטיפוס `Item` לפי **כמות הספרות** שבהם. הפונקציה תבנה מערך `L` של מצביעים אשר למעשה מהווה מערך של רשימות כך ש-`L[i]` יצביע לתחילת הרשימה בה שדות `number` של איבריה הם איברים של `A` בעלי `i+1` ספרות. `L` יהיה מורכב מ-`n` איברים, כאשר `n` הוא הכמות המקסימלית של ספרות במספר בין איברי `A`. אם ב-`A` אין אף איבר בעל `m` ספרות (`m<n`) אז `L[m+1]` יהיה שווה ל-`NULL`.\nהפונקציה תחזיר את הכתובת של תחילת המערך `L` ותעביר by reference (באמצעות מצביע `p_size`) את גודלו.\n\n**דוגמא:** עבור `A = {23, 4, -78, 34578, 79, -185, 0, 998, 9, 36}` הפונקציה תיצור את המערך `L` הבא (באיור: `L[0]: 4,0,9`; `L[1]: 23,-78,79,36`; `L[2]: -185,998`; `L[3]: NULL`; `L[4]: 34578`) ותעביר 5 כגודל המערך החדש.\n\nיש לכתוב ולהשתמש בפונקציית עזר `int digitsNumber(int num)` אשר מחזירה את כמות הספרות במספר `num`.\nלהכנסת איבר חדש לרשימה אין צורך לסרוק את הרשימה מתחילתה עד סופה. יש לשמור כתובות של איברים אחרונים ברשימות או להכניס את האיבר לראש הרשימה (סדר האיברים ברשימות אינו משנה).\nאפשר (אבל לא חובה) להשתמש במערכי עזר.\nניתן להניח שיש בזיכרון מספיק מקום להקצאה.",
+   "solution": "```c\ndigitsNumber(int num)\n{\n       int count = 1, abs_num = abs(num);\n       while (abs_num > 9)\n       {\n              count++;\n              abs_num /= 10;\n       }\n       return count;\n}\n\nvoid headInsert(Item** plst, int key)\n{\n       Item* temp = (Item*)malloc(sizeof(Item));\n       temp->number = key;\n       temp->next = *plst;\n       *plst = temp;\n}\n\nItem** numSeparation(int* A, int sz, int* p_size)\n{\n       int i, max_dig_num = 1,\n              *dig_num = (int *)calloc(sz, sizeof(int)); //auxiliary array: digit numbers of A's elements\n       Item** L;\n\n       /* Search of maximum number of digits */\n       for (i = 0; i < sz; i++)\n       {\n              dig_num[i] = digitsNumber(A[i]);\n              if (dig_num[i] > max_dig_num)\n                     max_dig_num = dig_num[i];\n       }\n\n       L = (Item**)calloc(max_dig_num, sizeof(Item*)); //array of pointers to lists\n       for (i = sz - 1; i >= 0; i--)\n              headInsert(L + dig_num[i] - 1, A[i]); //insert A[i] into the head of corresponding list\n\n       free(dig_num);\n       *p_size = max_dig_num;\n       return L;\n}\n```\n**הערה:** בפתרון הרשמי כותרת הפונקציה `digitsNumber` נכתבה ללא טיפוס החזרה `int` (שאלה מחייבת `int digitsNumber(int num)`). במהדר clang בתקן C99 ומעלה ללא `int` זו שגיאת קומפילציה; עם `int` הקוד עובר ומחזיר את הרשימות מהדוגמא.",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "high",
+   "points": 40,
+   "image": "images/exams/24B-B-Q1.png"
+  },
+  {
+   "num": 2,
+   "kind": "code",
+   "topic": "dynamic_arrays_2d",
+   "question": "**שימו לב:** בחלק זה יש לענות על שאלה אחת מתוך שתיים (שאלה 2 או שאלה 3).\n\nכתבו פונקציה `int ** matrixToFrame(int ** M, int rows, int cols)` אשר מקבלת מערך דו-ממדי דינאמי `M` של מספרים שלמים בעל `rows` שורות ו-`cols` עמודות.\n`M` מבוסס על מערך דינאמי של פוינטרים אשר מצביעים על מערכים דינאמיים המהווים שורות (כפי שלמדנו בכיתה).\n\nעל הפונקציה לבנות מערך דו-ממדי דינאמי `F` בעל `rows+2` שורות ו-`cols+2` עמודות המהווה את תוכן המערך המקורי `M` מוקף ב**מסגרת** המורכבת מאפסים.\n\n**דוגמא:** (איור: המערך `M` בעל 3 שורות ו-4 עמודות, והמערך `F` בעל 5 שורות ו-6 עמודות)\n\nבסוף הפונקציה **תשחרר** את המערך המקורי `M` ו**תחזיר** את הכתובת של המערך `F`.\n\nניתן להניח שיש בזיכרון מספיק מקום להקצאה.",
+   "solution": "```c\nvoid freeMatrix(int** M, int rows)\n{\n       int i;\n       for (i = 0; i < rows; i++)\n              free(M[i]);\n       free(M);\n}\n\nint** matrixToFrame(int** M, int rows, int cols)\n{\n       int rows2 = rows + 2, cols2 = cols + 2, ** F = (int**)calloc(rows2, sizeof(int*)), i, j;\n       for (i = 0; i < rows2; i++)\n              F[i] = (int*)calloc(cols2, sizeof(int)); //all elements are zeros\n       for (i = 0; i < rows; i++)\n              for (j = 0; j < cols; j++)\n                     F[i + 1][j + 1] = M[i][j];\n       freeMatrix(M, rows);\n       return F;\n}\n```",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "high",
+   "points": 40,
+   "image": "images/exams/24B-B-Q2.png"
+  },
+  {
+   "num": 3,
+   "kind": "code",
+   "topic": "files",
+   "question": "**שימו לב:** שאלה זו היא חלופה לשאלה 2 (יש לענות על שאלה אחת מתוך שתיים).\n\nכתבו פונקציה עם החתימה `void processFiles(const char* inputFilename, const char* outputFilename)` אשר מקבלת שמות שני קבצי טקסט (קובץ קלט וקובץ פלט בהתאמה). קובץ הקלט מורכב משורות של תווים שרירותיים.\nעל הפונקציה למצוא שורות בקובץ הקלט שמורכבות רק מאותיות (באנגלית) ובנוסף מכילות אותיות שונות זו מזו בלבד. יש להתייחס אל אותיות קטנות וגדולות בטקסט באותו האופן (כך שלמשל `'a'` וגם `'A'` יחשבו כאותה אות).\nהפונקציה תשמור את השורות הנ\"ל בקובץ הפלט כך שסדר האותיות בכל שורה יהיה הפוך.\nניתן להניח שאורך כל שורה בקובץ הקלט אינו עולה על 99 תווים (לא כולל `'\\n'`). יש להשתמש במחרוזת עזר.\n\n**דוגמא:**\n\nקובץ הקלט:\n```\nabc#xyz\ntable\nAlisa\nWalla\nMichael\n```\nקובץ הפלט:\n```\nelbat\nleahciM\n```\nיש לכתוב ולהשתמש בפונקציית עזר `void reverseString(char* str)` להפיכת סדר התווים במחרוזת.\nיש לכתוב ולהשתמש בפונקציית עזר יעילה `int hasUniqueLetters(const char* str)` שבודקת האם המחרוזת מכילה רק אותיות והאם כל האותיות במחרוזת שונות. הפונקציה תחזיר 1 אם שני התנאים מתקיימים ו-0 אחרת.\nאפשר להשתמש במערך עזר.\nבמידה ויהיה צורך בהקצאת זיכרון דינאמי, ניתן להניח שיש בזיכרון מספיק מקום להקצאה.",
+   "solution": "```c\nvoid reverseString(char* str)\n{\n       int i = 0, j = strlen(str) - 1;\n       char temp;\n       for (; i < j; i++, j--)\n       {\n              temp = str[i];\n              str[i] = str[j];\n              str[j] = temp;\n       }\n}\n\nint hasUniqueLetters(const char* str)\n{\n       char temp[26] = { 0 }; //counters of 26 english letters\n       int i, index;\n       for (i = 0; str[i] != '\\0'; i++)\n       {\n              if (!isalpha(str[i]))\n                     return 0;\n              index = tolower(str[i]) - 'a';\n              if (temp[index] > 0)\n                     return 0;\n              temp[index]++;\n       }\n       return 1;\n}\n\nvoid processFiles(const char* inputFilename, const char* outputFilename)\n{\n       char str[101];\n       FILE* fin = fopen(inputFilename, \"r\"), *fout = fopen(outputFilename, \"w\");\n       if (!fin || !fout)\n              exit(1);\n       while (fgets(str, 101, fin)) //together with '\\n' and '\\0': 99+1+1=101\n       {\n              str[strlen(str) - 1] = '\\0'; //removing '\\n'\n              if (hasUniqueLetters(str))\n              {\n                     reverseString(str);\n                     fprintf(fout, \"%s\\n\", str);\n              } //if\n       }  //while\n       fclose(fin);\n       fclose(fout);\n}\n```",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "high",
+   "points": 40
+  },
+  {
+   "num": 4,
+   "kind": "code",
+   "topic": "storage_classes",
+   "question": "מהו הפלט של התוכנית הבאה?\n```c\n#include <stdio.h>\nint* fun(int *);\nvoid main()\n{\n    int x, y;\n    x = *fun(&y);\n    printf(\"%d %d\\n\", x, y);\n    x = ++(*fun(&y));\n    printf(\"%d %d\\n\", x, y);\n    y = ++(*fun(&x));\n    printf(\"%d %d\\n\", x, y);\n    x = ++(*fun(&x));\n    printf(\"%d %d\\n\", x, y);\n    y = ++(*fun(&y));\n    printf(\"%d %d\\n\", x, y);\n}\nint* fun(int* q)\n{\n    static int x = 1;\n    int y = 1;\n    x++;\n    y++;\n    *q = y;\n    return &x;\n}\n```\nיש לנמק את התשובה.",
+   "solution": "**הפלט:**\n```\n2 2\n4 2\n2 6\n8 6\n8 10\n```\n**נימוק:**\n**הקריאה הראשונה ל-`fun`.** `x` ו-`y` של הפונקציה מאותחלים ב-1 ומתקדמים ל-2. הפונקציה מעבירה ערך 2 של `y` שלה ל-`y` של `main` ומחזירה כתובת של `x` שלה. `x` ב-`main` מקבל ערך 2 של `static x` שנמצא בכתובת המוחזרת. לכן הפלט:\n`2 2`\n**הקריאה השנייה ל-`fun`.** `static x` זוכר את ערכו 2 ומתקדם ל-3. `y` של הפונקציה שוב מאותחל ב-1 ומתקדם ל-2. הפונקציה מעבירה ערך 2 של `y` שלה ל-`y` של `main` ומחזירה כתובת של `x` שלה. המשתנה שבכתובת (ז\"א `static x` של הפונקציה) מתקדם ל-4 ב-`main` וערך זה הוכנס ל-`x` של `main`. לכן הפלט:\n`4 2`\n**הקריאה השלישית ל-`fun`.** `static x` זוכר את ערכו 4 ומתקדם ל-5. `y` של הפונקציה שוב מאותחל ב-1 ומתקדם ל-2. הפונקציה מעבירה ערך 2 של `y` שלה ל-`x` של `main` ומחזירה כתובת של `x` שלה. המשתנה שבכתובת (ז\"א `static x` של הפונקציה) מתקדם ל-6 ב-`main` וערך זה הוכנס ל-`y` של `main`. לכן הפלט:\n`2 6`\n**הקריאה הרביעית ל-`fun`.** `static x` זוכר את ערכו 6 ומתקדם ל-7. `y` של הפונקציה שוב מאותחל ב-1 ומתקדם ל-2. הפונקציה מעבירה ערך 2 של `y` שלה ל-`x` של `main` ומחזירה כתובת של `x` שלה. המשתנה שבכתובת (ז\"א `static x` של הפונקציה) מתקדם ל-8 ב-`main` וערך זה הוכנס ל-`x` של `main`. `y` של `main` נישאר 6 ללא שינוי. לכן הפלט:\n`8 6`\n**הקריאה החמישית ל-`fun`.** `static x` זוכר את ערכו 8 ומתקדם ל-9. `y` של הפונקציה שוב מאותחל ב-1 ומתקדם ל-2. הפונקציה מעבירה ערך 2 של `y` שלה ל-`y` של `main` ומחזירה כתובת של `x` שלה. המשתנה שבכתובת (ז\"א `static x` של הפונקציה) מתקדם ל-10 ב-`main` וערך זה הוכנס ל-`y` של `main`. `x` של `main` נישאר 8 ללא שינוי. לכן הפלט:\n`8 10`",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "high",
+   "points": 10
+  },
+  {
+   "num": 5,
+   "part": "א",
+   "kind": "mcq",
+   "topic": "structs_unions",
+   "question": "בחרו את התשובה הנכונה **ונמקו** בכל אחד מהסעיפים הבאים (שאלה 5, 10 נק' בסך הכול).\nנתונה ההצהרה הבאה:\n```c\nstruct a { int b, c; } d;\n```\nמהו `d`?",
+   "options": [
+    {
+     "id": "a",
+     "type": "text",
+     "value": "שם הפונקציה"
+    },
+    {
+     "id": "b",
+     "type": "text",
+     "value": "שם הטיפוס"
+    },
+    {
+     "id": "c",
+     "type": "text",
+     "value": "שם השדה"
+    },
+    {
+     "id": "d",
+     "type": "text",
+     "value": "שם המשתנה"
+    },
+    {
+     "id": "e",
+     "type": "text",
+     "value": "אף תשובה אינה נכונה"
+    }
+   ],
+   "correctId": "d",
+   "explanation": "כאן מוגדר מבנה `a` בעל שדות `b` ו-`c` ומיד מוצהר משתנה `d` מטיפוס `struct a` המוגדר.",
+   "official": true,
+   "confidence": "high"
+  },
+  {
+   "num": 5,
+   "part": "ב",
+   "kind": "mcq",
+   "topic": "dynamic_memory",
+   "question": "בחרו את התשובה הנכונה **ונמקו** בכל אחד מהסעיפים הבאים (שאלה 5, 10 נק' בסך הכול).\nנתון פוינטר ל-`int` בשם `p`. בחרו מה יקרה אחרי ביצוע הפעולה\n```c\np = (int*)realloc(NULL, sizeof(int));\n```",
+   "options": [
+    {
+     "id": "a",
+     "type": "text",
+     "value": "יוקצה בית אחד"
+    },
+    {
+     "id": "b",
+     "type": "text",
+     "value": "`p` יהיה שווה ל-`NULL`"
+    },
+    {
+     "id": "c",
+     "type": "text",
+     "value": "יוקצה משתנה אחד מסוג `int`"
+    },
+    {
+     "id": "d",
+     "type": "text",
+     "value": "הפעולה תגרום לשגיאת ריצה"
+    },
+    {
+     "id": "e",
+     "type": "text",
+     "value": "אף תשובה אינה נכונה"
+    }
+   ],
+   "correctId": "c",
+   "explanation": "אם הפרמטר הראשון (המצביע) של `realloc` שווה ל-`NULL`, הקריאה שקולה לקריאה ל-`malloc`. לכן מקצים פה מקום למשתנה אחד מסוג `int`.",
+   "official": true,
+   "confidence": "high"
+  },
+  {
+   "num": 6,
+   "kind": "code",
+   "topic": "bit_manipulation",
+   "question": "**שאלת בונוס.** מהו הפלט של התוכנית הבאה?\n```c\n#include <stdio.h>\nvoid main()\n{\n    printf(\"%d\", (int)(((long long)1 << (1 << ((1 << (1 << 1)) + 1))) - 1));\n}\n```\nיש לנמק את התשובה.",
+   "solution": "**הפלט:** `-1`\n\n**נימוק:**\nנתחיל מהביטוי הפנימי ביותר.\n`( 1 << 1 )` = `10` בבינארי = 2\n`( 1 << (1 << 1) )` = `1<<2` = `100` בבינארי = 4\n`( (1 << (1 << 1)) + 1 )` = 4+1 = 5\n`( 1 << ((1 << (1 << 1)) + 1) )` = `1<<5` = `100000` בבינארי = 32\n`( (long long)1 << (1 << ((1 << (1 << 1)) + 1)) )` = `(long long)1 << 32` = 2^32 (64 סיביות)\n`( ((long long)1 << (1 << ((1 << (1 << 1)) + 1))) - 1 )` = 2^32 - 1 (64 סיביות)\n`(int)(((long long)1 << (1 << ((1 << (1 << 1)) + 1))) - 1)` = `(int)(2^32 - 1)` = `111…1` בבינארי (32 סיביות)\nהתוצאה היא ייצוג בינארי של -1.",
+   "solutionSource": "official-pdf",
+   "official": true,
+   "confidence": "high",
+   "points": 10
+  }
+ ]
+}
