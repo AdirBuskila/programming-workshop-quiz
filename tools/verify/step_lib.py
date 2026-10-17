@@ -17,11 +17,11 @@ def run(src, stdin="", timeout=10):
     try:
         c, exe = d / "t.c", d / "t.exe"
         c.write_text(src, encoding="utf-8")
-        p = subprocess.run([CLANG, "-w", "-O0", "-o", str(exe), str(c)], capture_output=True, text=True, cwd=d)
+        p = subprocess.run([CLANG, "-w", "-O0", "-o", str(exe), str(c)], capture_output=True, text=True, errors="replace", cwd=d)
         if p.returncode:
             return ("BUILD-FAIL", p.stderr[:150])
         try:
-            r = subprocess.run([str(exe)], capture_output=True, text=True, timeout=timeout, cwd=d, input=stdin)
+            r = subprocess.run([str(exe)], capture_output=True, text=True, errors="replace", timeout=timeout, cwd=d, input=stdin)
         except subprocess.TimeoutExpired:
             return ("TIMEOUT", "")
         return (r.returncode, r.stdout)

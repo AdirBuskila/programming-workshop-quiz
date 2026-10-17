@@ -23,7 +23,164 @@
    "official": true,
    "confidence": "high",
    "points": 40,
-   "image": "images/exams/23B-A-Q1.png"
+   "image": "images/exams/23B-A-Q1.png",
+   "rubric": [
+    {
+     "text": "מציאת החזקה המקסימלית ברשימה `L` במעבר אחד",
+     "points": 8
+    },
+    {
+     "text": "הקצאת מערך עזר מאופס בגודל `max_power+1` וסכימת המקדמים לפי חזקה: `arr[power] += coefficient`",
+     "points": 14
+    },
+    {
+     "text": "בניית הרשימה החדשה מהמערך: איבר `Item` חדש רק לכל מקדם שונה מ-0, והכנסה לראש הרשימה במעבר מחזקה קטנה לגדולה כדי שהרשימה תהיה ממוינת בסדר יורד",
+     "points": 12
+    },
+    {
+     "text": "שחרור מערך העזר והחזרת הרשימה (`NULL` לרשימה ריקה או כשכל המקדמים מתאפסים)",
+     "points": 6
+    }
+   ],
+   "rubricSource": "ai-draft",
+   "pitfalls": [
+    "להקצות את מערך העזר בגודל `n` (מספר האיברים) ולא `max_power+1`, או להשתמש ב-`malloc` בלי איפוס.",
+    "לכלול ברשימה החדשה מונומים שהמקדם הסופי שלהם 0 (למשל `(3,6)` ו-`(-3,6)` שמתבטלים).",
+    "להכניס לסוף הרשימה או לעבור על המערך מהחזקה הגדולה לקטנה, ולקבל רשימה ממוינת בסדר עולה."
+   ],
+   "steps": [
+    {
+     "type": "numeric",
+     "prompt": "מה החזקה המקסימלית ברשימה `L` מהדוגמה: `(2,4) (-5,1) (3,6) (6,4) (-8,0) (-3,6) (7.5,3)`?",
+     "answer": 6,
+     "tol": 0,
+     "explain": "החזקות הן 4, 1, 6, 4, 0, 6, 3 והגדולה שבהן 6, ולכן מערך העזר בגודל 7 (ריצה אמיתית: 6)."
+    },
+    {
+     "type": "numeric",
+     "prompt": "אחרי הסכימה, מה ערך `arr[4]` בדוגמה?",
+     "answer": 8,
+     "tol": 0,
+     "explain": "שני המונומים בחזקה 4 הם `2` ו-`6`, וסכומם 8 (ריצה אמיתית: 8, המונום `(8,4)` ברשימה החדשה)."
+    },
+    {
+     "type": "fillblank",
+     "prompt": "השלימו את שורת הסכימה.",
+     "code": true,
+     "lines": [
+      "Item* createPolynom(Item* L)",
+      "{",
+      "       Item* curr = L, * P = NULL;",
+      "       int max_power = 0, power;",
+      "       double *arr;",
+      "       while (curr)",
+      "       {",
+      "              if (curr->mon.power > max_power)",
+      "                     max_power = curr->mon.power;",
+      "              curr = curr->next;",
+      "       }",
+      "       arr = (double*)calloc(max_power + 1, sizeof(double));",
+      "       curr = L;",
+      "       while (curr)",
+      "       {",
+      "___",
+      "              curr = curr->next;",
+      "       }",
+      "       curr = L;",
+      "       for (power = 0; power <= max_power; power++)",
+      "              if (arr[power] != 0)",
+      "              {",
+      "                     curr = (Item*)malloc(sizeof(Item));",
+      "                     curr->next = P;",
+      "                     P = curr;",
+      "                     P->mon.coefficient = arr[power];",
+      "                     P->mon.power = power;",
+      "              }",
+      "       free(arr);",
+      "       return P;",
+      "}"
+     ],
+     "blankIndex": 15,
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "arr[curr->mon.power] += curr->mon.coefficient;"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "arr[curr->mon.power] = curr->mon.coefficient;"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "arr[curr->mon.power] += curr->mon.power;"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "arr[max_power - curr->mon.power] += curr->mon.coefficient;"
+      }
+     ],
+     "correctId": "a",
+     "explain": "יש לסכום את המקדמים של אותה חזקה באותו תא. ב' דורס את הערך הקודם (`arr[4]` היה 6 במקום 8), ג' מוסיף חזקות במקום מקדמים, וד' מציב בתא שגוי (ריצה אמיתית: רשימות שונות בכל אחת מהן)."
+    },
+    {
+     "type": "order",
+     "prompt": "סדרו את הפקודות של `createPolynom` (כל שורה היא בלוק לוגי אחד).",
+     "code": true,
+     "lines": [
+      "Item* curr = L, * P = NULL; int max_power = 0, power; double *arr;",
+      "while (curr) { if (curr->mon.power > max_power) max_power = curr->mon.power; curr = curr->next; } arr = (double*)calloc(max_power + 1, sizeof(double));",
+      "curr = L; while (curr) { arr[curr->mon.power] += curr->mon.coefficient; curr = curr->next; }",
+      "for (power = 0; power <= max_power; power++) if (arr[power] != 0) { curr = (Item*)malloc(sizeof(Item)); curr->next = P; P = curr; P->mon.coefficient = arr[power]; P->mon.power = power; }",
+      "free(arr); return P;"
+     ],
+     "explain": "הצהרות, חישוב החזקה המקסימלית והקצאת מערך העזר, סכימת המקדמים, בניית הרשימה מהמערך, ובסוף שחרור והחזרה. כל החלפה נכשלת בבנייה, קורסת או נותנת רשימה שגויה (נבדק בריצה)."
+    },
+    {
+     "type": "findbug",
+     "prompt": "בגרסה הבאה שורה אחת שונתה, והרשימה החדשה אינה כוללת את המונומים בעלי מקדם שלילי (`(-5,1)` ו-`(-8,0)`). מצאו את השורה.",
+     "code": true,
+     "lines": [
+      "Item* createPolynom(Item* L)",
+      "{",
+      "       Item* curr = L, * P = NULL;",
+      "       int max_power = 0, power;",
+      "       double *arr;",
+      "       while (curr)",
+      "       {",
+      "              if (curr->mon.power > max_power)",
+      "                     max_power = curr->mon.power;",
+      "              curr = curr->next;",
+      "       }",
+      "       arr = (double*)calloc(max_power + 1, sizeof(double));",
+      "       curr = L;",
+      "       while (curr)",
+      "       {",
+      "              arr[curr->mon.power] += curr->mon.coefficient;",
+      "              curr = curr->next;",
+      "       }",
+      "       curr = L;",
+      "       for (power = 0; power <= max_power; power++)",
+      "              if (arr[power] > 0)",
+      "              {",
+      "                     curr = (Item*)malloc(sizeof(Item));",
+      "                     curr->next = P;",
+      "                     P = curr;",
+      "                     P->mon.coefficient = arr[power];",
+      "                     P->mon.power = power;",
+      "              }",
+      "       free(arr);",
+      "       return P;",
+      "}"
+     ],
+     "bugIndex": 20,
+     "explain": "התנאי `> 0` מדלג על מקדם שלילי; הנכון הוא `!= 0` (ריצה אמיתית: נשארים רק `(8,4)` ו-`(7.5,3)`)."
+    }
+   ],
+   "stepsSource": "ai-draft"
   },
   {
    "num": 2,
@@ -34,7 +191,120 @@
    "solutionSource": "official-pdf",
    "official": true,
    "confidence": "high",
-   "points": 40
+   "points": 40,
+   "rubric": [
+    {
+     "text": "`arrSorted`: מעבר על השורה והחזרת 0 כשיש זוג סמוך שאינו עולה ממש (`a[i] <= a[i-1]`)",
+     "points": 8
+    },
+    {
+     "text": "`columnSorted`: מעבר על העמודה והחזרת 0 כשיש זוג סמוך שאינו יורד ממש (`>=`)",
+     "points": 8
+    },
+    {
+     "text": "הקצאת שני מערכים בגודל המרבי (`m` ו-`n`) ואיפוס הגדלים",
+     "points": 8
+    },
+    {
+     "text": "מעבר על כל השורות והעמודות, שימוש בפונקציות העזר ואיסוף האינדקסים בסדר",
+     "points": 10
+    },
+    {
+     "text": "כיווץ המערכים לגודל המדויק עם `realloc`, כך שמערך ריק הוא `NULL` וגודלו 0",
+     "points": 6
+    }
+   ],
+   "rubricSource": "ai-draft",
+   "pitfalls": [
+    "לבדוק מיון חלש (`a[i] < a[i-1]` במקום `<=`) ולקבל שורות עם ערכים שווים כמו `25 73 84 84`.",
+    "לבדוק עמודה בסדר עולה במקום יורד, או לעבור על העמודה עם מספר העמודות במקום מספר השורות.",
+    "לא לכווץ את המערכים, ולהשאיר בהם תאים מיותרים ולא מאופסים כשחלק מהשורות אינן ממוינות."
+   ],
+   "steps": [
+    {
+     "type": "numeric",
+     "prompt": "בדוגמה (מטריצה 5 × 4), כמה שורות ממוינות בסדר עולה ממש? זהו `*num_s_rows`.",
+     "answer": 3,
+     "tol": 0,
+     "explain": "שורות 0, 1 ו-3 עולות ממש; שורה 2 (`36 19 ...`) ושורה 4 (`... 84 84`) אינן (ריצה אמיתית: `0 1 3`)."
+    },
+    {
+     "type": "numeric",
+     "prompt": "בדוגמה, כמה עמודות ממוינות בסדר יורד ממש? זהו `*num_s_cols`.",
+     "answer": 1,
+     "tol": 0,
+     "explain": "רק עמודה 3 (`99 93 89 85 84`) יורדת ממש (ריצה אמיתית: `3`)."
+    },
+    {
+     "type": "fillblank",
+     "prompt": "השלימו את תנאי הדחייה ב-`columnSorted`: העמודה יורדת ממש, ולכן...",
+     "code": true,
+     "lines": [
+      "int columnSorted(int** ar, int m, int col)",
+      "{",
+      "       int i;",
+      "       for (i = 1; i < m; i++)",
+      "___",
+      "                     return 0;",
+      "       return 1;",
+      "}"
+     ],
+     "blankIndex": 4,
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "if (ar[i][col] >= ar[i - 1][col])"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "if (ar[i][col] > ar[i - 1][col])"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "if (ar[i][col] <= ar[i - 1][col])"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "if (ar[i][col] < ar[i - 1][col])"
+      }
+     ],
+     "correctId": "a",
+     "explain": "עמודה יורדת ממש כשכל איבר קטן ממש מקודמו, ולכן דוחים כשהאיבר גדול או שווה (`>=`). ב' מקבל עמודות עם ערכים שווים, וג' ו-ד' בודקים סדר עולה (ריצה אמיתית: אינדקסים שונים על מטריצות הבדיקה)."
+    },
+    {
+     "type": "order",
+     "prompt": "סדרו את הפקודות של `sortedRowsCols` (כל שורה היא בלוק לוגי אחד).",
+     "code": true,
+     "lines": [
+      "int i, j; *num_s_rows = *num_s_cols = 0; *ar_s_rows = (int*)calloc(m, sizeof(int)); *ar_s_cols = (int*)calloc(n, sizeof(int));",
+      "for (i = 0; i < m; i++) if (arrSorted(ar[i], n)) (*ar_s_rows)[(*num_s_rows)++] = i; for (j = 0; j < n; j++) if (columnSorted(ar, m, j)) (*ar_s_cols)[(*num_s_cols)++] = j;",
+      "*ar_s_rows = (int*)realloc(*ar_s_rows, *num_s_rows * sizeof(int)); *ar_s_cols = (int*)realloc(*ar_s_cols, *num_s_cols * sizeof(int));"
+     ],
+     "explain": "הכנה (הצהרות, איפוס והקצאה), מעבר שמאסף את האינדקסים, ובסוף כיווץ המערכים. כל החלפה כותבת למערך שלא הוקצה או מכווצת לפני האיסוף (נבדק בריצה)."
+    },
+    {
+     "type": "findbug",
+     "prompt": "בגרסה הבאה של `arrSorted` שורה אחת שונתה, והשורה `25 73 84 84` נחשבת בטעות לממוינת. מצאו את השורה.",
+     "code": true,
+     "lines": [
+      "int arrSorted(int* a, int n)",
+      "{",
+      "       int i;",
+      "       for (i = 1; i < n; i++)",
+      "              if (a[i] < a[i - 1])",
+      "                     return 0;",
+      "       return 1;",
+      "}"
+     ],
+     "bugIndex": 4,
+     "explain": "`<` במקום `<=` מקבל שני ערכים שווים (`84 84`) כאילו הם עולים ממש; בריצה אמיתית מתקבל `0 1 3 4` במקום `0 1 3`."
+    }
+   ],
+   "stepsSource": "ai-draft"
   },
   {
    "num": 3,
@@ -47,7 +317,143 @@
    "confidence": "high",
    "points": 15,
    "part": "א",
-   "contextId": "c1"
+   "contextId": "c1",
+   "rubric": [
+    {
+     "text": "העתקת תווי המילה הראשונה ל-`word` עד המפריד הראשון או סוף המחרוזת (הבדיקה בעזרת `strchr` על `separators`)",
+     "points": 6
+    },
+    {
+     "text": "סיום `word` ב-`'\\0'`",
+     "points": 3
+    },
+    {
+     "text": "דילוג על כל המפרידים שאחרי המילה",
+     "points": 3
+    },
+    {
+     "text": "החזרת מצביע לתחילת המילה הבאה, או `NULL` כשאין מילה נוספת",
+     "points": 3
+    }
+   ],
+   "rubricSource": "ai-draft",
+   "pitfalls": [
+    "לעצור רק ברווח ולא בכל אחד מהמפרידים (למשל `Why?!` תועתק כולה).",
+    "לדלג על מפריד אחד בלבד, ולהחזיר מצביע שמצביע על מפריד נוסף.",
+    "להחזיר מצביע לסוף המחרוזת במקום `NULL` כשהמשפט נגמר, ולגרום ללולאה אינסופית אצל הקורא."
+   ],
+   "steps": [
+    {
+     "type": "numeric",
+     "prompt": "עבור `sentence = \"Why?! That's why.\"` ו-`separators = \"? !.\"`, באיזה אינדקס ב-`sentence` מתחילה המחרוזת שהפונקציה מחזירה?",
+     "answer": 6,
+     "tol": 0,
+     "explain": "המילה `Why` תופסת את האינדקסים 0 עד 2, אחריה שלושה מפרידים באינדקסים 3, 4, 5 (`?`, `!` ורווח), ולכן המילה הבאה מתחילה באינדקס 6 (ריצה אמיתית: `That's why.`)."
+    },
+    {
+     "type": "choice",
+     "prompt": "מה מחזירה הפונקציה כשהמילה הראשונה היא האחרונה במשפט (למשל `sentence = \"why\"`)?",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`NULL`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "מצביע לתו הסיום של `sentence`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "מצביע לתחילת `sentence`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "מצביע לתחילת `word`"
+      }
+     ],
+     "correctId": "a",
+     "explain": "אחרי המילה אין עוד תווים, ולכן `sentence[i]` הוא `'\\0'` והפונקציה מחזירה `NULL` (ריצה אמיתית: `NULL`)."
+    },
+    {
+     "type": "fillblank",
+     "prompt": "השלימו את תנאי הלולאה שמעתיקה את המילה.",
+     "code": true,
+     "lines": [
+      "char* nextWord(char* sentence, char* separators, char* word)",
+      "{",
+      "       int i = 0;",
+      "___",
+      "              word[i++] = sentence[i];",
+      "       word[i] = '\\0';",
+      "       while (sentence[i] && strchr(separators, sentence[i]))",
+      "              i++;",
+      "       return sentence[i] ? sentence + i : NULL;",
+      "}"
+     ],
+     "blankIndex": 3,
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "while ( sentence[i] && !strchr(separators, sentence[i]) )"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "while ( sentence[i] && strchr(separators, sentence[i]) )"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "while ( sentence[i] && sentence[i] != ' ' )"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "while ( sentence[i] && sentence[i] != '?' && sentence[i] != '!' )"
+      }
+     ],
+     "correctId": "a",
+     "explain": "מעתיקים כל עוד התו אינו מפריד (ואינו סוף המחרוזת). ב' מעתיק את המפרידים במקום את המילה, ג' מתעלם מהמפרידים שאינם רווח, וד' מכיר רק שני מפרידים (ריצה אמיתית: רשימת מילים שגויה במשפט המלא)."
+    },
+    {
+     "type": "order",
+     "prompt": "סדרו את הפקודות של `nextWord` (כל שורה היא בלוק לוגי אחד).",
+     "code": true,
+     "lines": [
+      "int i = 0;",
+      "while ( sentence[i] && !strchr(separators, sentence[i]) ) { word[i] = sentence[i]; i++; }",
+      "word[i] = '\\0';",
+      "while (sentence[i] && strchr(separators, sentence[i])) i++;",
+      "return sentence[i] ? sentence + i : NULL;"
+     ],
+     "explain": "אתחול `i`, העתקת המילה, סיום המחרוזת, דילוג על המפרידים והחזרה. כל החלפה נכשלת בבנייה או משנה את `word` או את הערך המוחזר (נבדק בריצה, עם מאגר שמלא בתו אחר מההתחלה)."
+    },
+    {
+     "type": "findbug",
+     "prompt": "בגרסה הבאה שורה אחת שונתה, והפונקציה אף פעם לא מחזירה `NULL`, ולכן הלולאה אצל הקורא לא נעצרת. מצאו את השורה.",
+     "code": true,
+     "lines": [
+      "char* nextWord(char* sentence, char* separators, char* word)",
+      "{",
+      "       int i = 0;",
+      "       while ( sentence[i] && !strchr(separators, sentence[i]) )",
+      "              word[i++] = sentence[i];",
+      "       word[i] = '\\0';",
+      "       while (sentence[i] && strchr(separators, sentence[i]))",
+      "              i++;",
+      "       return sentence + i;",
+      "}"
+     ],
+     "bugIndex": 8,
+     "explain": "`return sentence + i;` מחזירה תמיד מצביע (גם לסוף המחרוזת) ולכן הקורא לא מזהה את סוף המשפט (ריצה אמיתית: התוכנית ממשיכה לקבל מצביע שאינו `NULL`)."
+    }
+   ],
+   "stepsSource": "ai-draft"
   },
   {
    "num": 3,
@@ -60,7 +466,150 @@
    "confidence": "high",
    "points": 15,
    "part": "ב",
-   "contextId": "c1"
+   "contextId": "c1",
+   "rubric": [
+    {
+     "text": "פתיחת הקובץ לכתיבה ובדיקת הצלחה",
+     "points": 3
+    },
+    {
+     "text": "הקצאת מערך עזר ל-`word` בגודל מספיק (`strlen(sentence)+1`)",
+     "points": 2
+    },
+    {
+     "text": "לולאה שקוראת ל-`nextWord`, כותבת כל מילה לשורה נפרדת וסופרת",
+     "points": 5
+    },
+    {
+     "text": "טיפול במילה האחרונה אחרי הלולאה (כש-`nextWord` מחזירה `NULL`), ובמשפט ריק שבו אין מילה",
+     "points": 3
+    },
+    {
+     "text": "שחרור המערך, סגירת הקובץ והחזרת כמות המילים",
+     "points": 2
+    }
+   ],
+   "rubricSource": "ai-draft",
+   "pitfalls": [
+    "לשכוח את המילה האחרונה: `nextWord` מחזירה `NULL` כשהיא כבר העתיקה את המילה האחרונה ל-`word`, והלולאה נגמרת לפניה.",
+    "לכתוב מילה ריקה לקובץ כשהמשפט ריק, בלי לבדוק `*word`.",
+    "לכתוב מילים בלי `'\\n'` ולקבל שורה אחת בקובץ."
+   ],
+   "steps": [
+    {
+     "type": "numeric",
+     "prompt": "עבור `sentence = \"But why?! That's why.\"` כמה מילים נכתבות לקובץ **בתוך הלולאה** (לפני הטיפול במילה האחרונה)?",
+     "answer": 3,
+     "tol": 0,
+     "explain": "המילים `But`, `why`, `That's` נכתבות בלולאה, והמילה `why` האחרונה נכתבת אחריה (ריצה אמיתית: הלולאה כתבה 3, והפונקציה החזירה 4)."
+    },
+    {
+     "type": "numeric",
+     "prompt": "מה מחזירה `breakSentence` עבור אותו משפט?",
+     "answer": 4,
+     "tol": 0,
+     "explain": "ארבע מילים: `But`, `why`, `That's`, `why` (ריצה אמיתית: 4)."
+    },
+    {
+     "type": "fillblank",
+     "prompt": "השלימו את התנאי לכתיבת המילה האחרונה אחרי הלולאה.",
+     "code": true,
+     "lines": [
+      "int breakSentence(char* sentence, char* separators, char* file_name)",
+      "{",
+      "       FILE* fptr = fopen(file_name, \"w\");",
+      "       char* word;",
+      "       int count = 0;",
+      "       if (!fptr)",
+      "              return -1;",
+      "       word = (char*)malloc(strlen(sentence) + 1);",
+      "       while ( (sentence = nextWord(sentence, separators, word)) != NULL )",
+      "       {",
+      "              fprintf(fptr, \"%s\\n\", word);",
+      "              count++;",
+      "       }",
+      "___",
+      "       {",
+      "              fprintf(fptr, \"%s\\n\", word);",
+      "              count++;",
+      "       }",
+      "       free(word);",
+      "       fclose(fptr);",
+      "       return count;",
+      "}"
+     ],
+     "blankIndex": 13,
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "if (*word)"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "if (word)"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "if (!*word)"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "if (count > 0)"
+      }
+     ],
+     "correctId": "a",
+     "explain": "יש מילה אחרונה כש-`word` אינו מחרוזת ריקה. ב' תמיד נכון וכותב מילה ריקה למשפט ריק, ג' הפוך, וד' מפספס משפט בן מילה אחת (שבו `count` נשאר 0) (ריצה אמיתית: ספירות שגויות על משפט ריק ועל משפט בן מילה אחת)."
+    },
+    {
+     "type": "order",
+     "prompt": "סדרו את הפקודות של `breakSentence` (כל שורה היא בלוק לוגי אחד).",
+     "code": true,
+     "lines": [
+      "FILE* fptr = fopen(file_name, \"w\"); char* word; int count = 0; if (!fptr) return -1;",
+      "word = (char*)malloc(strlen(sentence) + 1);",
+      "while ( (sentence = nextWord(sentence, separators, word)) != NULL ) { fprintf(fptr, \"%s\\n\", word); count++; }",
+      "if (*word) { fprintf(fptr, \"%s\\n\", word); count++; }",
+      "free(word); fclose(fptr); return count;"
+     ],
+     "explain": "פתיחה, הקצאת `word`, לולאת הכתיבה, כתיבת המילה האחרונה ובסוף שחרור, סגירה והחזרה. כל החלפה נכשלת בבנייה, קורסת או משנה את תוכן הקובץ או את הספירה (נבדק בריצה)."
+    },
+    {
+     "type": "findbug",
+     "prompt": "בגרסה הבאה שורה אחת שונתה, ובקובץ כל המילים נדבקות זו לזו בשורה אחת. מצאו את השורה.",
+     "code": true,
+     "lines": [
+      "int breakSentence(char* sentence, char* separators, char* file_name)",
+      "{",
+      "       FILE* fptr = fopen(file_name, \"w\");",
+      "       char* word;",
+      "       int count = 0;",
+      "       if (!fptr)",
+      "              return -1;",
+      "       word = (char*)malloc(strlen(sentence) + 1);",
+      "       while ( (sentence = nextWord(sentence, separators, word)) != NULL )",
+      "       {",
+      "              fprintf(fptr, \"%s\", word);",
+      "              count++;",
+      "       }",
+      "       if (*word)",
+      "       {",
+      "              fprintf(fptr, \"%s\\n\", word);",
+      "              count++;",
+      "       }",
+      "       free(word);",
+      "       fclose(fptr);",
+      "       return count;",
+      "}"
+     ],
+     "bugIndex": 10,
+     "explain": "הפורמט `\"%s\"` בלי `'\\n'` בתוך הלולאה כותב את המילים ברצף (ריצה אמיתית: הקובץ הוא שורה אחת, `ButwhyThat'swhy`, במקום ארבע שורות)."
+    }
+   ],
+   "stepsSource": "ai-draft"
   },
   {
    "num": 3,
@@ -73,7 +622,127 @@
    "confidence": "high",
    "points": 10,
    "part": "ג",
-   "contextId": "c1"
+   "contextId": "c1",
+   "rubric": [
+    {
+     "text": "הקצאת מערך עזר ל-`word` ואתחול מונה",
+     "points": 2
+    },
+    {
+     "text": "לולאה על המילים עם `nextWord` והשוואת כל מילה ל-`query` עם `strcmp` (ולא השוואת מצביעים)",
+     "points": 4
+    },
+    {
+     "text": "בדיקת המילה האחרונה אחרי הלולאה",
+     "points": 3
+    },
+    {
+     "text": "שחרור והחזרת המונה",
+     "points": 1
+    }
+   ],
+   "rubricSource": "ai-draft",
+   "pitfalls": [
+    "להשוות `word == query` (כתובות) במקום `strcmp`.",
+    "לשכוח את המילה האחרונה שנשארה ב-`word` אחרי שהלולאה נגמרה.",
+    "לספור מילים שמכילות את `query` כתת-מחרוזת, באמצעות `strstr`."
+   ],
+   "steps": [
+    {
+     "type": "numeric",
+     "prompt": "עבור `\"But why?! That's why. And don't ask me why.\"` ו-`query = \"why\"`, כמה פעמים נספרת המילה `why` **בתוך הלולאה** (לפני בדיקת המילה האחרונה)?",
+     "answer": 2,
+     "tol": 0,
+     "explain": "שתי המילים `why` הראשונות נספרות בלולאה, והשלישית נשארת ב-`word` ונבדקת אחריה (ריצה אמיתית: 2 בלולאה, ו-3 בסך הכול)."
+    },
+    {
+     "type": "numeric",
+     "prompt": "מה מחזירה `countWordOccur` עבור אותו משפט?",
+     "answer": 3,
+     "tol": 0,
+     "explain": "המילה `why` מופיעה שלוש פעמים (ריצה אמיתית: 3)."
+    },
+    {
+     "type": "fillblank",
+     "prompt": "השלימו את תנאי ההשוואה בלולאה.",
+     "code": true,
+     "lines": [
+      "int countWordOccur(char* sentence, char* separators, char* query)",
+      "{",
+      "       char* word;",
+      "       int count = 0;",
+      "       word = (char*)malloc(strlen(sentence) + 1);",
+      "       while ( (sentence = nextWord(sentence, separators, word)) != NULL )",
+      "___",
+      "                     count++;",
+      "       if (strcmp(word, query) == 0)",
+      "              count++;",
+      "       free(word);",
+      "       return count;",
+      "}"
+     ],
+     "blankIndex": 6,
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "if (strcmp(word, query) == 0)"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "if (strcmp(word, query))"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "if (word == query)"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "if (strlen(word) == strlen(query))"
+      }
+     ],
+     "correctId": "a",
+     "explain": "`strcmp` מחזירה 0 כשהמחרוזות שוות. ב' סופר את המילים השונות, ג' משווה כתובות (אף פעם לא שוות) וד' סופר כל מילה באותו אורך (ריצה אמיתית: ספירות שגויות בכל אחת מהן)."
+    },
+    {
+     "type": "order",
+     "prompt": "סדרו את הפקודות של `countWordOccur` (כל שורה היא בלוק לוגי אחד).",
+     "code": true,
+     "lines": [
+      "char* word; int count = 0; word = (char*)malloc(strlen(sentence) + 1);",
+      "while ( (sentence = nextWord(sentence, separators, word)) != NULL ) if (strcmp(word, query) == 0) count++;",
+      "if (strcmp(word, query) == 0) count++;",
+      "free(word); return count;"
+     ],
+     "explain": "הכנה, לולאת המילים, בדיקת המילה האחרונה ובסוף שחרור והחזרה. כל החלפה נכשלת בבנייה או נותנת ספירה שגויה (נבדק בריצה)."
+    },
+    {
+     "type": "findbug",
+     "prompt": "בגרסה הבאה שורה אחת שונתה, והפונקציה מחזירה 2 במקום 3 על המשפט הנתון. מצאו את השורה.",
+     "code": true,
+     "lines": [
+      "int countWordOccur(char* sentence, char* separators, char* query)",
+      "{",
+      "       char* word;",
+      "       int count = 0;",
+      "       word = (char*)malloc(strlen(sentence) + 1);",
+      "       while ( (sentence = nextWord(sentence, separators, word)) != NULL )",
+      "              if (strcmp(word, query) == 0)",
+      "                     count++;",
+      "       if (strcmp(word, query) != 0)",
+      "              count++;",
+      "       free(word);",
+      "       return count;",
+      "}"
+     ],
+     "bugIndex": 8,
+     "explain": "בבדיקת המילה האחרונה `!= 0` סופר אותה רק כשהיא שונה מ-`query` (ריצה אמיתית: 2)."
+    }
+   ],
+   "stepsSource": "ai-draft"
   },
   {
    "num": 4,
@@ -84,7 +753,66 @@
    "solutionSource": "official-pdf",
    "official": true,
    "confidence": "high",
-   "points": 10
+   "points": 10,
+   "rubric": [
+    {
+     "text": "`main` עובדת עם `x`,`y` הגלובליים, ולכן `y = 5`",
+     "points": 2
+    },
+    {
+     "text": "`f1(20)`: הפרמטר `x` מסתיר את הגלובלי, `y` גלובלי, והפלט `x=20,y=5`",
+     "points": 3
+    },
+    {
+     "text": "`f2(y)`: הפרמטר `y` (עותק של 10) מסתיר את הגלובלי, ו-`x` גלובלי 30, והפלט `x=30,y=10`",
+     "points": 3
+    },
+    {
+     "text": "הפלט ב-`main`: `x=15,y=10`, כי ההשמה ב-`f2` שינתה את `x` הגלובלי ל-15, וההשמה ב-`f1` שינתה את `y` הגלובלי ל-10",
+     "points": 2
+    }
+   ],
+   "rubricSource": "ai-draft",
+   "pitfalls": [
+    "לחשוב ש-`x = y = 10` ב-`f1` משנה את `x` הגלובלי: הוא משנה את הפרמטר `x`, ורק את `y` הגלובלי.",
+    "לחשוב ש-`x = y = 15` ב-`f2` משנה את `y` הגלובלי: הוא משנה רק את הפרמטר `y` ואת `x` הגלובלי.",
+    "להדפיס `x=30` בשורה האחרונה בלי לשים לב ש-`f2` שינתה את `x` הגלובלי."
+   ],
+   "steps": [
+    {
+     "type": "numeric",
+     "prompt": "מה ערך `x` שמדפיסה `f1(20)`?",
+     "answer": 20,
+     "tol": 0,
+     "explain": "הפרמטר `x` מסתיר את `x` הגלובלי (ריצה אמיתית: `x=20,y=5`)."
+    },
+    {
+     "type": "numeric",
+     "prompt": "מה ערך `x` שמדפיסה `f2(y)` (בקריאה השנייה)?",
+     "answer": 30,
+     "tol": 0,
+     "explain": "ב-`f2` אין פרמטר או משתנה בשם `x`, ולכן זה `x` הגלובלי, ש-`f1` לא שינתה (ריצה אמיתית: `x=30,y=10`)."
+    },
+    {
+     "type": "numeric",
+     "prompt": "מה ערך `y` שמדפיסה `printf` האחרונה ב-`main`?",
+     "answer": 10,
+     "tol": 0,
+     "explain": "`f1` שינתה את `y` הגלובלי ל-10, ו-`f2` שינתה רק את הפרמטר `y` שלה (ריצה אמיתית: `x=15,y=10`)."
+    },
+    {
+     "type": "order",
+     "prompt": "סדרו את שלוש שורות הפלט של התוכנית, מהראשונה לאחרונה.",
+     "code": true,
+     "lines": [
+      "x=20,y=5",
+      "x=30,y=10",
+      "x=15,y=10"
+     ],
+     "explain": "ריצה אמיתית: אותן שלוש שורות."
+    }
+   ],
+   "stepsSource": "ai-draft"
   },
   {
    "num": 5,
@@ -176,7 +904,59 @@
    "solutionSource": "official-pdf",
    "official": true,
    "confidence": "high",
-   "points": 10
+   "points": 10,
+   "rubric": [
+    {
+     "text": "`strlen(\"strlen\")` שווה 6",
+     "points": 3
+    },
+    {
+     "text": "`sizeof\"sizeof\"` שווה 7 (שבעה תווים כולל התו האפסי)",
+     "points": 3
+    },
+    {
+     "text": "המחרוזת הקבועה היא כתובת: `\"puts\" - 6 + 7` שקול ל-`\"puts\" + 1`, ולכן `puts` מדפיסה `uts`",
+     "points": 4
+    }
+   ],
+   "rubricSource": "ai-draft",
+   "pitfalls": [
+    "לחשוב ש-`sizeof\"sizeof\"` שווה 6 ולשכוח את התו האפסי, ולקבל `puts`.",
+    "לנסות לחסר מספר ממחרוזת כערך מספרי, במקום לראות בה כתובת של התו הראשון."
+   ],
+   "steps": [
+    {
+     "type": "numeric",
+     "prompt": "מה ערך `strlen(\"strlen\")`?",
+     "answer": 6,
+     "tol": 0,
+     "explain": "שישה תווים, בלי התו האפסי (ריצה אמיתית: 6)."
+    },
+    {
+     "type": "numeric",
+     "prompt": "מה ערך `sizeof\"sizeof\"`?",
+     "answer": 7,
+     "tol": 0,
+     "explain": "מחרוזת קבועה בת שישה תווים תופסת 7 בתים כולל התו האפסי (ריצה אמיתית: 7)."
+    },
+    {
+     "type": "numeric",
+     "prompt": "בכמה תווים מוזזת הכתובת `\"puts\"` בביטוי `\"puts\" - strlen(\"strlen\") + sizeof\"sizeof\"`?",
+     "answer": 1,
+     "tol": 0,
+     "explain": "-6 + 7 = 1, ולכן המצביע מצביע על התו השני (ריצה אמיתית: מודפס `uts`)."
+    },
+    {
+     "type": "text",
+     "prompt": "מה הפלט של התוכנית?",
+     "accept": [
+      "uts"
+     ],
+     "normalize": "none",
+     "explain": "`puts(\"puts\" + 1)` מדפיסה את `uts` (ריצה אמיתית: `uts`)."
+    }
+   ],
+   "stepsSource": "ai-draft"
   }
  ]
 }

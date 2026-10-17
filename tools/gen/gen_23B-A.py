@@ -340,6 +340,333 @@ questions = [
     Q(6, "code", "c_traps_mcq", Q6_TEXT, Q6_SOL, points=10),
 ]
 
+# ---- rubric / pitfalls / steps (ai-draft). Every expected value comes from a real clang run in tools/verify/<CODE>/
+# (steps_check.py compiles the shipped steps; q*.c are the solution harnesses). Lines of order/findbug/fillblank come from the stored solutions.
+import re
+
+
+def rub(*items):
+    return [{"text": t, "points": p} for t, p in items]
+
+
+def strip_c(ln):
+    ln = re.sub(r"\s*//.*$", "", ln)
+    ln = re.sub(r"\s*/\*.*?\*/\s*", " ", ln)
+    return ln.rstrip()
+
+
+def code_lines(src):
+    """Non-blank code lines of a solution, trailing comments removed."""
+    out = []
+    for ln in src.strip("\n").split("\n"):
+        ln = strip_c(ln)
+        if ln.strip() and not ln.startswith("```") and not ln.startswith("**"):
+            out.append(ln)
+    return out
+
+
+def func_lines(src, header_start):
+    """The lines of the function whose header starts with header_start, down to its closing brace at column 0."""
+    ls = code_lines(src)
+    i0 = [i for i, ln in enumerate(ls) if ln.startswith(header_start)]
+    assert len(i0) == 1, header_start
+    i1 = next(i for i in range(i0[0], len(ls)) if ls[i] == "}")
+    return ls[i0[0]:i1 + 1]
+
+
+def swap(lines, old, new):
+    idx = [i for i, ln in enumerate(lines) if ln.strip() == old.strip()]
+    assert len(idx) == 1, old
+    out = list(lines)
+    out[idx[0]] = out[idx[0]].replace(old.strip(), new.strip())
+    return out, idx[0]
+
+
+def blank(lines, target, nth=0):
+    idx = [i for i, ln in enumerate(lines) if ln.strip() == target.strip()]
+    assert len(idx) > nth, target
+    return [("___" if i == idx[nth] else ln) for i, ln in enumerate(lines)], idx[nth]
+
+
+def add(num, part=None, **kw):
+    for q in questions:
+        if q["num"] == num and q.get("part") == part:
+            q.update(kw)
+            return
+    raise KeyError(num)
+
+
+def T(*vals):
+    return [{"id": "abcdef"[i], "type": "text", "value": v} for i, v in enumerate(vals)]
+
+
+def swap_nth(lines, old, new, nth):
+    idx = [i for i, ln in enumerate(lines) if ln.strip() == old.strip()]
+    assert len(idx) > nth, old
+    out = list(lines)
+    out[idx[nth]] = out[idx[nth]].replace(old.strip(), new.strip())
+    return out, idx[nth]
+
+
+# Q1 -- createPolynom
+F1 = func_lines(Q1_SOL, "Item* createPolynom")
+B1 = ["Item* curr = L, * P = NULL; int max_power = 0, power; double *arr;",
+      "while (curr) { if (curr->mon.power > max_power) max_power = curr->mon.power; curr = curr->next; } arr = (double*)calloc(max_power + 1, sizeof(double));",
+      "curr = L; while (curr) { arr[curr->mon.power] += curr->mon.coefficient; curr = curr->next; }",
+      "for (power = 0; power <= max_power; power++) if (arr[power] != 0) { curr = (Item*)malloc(sizeof(Item)); curr->next = P; P = curr; P->mon.coefficient = arr[power]; P->mon.power = power; }",
+      "free(arr); return P;"]
+f1, j1 = blank(F1, "arr[curr->mon.power] += curr->mon.coefficient;")
+b1, i1 = swap(F1, "if (arr[power] != 0)", "if (arr[power] > 0)")
+add(1,
+    rubric=rub(("מציאת החזקה המקסימלית ברשימה `L` במעבר אחד", 8),
+               ("הקצאת מערך עזר מאופס בגודל `max_power+1` וסכימת המקדמים לפי חזקה: `arr[power] += coefficient`", 14),
+               ("בניית הרשימה החדשה מהמערך: איבר `Item` חדש רק לכל מקדם שונה מ-0, והכנסה לראש הרשימה במעבר מחזקה קטנה לגדולה כדי שהרשימה תהיה ממוינת בסדר יורד", 12),
+               ("שחרור מערך העזר והחזרת הרשימה (`NULL` לרשימה ריקה או כשכל המקדמים מתאפסים)", 6)),
+    rubricSource="ai-draft",
+    pitfalls=["להקצות את מערך העזר בגודל `n` (מספר האיברים) ולא `max_power+1`, או להשתמש ב-`malloc` בלי איפוס.",
+              "לכלול ברשימה החדשה מונומים שהמקדם הסופי שלהם 0 (למשל `(3,6)` ו-`(-3,6)` שמתבטלים).",
+              "להכניס לסוף הרשימה או לעבור על המערך מהחזקה הגדולה לקטנה, ולקבל רשימה ממוינת בסדר עולה."],
+    steps=[
+        {"type": "numeric",
+         "prompt": "מה החזקה המקסימלית ברשימה `L` מהדוגמה: `(2,4) (-5,1) (3,6) (6,4) (-8,0) (-3,6) (7.5,3)`?",
+         "answer": 6, "tol": 0,
+         "explain": "החזקות הן 4, 1, 6, 4, 0, 6, 3 והגדולה שבהן 6, ולכן מערך העזר בגודל 7 (ריצה אמיתית: 6)."},
+        {"type": "numeric",
+         "prompt": "אחרי הסכימה, מה ערך `arr[4]` בדוגמה?",
+         "answer": 8, "tol": 0,
+         "explain": "שני המונומים בחזקה 4 הם `2` ו-`6`, וסכומם 8 (ריצה אמיתית: 8, המונום `(8,4)` ברשימה החדשה)."},
+        {"type": "fillblank", "prompt": "השלימו את שורת הסכימה.", "code": True,
+         "lines": f1, "blankIndex": j1,
+         "options": T("arr[curr->mon.power] += curr->mon.coefficient;", "arr[curr->mon.power] = curr->mon.coefficient;",
+                      "arr[curr->mon.power] += curr->mon.power;", "arr[max_power - curr->mon.power] += curr->mon.coefficient;"),
+         "correctId": "a",
+         "explain": "יש לסכום את המקדמים של אותה חזקה באותו תא. ב' דורס את הערך הקודם (`arr[4]` היה 6 במקום 8), ג' מוסיף חזקות במקום מקדמים, וד' מציב בתא שגוי (ריצה אמיתית: רשימות שונות בכל אחת מהן)."},
+        {"type": "order", "prompt": "סדרו את הפקודות של `createPolynom` (כל שורה היא בלוק לוגי אחד).", "code": True, "lines": B1,
+         "explain": "הצהרות, חישוב החזקה המקסימלית והקצאת מערך העזר, סכימת המקדמים, בניית הרשימה מהמערך, ובסוף שחרור והחזרה. כל החלפה נכשלת בבנייה, קורסת או נותנת רשימה שגויה (נבדק בריצה)."},
+        {"type": "findbug", "prompt": "בגרסה הבאה שורה אחת שונתה, והרשימה החדשה אינה כוללת את המונומים בעלי מקדם שלילי (`(-5,1)` ו-`(-8,0)`). מצאו את השורה.", "code": True,
+         "lines": b1, "bugIndex": i1,
+         "explain": "התנאי `> 0` מדלג על מקדם שלילי; הנכון הוא `!= 0` (ריצה אמיתית: נשארים רק `(8,4)` ו-`(7.5,3)`)."},
+    ],
+    stepsSource="ai-draft")
+
+# Q2 -- sortedRowsCols
+FA2 = func_lines(Q2_SOL, "int arrSorted")
+FC2 = func_lines(Q2_SOL, "int columnSorted")
+FS2 = func_lines(Q2_SOL, "void sortedRowsCols")
+B2 = ["int i, j; *num_s_rows = *num_s_cols = 0; *ar_s_rows = (int*)calloc(m, sizeof(int)); *ar_s_cols = (int*)calloc(n, sizeof(int));",
+      "for (i = 0; i < m; i++) if (arrSorted(ar[i], n)) (*ar_s_rows)[(*num_s_rows)++] = i; for (j = 0; j < n; j++) if (columnSorted(ar, m, j)) (*ar_s_cols)[(*num_s_cols)++] = j;",
+      "*ar_s_rows = (int*)realloc(*ar_s_rows, *num_s_rows * sizeof(int)); *ar_s_cols = (int*)realloc(*ar_s_cols, *num_s_cols * sizeof(int));"]
+f2, j2 = blank(FC2, "if (ar[i][col] >= ar[i - 1][col])")
+b2, i2 = swap(FA2, "if (a[i] <= a[i - 1])", "if (a[i] < a[i - 1])")
+add(2,
+    rubric=rub(("`arrSorted`: מעבר על השורה והחזרת 0 כשיש זוג סמוך שאינו עולה ממש (`a[i] <= a[i-1]`)", 8),
+               ("`columnSorted`: מעבר על העמודה והחזרת 0 כשיש זוג סמוך שאינו יורד ממש (`>=`)", 8),
+               ("הקצאת שני מערכים בגודל המרבי (`m` ו-`n`) ואיפוס הגדלים", 8),
+               ("מעבר על כל השורות והעמודות, שימוש בפונקציות העזר ואיסוף האינדקסים בסדר", 10),
+               ("כיווץ המערכים לגודל המדויק עם `realloc`, כך שמערך ריק הוא `NULL` וגודלו 0", 6)),
+    rubricSource="ai-draft",
+    pitfalls=["לבדוק מיון חלש (`a[i] < a[i-1]` במקום `<=`) ולקבל שורות עם ערכים שווים כמו `25 73 84 84`.",
+              "לבדוק עמודה בסדר עולה במקום יורד, או לעבור על העמודה עם מספר העמודות במקום מספר השורות.",
+              "לא לכווץ את המערכים, ולהשאיר בהם תאים מיותרים ולא מאופסים כשחלק מהשורות אינן ממוינות."],
+    steps=[
+        {"type": "numeric",
+         "prompt": "בדוגמה (מטריצה 5 × 4), כמה שורות ממוינות בסדר עולה ממש? זהו `*num_s_rows`.",
+         "answer": 3, "tol": 0,
+         "explain": "שורות 0, 1 ו-3 עולות ממש; שורה 2 (`36 19 ...`) ושורה 4 (`... 84 84`) אינן (ריצה אמיתית: `0 1 3`)."},
+        {"type": "numeric",
+         "prompt": "בדוגמה, כמה עמודות ממוינות בסדר יורד ממש? זהו `*num_s_cols`.",
+         "answer": 1, "tol": 0,
+         "explain": "רק עמודה 3 (`99 93 89 85 84`) יורדת ממש (ריצה אמיתית: `3`)."},
+        {"type": "fillblank", "prompt": "השלימו את תנאי הדחייה ב-`columnSorted`: העמודה יורדת ממש, ולכן...", "code": True,
+         "lines": f2, "blankIndex": j2,
+         "options": T("if (ar[i][col] >= ar[i - 1][col])", "if (ar[i][col] > ar[i - 1][col])",
+                      "if (ar[i][col] <= ar[i - 1][col])", "if (ar[i][col] < ar[i - 1][col])"),
+         "correctId": "a",
+         "explain": "עמודה יורדת ממש כשכל איבר קטן ממש מקודמו, ולכן דוחים כשהאיבר גדול או שווה (`>=`). ב' מקבל עמודות עם ערכים שווים, וג' ו-ד' בודקים סדר עולה (ריצה אמיתית: אינדקסים שונים על מטריצות הבדיקה)."},
+        {"type": "order", "prompt": "סדרו את הפקודות של `sortedRowsCols` (כל שורה היא בלוק לוגי אחד).", "code": True, "lines": B2,
+         "explain": "הכנה (הצהרות, איפוס והקצאה), מעבר שמאסף את האינדקסים, ובסוף כיווץ המערכים. כל החלפה כותבת למערך שלא הוקצה או מכווצת לפני האיסוף (נבדק בריצה)."},
+        {"type": "findbug", "prompt": "בגרסה הבאה של `arrSorted` שורה אחת שונתה, והשורה `25 73 84 84` נחשבת בטעות לממוינת. מצאו את השורה.", "code": True,
+         "lines": b2, "bugIndex": i2,
+         "explain": "`<` במקום `<=` מקבל שני ערכים שווים (`84 84`) כאילו הם עולים ממש; בריצה אמיתית מתקבל `0 1 3 4` במקום `0 1 3`."},
+    ],
+    stepsSource="ai-draft")
+
+# Q3 -- parts a, b, c (nextWord, breakSentence, countWordOccur)
+FN3A = func_lines(Q3A_SOL, "char* nextWord")
+B3A = ["int i = 0;",
+       "while ( sentence[i] && !strchr(separators, sentence[i]) ) { word[i] = sentence[i]; i++; }",
+       "word[i] = '\\0';",
+       "while (sentence[i] && strchr(separators, sentence[i])) i++;",
+       "return sentence[i] ? sentence + i : NULL;"]
+f3a, j3a = blank(FN3A, "while ( sentence[i] && !strchr(separators, sentence[i]) )")
+b3a, i3a = swap(FN3A, "return sentence[i] ? sentence + i : NULL;", "return sentence + i;")
+add(3, "א",
+    rubric=rub(("העתקת תווי המילה הראשונה ל-`word` עד המפריד הראשון או סוף המחרוזת (הבדיקה בעזרת `strchr` על `separators`)", 6),
+               ("סיום `word` ב-`'\\0'`", 3),
+               ("דילוג על כל המפרידים שאחרי המילה", 3),
+               ("החזרת מצביע לתחילת המילה הבאה, או `NULL` כשאין מילה נוספת", 3)),
+    rubricSource="ai-draft",
+    pitfalls=["לעצור רק ברווח ולא בכל אחד מהמפרידים (למשל `Why?!` תועתק כולה).",
+              "לדלג על מפריד אחד בלבד, ולהחזיר מצביע שמצביע על מפריד נוסף.",
+              "להחזיר מצביע לסוף המחרוזת במקום `NULL` כשהמשפט נגמר, ולגרום ללולאה אינסופית אצל הקורא."],
+    steps=[
+        {"type": "numeric",
+         "prompt": "עבור `sentence = \"Why?! That's why.\"` ו-`separators = \"? !.\"`, באיזה אינדקס ב-`sentence` מתחילה המחרוזת שהפונקציה מחזירה?",
+         "answer": 6, "tol": 0,
+         "explain": "המילה `Why` תופסת את האינדקסים 0 עד 2, אחריה שלושה מפרידים באינדקסים 3, 4, 5 (`?`, `!` ורווח), ולכן המילה הבאה מתחילה באינדקס 6 (ריצה אמיתית: `That's why.`)."},
+        {"type": "choice",
+         "prompt": "מה מחזירה הפונקציה כשהמילה הראשונה היא האחרונה במשפט (למשל `sentence = \"why\"`)?",
+         "options": T("`NULL`", "מצביע לתו הסיום של `sentence`", "מצביע לתחילת `sentence`", "מצביע לתחילת `word`"), "correctId": "a",
+         "explain": "אחרי המילה אין עוד תווים, ולכן `sentence[i]` הוא `'\\0'` והפונקציה מחזירה `NULL` (ריצה אמיתית: `NULL`)."},
+        {"type": "fillblank", "prompt": "השלימו את תנאי הלולאה שמעתיקה את המילה.", "code": True,
+         "lines": f3a, "blankIndex": j3a,
+         "options": T("while ( sentence[i] && !strchr(separators, sentence[i]) )", "while ( sentence[i] && strchr(separators, sentence[i]) )",
+                      "while ( sentence[i] && sentence[i] != ' ' )", "while ( sentence[i] && sentence[i] != '?' && sentence[i] != '!' )"),
+         "correctId": "a",
+         "explain": "מעתיקים כל עוד התו אינו מפריד (ואינו סוף המחרוזת). ב' מעתיק את המפרידים במקום את המילה, ג' מתעלם מהמפרידים שאינם רווח, וד' מכיר רק שני מפרידים (ריצה אמיתית: רשימת מילים שגויה במשפט המלא)."},
+        {"type": "order", "prompt": "סדרו את הפקודות של `nextWord` (כל שורה היא בלוק לוגי אחד).", "code": True, "lines": B3A,
+         "explain": "אתחול `i`, העתקת המילה, סיום המחרוזת, דילוג על המפרידים והחזרה. כל החלפה נכשלת בבנייה או משנה את `word` או את הערך המוחזר (נבדק בריצה, עם מאגר שמלא בתו אחר מההתחלה)."},
+        {"type": "findbug", "prompt": "בגרסה הבאה שורה אחת שונתה, והפונקציה אף פעם לא מחזירה `NULL`, ולכן הלולאה אצל הקורא לא נעצרת. מצאו את השורה.", "code": True,
+         "lines": b3a, "bugIndex": i3a,
+         "explain": "`return sentence + i;` מחזירה תמיד מצביע (גם לסוף המחרוזת) ולכן הקורא לא מזהה את סוף המשפט (ריצה אמיתית: התוכנית ממשיכה לקבל מצביע שאינו `NULL`)."},
+    ],
+    stepsSource="ai-draft")
+
+FN3B = func_lines(Q3B_SOL, "int breakSentence")
+B3B = ["FILE* fptr = fopen(file_name, \"w\"); char* word; int count = 0; if (!fptr) return -1;",
+       "word = (char*)malloc(strlen(sentence) + 1);",
+       "while ( (sentence = nextWord(sentence, separators, word)) != NULL ) { fprintf(fptr, \"%s\\n\", word); count++; }",
+       "if (*word) { fprintf(fptr, \"%s\\n\", word); count++; }",
+       "free(word); fclose(fptr); return count;"]
+f3b, j3b = blank(FN3B, "if (*word)")
+b3b, i3b = swap_nth(FN3B, 'fprintf(fptr, "%s\\n", word);', 'fprintf(fptr, "%s", word);', 0)
+add(3, "ב",
+    rubric=rub(("פתיחת הקובץ לכתיבה ובדיקת הצלחה", 3),
+               ("הקצאת מערך עזר ל-`word` בגודל מספיק (`strlen(sentence)+1`)", 2),
+               ("לולאה שקוראת ל-`nextWord`, כותבת כל מילה לשורה נפרדת וסופרת", 5),
+               ("טיפול במילה האחרונה אחרי הלולאה (כש-`nextWord` מחזירה `NULL`), ובמשפט ריק שבו אין מילה", 3),
+               ("שחרור המערך, סגירת הקובץ והחזרת כמות המילים", 2)),
+    rubricSource="ai-draft",
+    pitfalls=["לשכוח את המילה האחרונה: `nextWord` מחזירה `NULL` כשהיא כבר העתיקה את המילה האחרונה ל-`word`, והלולאה נגמרת לפניה.",
+              "לכתוב מילה ריקה לקובץ כשהמשפט ריק, בלי לבדוק `*word`.",
+              "לכתוב מילים בלי `'\\n'` ולקבל שורה אחת בקובץ."],
+    steps=[
+        {"type": "numeric",
+         "prompt": "עבור `sentence = \"But why?! That's why.\"` כמה מילים נכתבות לקובץ **בתוך הלולאה** (לפני הטיפול במילה האחרונה)?",
+         "answer": 3, "tol": 0,
+         "explain": "המילים `But`, `why`, `That's` נכתבות בלולאה, והמילה `why` האחרונה נכתבת אחריה (ריצה אמיתית: הלולאה כתבה 3, והפונקציה החזירה 4)."},
+        {"type": "numeric",
+         "prompt": "מה מחזירה `breakSentence` עבור אותו משפט?",
+         "answer": 4, "tol": 0,
+         "explain": "ארבע מילים: `But`, `why`, `That's`, `why` (ריצה אמיתית: 4)."},
+        {"type": "fillblank", "prompt": "השלימו את התנאי לכתיבת המילה האחרונה אחרי הלולאה.", "code": True,
+         "lines": f3b, "blankIndex": j3b,
+         "options": T("if (*word)", "if (word)", "if (!*word)", "if (count > 0)"),
+         "correctId": "a",
+         "explain": "יש מילה אחרונה כש-`word` אינו מחרוזת ריקה. ב' תמיד נכון וכותב מילה ריקה למשפט ריק, ג' הפוך, וד' מפספס משפט בן מילה אחת (שבו `count` נשאר 0) (ריצה אמיתית: ספירות שגויות על משפט ריק ועל משפט בן מילה אחת)."},
+        {"type": "order", "prompt": "סדרו את הפקודות של `breakSentence` (כל שורה היא בלוק לוגי אחד).", "code": True, "lines": B3B,
+         "explain": "פתיחה, הקצאת `word`, לולאת הכתיבה, כתיבת המילה האחרונה ובסוף שחרור, סגירה והחזרה. כל החלפה נכשלת בבנייה, קורסת או משנה את תוכן הקובץ או את הספירה (נבדק בריצה)."},
+        {"type": "findbug", "prompt": "בגרסה הבאה שורה אחת שונתה, ובקובץ כל המילים נדבקות זו לזו בשורה אחת. מצאו את השורה.", "code": True,
+         "lines": b3b, "bugIndex": i3b,
+         "explain": "הפורמט `\"%s\"` בלי `'\\n'` בתוך הלולאה כותב את המילים ברצף (ריצה אמיתית: הקובץ הוא שורה אחת, `ButwhyThat'swhy`, במקום ארבע שורות)."},
+    ],
+    stepsSource="ai-draft")
+
+FN3C = func_lines(Q3C_SOL, "int countWordOccur")
+B3C = ["char* word; int count = 0; word = (char*)malloc(strlen(sentence) + 1);",
+       "while ( (sentence = nextWord(sentence, separators, word)) != NULL ) if (strcmp(word, query) == 0) count++;",
+       "if (strcmp(word, query) == 0) count++;",
+       "free(word); return count;"]
+f3c, j3c = blank(FN3C, "if (strcmp(word, query) == 0)", nth=0)
+b3c, i3c = swap_nth(FN3C, "if (strcmp(word, query) == 0)", "if (strcmp(word, query) != 0)", 1)
+add(3, "ג",
+    rubric=rub(("הקצאת מערך עזר ל-`word` ואתחול מונה", 2),
+               ("לולאה על המילים עם `nextWord` והשוואת כל מילה ל-`query` עם `strcmp` (ולא השוואת מצביעים)", 4),
+               ("בדיקת המילה האחרונה אחרי הלולאה", 3),
+               ("שחרור והחזרת המונה", 1)),
+    rubricSource="ai-draft",
+    pitfalls=["להשוות `word == query` (כתובות) במקום `strcmp`.",
+              "לשכוח את המילה האחרונה שנשארה ב-`word` אחרי שהלולאה נגמרה.",
+              "לספור מילים שמכילות את `query` כתת-מחרוזת, באמצעות `strstr`."],
+    steps=[
+        {"type": "numeric",
+         "prompt": "עבור `\"But why?! That's why. And don't ask me why.\"` ו-`query = \"why\"`, כמה פעמים נספרת המילה `why` **בתוך הלולאה** (לפני בדיקת המילה האחרונה)?",
+         "answer": 2, "tol": 0,
+         "explain": "שתי המילים `why` הראשונות נספרות בלולאה, והשלישית נשארת ב-`word` ונבדקת אחריה (ריצה אמיתית: 2 בלולאה, ו-3 בסך הכול)."},
+        {"type": "numeric",
+         "prompt": "מה מחזירה `countWordOccur` עבור אותו משפט?",
+         "answer": 3, "tol": 0,
+         "explain": "המילה `why` מופיעה שלוש פעמים (ריצה אמיתית: 3)."},
+        {"type": "fillblank", "prompt": "השלימו את תנאי ההשוואה בלולאה.", "code": True,
+         "lines": f3c, "blankIndex": j3c,
+         "options": T("if (strcmp(word, query) == 0)", "if (strcmp(word, query))", "if (word == query)", "if (strlen(word) == strlen(query))"),
+         "correctId": "a",
+         "explain": "`strcmp` מחזירה 0 כשהמחרוזות שוות. ב' סופר את המילים השונות, ג' משווה כתובות (אף פעם לא שוות) וד' סופר כל מילה באותו אורך (ריצה אמיתית: ספירות שגויות בכל אחת מהן)."},
+        {"type": "order", "prompt": "סדרו את הפקודות של `countWordOccur` (כל שורה היא בלוק לוגי אחד).", "code": True, "lines": B3C,
+         "explain": "הכנה, לולאת המילים, בדיקת המילה האחרונה ובסוף שחרור והחזרה. כל החלפה נכשלת בבנייה או נותנת ספירה שגויה (נבדק בריצה)."},
+        {"type": "findbug", "prompt": "בגרסה הבאה שורה אחת שונתה, והפונקציה מחזירה 2 במקום 3 על המשפט הנתון. מצאו את השורה.", "code": True,
+         "lines": b3c, "bugIndex": i3c,
+         "explain": "בבדיקת המילה האחרונה `!= 0` סופר אותה רק כשהיא שונה מ-`query` (ריצה אמיתית: 2)."},
+    ],
+    stepsSource="ai-draft")
+
+# Q4 -- globals and parameters (values from running q4.c)
+Q4_OUT = ["x=20,y=5", "x=30,y=10", "x=15,y=10"]
+add(4,
+    rubric=rub(("`main` עובדת עם `x`,`y` הגלובליים, ולכן `y = 5`", 2),
+               ("`f1(20)`: הפרמטר `x` מסתיר את הגלובלי, `y` גלובלי, והפלט `x=20,y=5`", 3),
+               ("`f2(y)`: הפרמטר `y` (עותק של 10) מסתיר את הגלובלי, ו-`x` גלובלי 30, והפלט `x=30,y=10`", 3),
+               ("הפלט ב-`main`: `x=15,y=10`, כי ההשמה ב-`f2` שינתה את `x` הגלובלי ל-15, וההשמה ב-`f1` שינתה את `y` הגלובלי ל-10", 2)),
+    rubricSource="ai-draft",
+    pitfalls=["לחשוב ש-`x = y = 10` ב-`f1` משנה את `x` הגלובלי: הוא משנה את הפרמטר `x`, ורק את `y` הגלובלי.",
+              "לחשוב ש-`x = y = 15` ב-`f2` משנה את `y` הגלובלי: הוא משנה רק את הפרמטר `y` ואת `x` הגלובלי.",
+              "להדפיס `x=30` בשורה האחרונה בלי לשים לב ש-`f2` שינתה את `x` הגלובלי."],
+    steps=[
+        {"type": "numeric",
+         "prompt": "מה ערך `x` שמדפיסה `f1(20)`?",
+         "answer": 20, "tol": 0,
+         "explain": "הפרמטר `x` מסתיר את `x` הגלובלי (ריצה אמיתית: `x=20,y=5`)."},
+        {"type": "numeric",
+         "prompt": "מה ערך `x` שמדפיסה `f2(y)` (בקריאה השנייה)?",
+         "answer": 30, "tol": 0,
+         "explain": "ב-`f2` אין פרמטר או משתנה בשם `x`, ולכן זה `x` הגלובלי, ש-`f1` לא שינתה (ריצה אמיתית: `x=30,y=10`)."},
+        {"type": "numeric",
+         "prompt": "מה ערך `y` שמדפיסה `printf` האחרונה ב-`main`?",
+         "answer": 10, "tol": 0,
+         "explain": "`f1` שינתה את `y` הגלובלי ל-10, ו-`f2` שינתה רק את הפרמטר `y` שלה (ריצה אמיתית: `x=15,y=10`)."},
+        {"type": "order", "prompt": "סדרו את שלוש שורות הפלט של התוכנית, מהראשונה לאחרונה.", "code": True, "lines": Q4_OUT,
+         "explain": "ריצה אמיתית: אותן שלוש שורות."},
+    ],
+    stepsSource="ai-draft")
+
+# Q6 -- bonus: "puts" - strlen("strlen") + sizeof "sizeof"
+add(6,
+    rubric=rub(("`strlen(\"strlen\")` שווה 6", 3),
+               ("`sizeof\"sizeof\"` שווה 7 (שבעה תווים כולל התו האפסי)", 3),
+               ("המחרוזת הקבועה היא כתובת: `\"puts\" - 6 + 7` שקול ל-`\"puts\" + 1`, ולכן `puts` מדפיסה `uts`", 4)),
+    rubricSource="ai-draft",
+    pitfalls=["לחשוב ש-`sizeof\"sizeof\"` שווה 6 ולשכוח את התו האפסי, ולקבל `puts`.",
+              "לנסות לחסר מספר ממחרוזת כערך מספרי, במקום לראות בה כתובת של התו הראשון."],
+    steps=[
+        {"type": "numeric",
+         "prompt": "מה ערך `strlen(\"strlen\")`?",
+         "answer": 6, "tol": 0,
+         "explain": "שישה תווים, בלי התו האפסי (ריצה אמיתית: 6)."},
+        {"type": "numeric",
+         "prompt": "מה ערך `sizeof\"sizeof\"`?",
+         "answer": 7, "tol": 0,
+         "explain": "מחרוזת קבועה בת שישה תווים תופסת 7 בתים כולל התו האפסי (ריצה אמיתית: 7)."},
+        {"type": "numeric",
+         "prompt": "בכמה תווים מוזזת הכתובת `\"puts\"` בביטוי `\"puts\" - strlen(\"strlen\") + sizeof\"sizeof\"`?",
+         "answer": 1, "tol": 0,
+         "explain": "-6 + 7 = 1, ולכן המצביע מצביע על התו השני (ריצה אמיתית: מודפס `uts`)."},
+        {"type": "text", "prompt": "מה הפלט של התוכנית?",
+         "accept": ["uts"], "normalize": "none",
+         "explain": "`puts(\"puts\" + 1)` מדפיסה את `uts` (ריצה אמיתית: `uts`)."},
+    ],
+    stepsSource="ai-draft")
+
+
 exam = {
     "examCode": "23B-A",
     "examLabel": "סדנה מתקדמת בתכנות 61108, סמסטר ב' תשפ\"ג, מועד א'",
