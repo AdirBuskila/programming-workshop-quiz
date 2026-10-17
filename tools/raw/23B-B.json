@@ -17,7 +17,162 @@
    "official": true,
    "confidence": "high",
    "points": 40,
-   "image": "images/exams/23B-B-Q1.png"
+   "image": "images/exams/23B-B-Q1.png",
+   "rubric": [
+    {
+     "text": "לולאה חיצונית שרצה כל עוד הרשימה המעגלית אינה ריקה (`lst != NULL`)",
+     "points": 6
+    },
+    {
+     "text": "התקדמות של `m-2` צעדים, כך ש-`lst` מצביע על האיבר שלפני האיבר ה-`m` בספירה",
+     "points": 10
+    },
+    {
+     "text": "ניתוק האיבר מהרשימה המעגלית (`lst->next = tmp->next`) ואיפוס `tmp->next = NULL`, בלי להקצות איברים חדשים",
+     "points": 12
+    },
+    {
+     "text": "הוספה לסוף הרשימה החדשה: טיפול באיבר הראשון (`head`) ועדכון `tail`",
+     "points": 8
+    },
+    {
+     "text": "המשך הספירה מהאיבר שאחרי המנותק (`lst = lst->next`) והחזרת `head`",
+     "points": 4
+    }
+   ],
+   "rubricSource": "ai-draft",
+   "pitfalls": [
+    "להתקדם `m` צעדים (או `m-1`) במקום `m-2`: `lst` חייב לעצור על האיבר שלפני האיבר שמנתקים, כי כך אפשר לעדכן את `next` שלו.",
+    "לשכוח `tmp->next = NULL`, ואז הרשימה החדשה נשארת מחוברת לשאר האיברים של הרשימה המעגלית.",
+    "לא לטפל באיבר הראשון של הרשימה החדשה (`head == NULL`) ולכתוב ל-`tail->next` כשה-`tail` עדיין `NULL`."
+   ],
+   "steps": [
+    {
+     "type": "numeric",
+     "prompt": "הרשימה המעגלית היא `1,2,...,8` והספירה מתחילה ב-`1`. עבור `m = 2`, מהו הערך של האיבר האחרון שעובר לרשימה החדשה?",
+     "answer": 1,
+     "tol": 0,
+     "explain": "סדר ההוצאה הוא `2 4 6 8 3 7 5 1`, ולכן האחרון הוא 1 (ריצה אמיתית: 1)."
+    },
+    {
+     "type": "choice",
+     "prompt": "הרשימה היא `1,2,...,8`, `m = 3`, והספירה מתחילה ב-`1`. על איזה איבר מצביע `lst` מיד אחרי הלולאה `for (i = 0; i < m - 2; i++)`?",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "על האיבר שלפני האיבר שמנתקים (הערך 2)"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "על האיבר שמנתקים (הערך 3)"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "על האיבר שאחרי האיבר שמנתקים (הערך 4)"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "על האיבר שהספירה התחילה בו (הערך 1)"
+      }
+     ],
+     "correctId": "a",
+     "explain": "הלולאה מתקדמת צעד אחד, ולכן `lst` מצביע על 2 ו-`tmp = lst->next` הוא 3 (ריצה אמיתית: `lst->value = 2`, `tmp->value = 3`)."
+    },
+    {
+     "type": "fillblank",
+     "prompt": "השלימו את השורה החסרה שמנתקת את `tmp` מהרשימה המעגלית.",
+     "code": true,
+     "lines": [
+      "node* JosephusPermutation(node* lst, int m)",
+      "{",
+      "    int i;",
+      "    node* head = NULL;",
+      "    node* tail = NULL;",
+      "    node* tmp;",
+      "    while (lst != NULL)",
+      "    {",
+      "        for (i = 0; i < m - 2; i++)",
+      "            lst = lst->next;",
+      "        tmp = lst->next;",
+      "___",
+      "        tmp->next = NULL;",
+      "        if (head == NULL)",
+      "            head = tail = tmp;",
+      "        else",
+      "        {",
+      "            tail->next = tmp;",
+      "            tail = tail->next;",
+      "        }",
+      "        lst = lst->next;",
+      "    }",
+      "    return head;",
+      "}"
+     ],
+     "blankIndex": 11,
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "lst->next = tmp->next;"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "lst->next = tmp;"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "tmp->next = lst->next;"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "lst = tmp->next;"
+      }
+     ],
+     "correctId": "a",
+     "explain": "האיבר שלפני `tmp` צריך לדלג עליו ולהצביע על האיבר שאחריו. בכל אחת מהחלופות האחרות האיבר נשאר ברשימה או שהרשימה נשברת, והפלט שונה (ריצה אמיתית)."
+    },
+    {
+     "type": "findbug",
+     "prompt": "בגרסה הבאה שורה אחת שונתה, ועבור `1,...,8` ו-`m = 3` מתקבל סדר הוצאה שונה מ-`3 6 1 5 2 8 4 7`. מצאו אותה.",
+     "code": true,
+     "lines": [
+      "node* JosephusPermutation(node* lst, int m)",
+      "{",
+      "    int i;",
+      "    node* head = NULL;",
+      "    node* tail = NULL;",
+      "    node* tmp;",
+      "    while (lst != NULL)",
+      "    {",
+      "        for (i = 0; i < m - 1; i++)",
+      "            lst = lst->next;",
+      "        tmp = lst->next;",
+      "        lst->next = tmp->next;",
+      "        tmp->next = NULL;",
+      "        if (head == NULL)",
+      "            head = tail = tmp;",
+      "        else",
+      "        {",
+      "            tail->next = tmp;",
+      "            tail = tail->next;",
+      "        }",
+      "        lst = lst->next;",
+      "    }",
+      "    return head;",
+      "}"
+     ],
+     "bugIndex": 8,
+     "explain": "`m - 1` צעדים במקום `m - 2` גורמים לניתוק האיבר הלא נכון (ריצה אמיתית: הפלט שונה מהמצופה)."
+    }
+   ],
+   "stepsSource": "ai-draft"
   },
   {
    "num": 2,
@@ -28,7 +183,157 @@
    "solutionSource": "official-pdf",
    "official": true,
    "confidence": "high",
-   "points": 40
+   "points": 40,
+   "rubric": [
+    {
+     "text": "פתיחת הקובץ בבינארי (`\"rb\"`), איפוס `*size` והחזרת `NULL` כשהפתיחה נכשלת",
+     "points": 8
+    },
+    {
+     "text": "מעבר ראשון על הקובץ שסופר את הרשומות שעומדות בשני התנאים (`copies <= copies_limit` ו-`year <= last_year`)",
+     "points": 10
+    },
+    {
+     "text": "החזרת `NULL` כשאין רשומה מתאימה, אחרת הקצאת מערך בגודל המדויק `*size`",
+     "points": 10
+    },
+    {
+     "text": "חזרה לתחילת הקובץ (`rewind`) ומעבר שני שמעתיק את הרשומות המתאימות, סגירת הקובץ והחזרת המערך",
+     "points": 12
+    }
+   ],
+   "rubricSource": "ai-draft",
+   "pitfalls": [
+    "לכתוב `<` במקום `<=` (או `>=` לשנה): הסרט עם בדיוק `copies_limit` עותקים או בדיוק `last_year` חייב להיכלל.",
+    "לשכוח `rewind` (או `fseek`) בין שני המעברים, ואז המעבר השני לא קורא אף רשומה והמערך נשאר אפסים.",
+    "לבדוק `feof` לפני הקריאה הראשונה, ואז הרשומה האחרונה נספרת פעמיים."
+   ],
+   "steps": [
+    {
+     "type": "numeric",
+     "prompt": "בקובץ הדוגמה (חמש הרשומות) קוראים לפונקציה עם `copies_limit = 3` ו-`last_year = 1972`. כמה רשומות יעמדו בשני התנאים?",
+     "answer": 3,
+     "tol": 0,
+     "explain": "מתאימות `A346-f`, `S516-t` ו-`R11-v`. `D8120-fx` נפסל בגלל 4 עותקים, ו-`G555-xx` בגלל שנת 2010 (ריצה אמיתית: 3)."
+    },
+    {
+     "type": "numeric",
+     "prompt": "כל רשומה מטיפוס `film` תופסת 20 בתים (כולל ריפוד). מה גודל קובץ הדוגמה בבתים (חמש רשומות)?",
+     "answer": 100,
+     "tol": 0,
+     "explain": "5 × 20 = 100 (ריצה אמיתית: `sizeof(film) = 20` וגודל הקובץ 100 בתים)."
+    },
+    {
+     "type": "fillblank",
+     "prompt": "השלימו את השורה החסרה שבין שני המעברים על הקובץ.",
+     "code": true,
+     "lines": [
+      "film* appropriateFilm(char* fileName, int copies_limit, int last_year, int* size)",
+      "{",
+      "    int i = 0;",
+      "    FILE* fptr = fopen(fileName, \"rb\");",
+      "    film* approp_film_units, unit;",
+      "    *size = 0;",
+      "    if (!fptr)",
+      "        return NULL;",
+      "    /* Estimation of array size */",
+      "    fread(&unit, sizeof(film), 1, fptr);",
+      "    while (!feof(fptr))",
+      "    {",
+      "        if (unit.copies <= copies_limit && unit.year <= last_year)",
+      "            (*size)++;",
+      "        fread(&unit, sizeof(film), 1, fptr);",
+      "    }",
+      "    if (*size == 0)",
+      "    {",
+      "        fclose(fptr);",
+      "        return NULL;",
+      "    }",
+      "    approp_film_units = (film*)calloc(*size, sizeof(film)); //array allocation",
+      "    /* Filling of array */",
+      "___",
+      "    fread(&unit, sizeof(film), 1, fptr);",
+      "    while (!feof(fptr))",
+      "    {",
+      "        if (unit.copies <= copies_limit && unit.year <= last_year)",
+      "            approp_film_units[i++] = unit;",
+      "        fread(&unit, sizeof(film), 1, fptr);",
+      "    }",
+      "    fclose(fptr);",
+      "    return approp_film_units;",
+      "}"
+     ],
+     "blankIndex": 23,
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "rewind(fptr);"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "fseek(fptr, 0, SEEK_END);"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "fseek(fptr, sizeof(film), SEEK_SET);"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "*size = 0;"
+      }
+     ],
+     "correctId": "a",
+     "explain": "המעבר השני חייב להתחיל מהרשומה הראשונה. בכל חלופה אחרת הוא מדלג על רשומות או לא קורא אותן, והפלט שונה (ריצה אמיתית)."
+    },
+    {
+     "type": "findbug",
+     "prompt": "בגרסה הבאה שורה אחת שונתה. בדוגמה (`copies_limit = 2`, `last_year = 1970`) הרשומה `A346-f` חסרה בתוצאה ובמקומה יש רשומה ריקה בסוף. מצאו את השורה.",
+     "code": true,
+     "lines": [
+      "film* appropriateFilm(char* fileName, int copies_limit, int last_year, int* size)",
+      "{",
+      "    int i = 0;",
+      "    FILE* fptr = fopen(fileName, \"rb\");",
+      "    film* approp_film_units, unit;",
+      "    *size = 0;",
+      "    if (!fptr)",
+      "        return NULL;",
+      "    /* Estimation of array size */",
+      "    fread(&unit, sizeof(film), 1, fptr);",
+      "    while (!feof(fptr))",
+      "    {",
+      "        if (unit.copies <= copies_limit && unit.year <= last_year)",
+      "            (*size)++;",
+      "        fread(&unit, sizeof(film), 1, fptr);",
+      "    }",
+      "    if (*size == 0)",
+      "    {",
+      "        fclose(fptr);",
+      "        return NULL;",
+      "    }",
+      "    approp_film_units = (film*)calloc(*size, sizeof(film)); //array allocation",
+      "    /* Filling of array */",
+      "    rewind(fptr);",
+      "    fread(&unit, sizeof(film), 1, fptr);",
+      "    while (!feof(fptr))",
+      "    {",
+      "        if (unit.copies < copies_limit && unit.year <= last_year)",
+      "            approp_film_units[i++] = unit;",
+      "        fread(&unit, sizeof(film), 1, fptr);",
+      "    }",
+      "    fclose(fptr);",
+      "    return approp_film_units;",
+      "}"
+     ],
+     "bugIndex": 27,
+     "explain": "במעבר השני נכתב `<` במקום `<=`, ולכן הרשומה עם 2 עותקים לא מועתקת אף שנספרה במעבר הראשון (ריצה אמיתית)."
+    }
+   ],
+   "stepsSource": "ai-draft"
   },
   {
    "num": 3,
@@ -39,7 +344,144 @@
    "solutionSource": "official-pdf",
    "official": true,
    "confidence": "high",
-   "points": 40
+   "points": 40,
+   "rubric": [
+    {
+     "text": "משתנה `static` ששומר את המיקום בין הקריאות, ואיתחול שלו מהמשפט רק כשהארגומנט אינו `NULL`",
+     "points": 10
+    },
+    {
+     "text": "דילוג על מפרידים לפני המילה (עם בדיקת `*start` כדי לא לעבור את סוף המחרוזת)",
+     "points": 8
+    },
+    {
+     "text": "העתקת תווי המילה למחרוזת דינמית חדשה (בלי לשנות את המשפט) וסיום ב-`'\\0'`",
+     "points": 12
+    },
+    {
+     "text": "החזרת `NULL` (ושחרור הזיכרון) כשאין עוד מילים",
+     "points": 10
+    }
+   ],
+   "rubricSource": "ai-draft",
+   "pitfalls": [
+    "לא להשתמש ב-`static` ולאבד את המיקום בין הקריאות, או לשנות את המשפט המקורי (כמו ש-`strtok` עושה).",
+    "לשכוח את בדיקת `*start` ב-`strchr(separators, *start)`: `strchr` מוצאת גם את תו הסיום `'\\0'`, ולכן הלולאה תעבור את סוף המחרוזת.",
+    "לא לסיים את המילה ב-`'\\0'` או להחזיר מחרוזת ריקה במקום `NULL` כשאין עוד מילים."
+   ],
+   "steps": [
+    {
+     "type": "numeric",
+     "prompt": "קוראים ל-`my_strtok` עם המשפט `\"a,,b,c,\"` והמפריד `\",\"`, ואחר כך שוב ושוב עם `NULL` עד לקבלת `NULL`. כמה מילים מוחזרות?",
+     "answer": 3,
+     "tol": 0,
+     "explain": "המילים הן `a`, `b`, `c`. הפסיקים הכפולים והפסיק בסוף לא יוצרים מילים ריקות (ריצה אמיתית: 3)."
+    },
+    {
+     "type": "fillblank",
+     "prompt": "השלימו את השורה החסרה: מה קורה בקריאה הראשונה?",
+     "code": true,
+     "lines": [
+      "char* my_strtok(char* sentence, char* separators)",
+      "{",
+      "    int i = 0;",
+      "    char* word;",
+      "    static char* start;",
+      "    if (sentence != NULL)",
+      "___",
+      "    word = (char*)malloc(strlen(start) + 1);",
+      "    while (*start && strchr(separators, *start)) // scan separators",
+      "        start++;",
+      "    while (*start && !strchr(separators, *start)) // scan word",
+      "    {",
+      "        word[i++] = *start;",
+      "        start++;",
+      "    }",
+      "    if (i > 0) // word was found",
+      "    {",
+      "        word[i] = '\\0';",
+      "        word = (char*)realloc(word, i + 1);",
+      "        return word;",
+      "    }",
+      "    free(word);",
+      "    return NULL;",
+      "}"
+     ],
+     "blankIndex": 6,
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "start = sentence;"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "sentence = start;"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "start = sentence + 1;"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "start = NULL;"
+      }
+     ],
+     "correctId": "a",
+     "explain": "בקריאה הראשונה `start` מקבל את תחילת המשפט. כל חלופה אחרת קורסת או מדלגת על התו הראשון, ולכן הפלט שונה (ריצה אמיתית)."
+    },
+    {
+     "type": "order",
+     "prompt": "סדרו את גוף הפונקציה `my_strtok`. כל שורה היא בלוק לוגי אחד.",
+     "code": true,
+     "lines": [
+      "int i = 0; char* word; static char* start;",
+      "if (sentence != NULL) start = sentence; word = (char*)malloc(strlen(start) + 1);",
+      "while (*start && strchr(separators, *start)) start++;",
+      "while (*start && !strchr(separators, *start)) { word[i++] = *start; start++; }",
+      "if (i > 0) { word[i] = '\\0'; word = (char*)realloc(word, i + 1); return word; }",
+      "free(word); return NULL;"
+     ],
+     "explain": "הצהרות, אתחול `start` והקצאה, דילוג על מפרידים, קריאת המילה, החזרתה אם נמצאה, ואחרת שחרור והחזרת `NULL`. כל החלפה של שני בלוקים משנה את הפלט או שוברת את הקומפילציה (ריצה אמיתית)."
+    },
+    {
+     "type": "findbug",
+     "prompt": "בגרסה הבאה שורה אחת שונתה, ועבור `\"   Why?! That's why.\"` כל מילה מוחזרת בלי התו האחרון שלה (`Wh` במקום `Why`). מצאו אותה.",
+     "code": true,
+     "lines": [
+      "char* my_strtok(char* sentence, char* separators)",
+      "{",
+      "    int i = 0;",
+      "    char* word;",
+      "    static char* start;",
+      "    if (sentence != NULL)",
+      "        start = sentence;",
+      "    word = (char*)malloc(strlen(start) + 1);",
+      "    while (*start && strchr(separators, *start)) // scan separators",
+      "        start++;",
+      "    while (*start && !strchr(separators, *start)) // scan word",
+      "    {",
+      "        word[i++] = *start;",
+      "        start++;",
+      "    }",
+      "    if (i > 0) // word was found",
+      "    {",
+      "        word[i - 1] = '\\0';",
+      "        word = (char*)realloc(word, i + 1);",
+      "        return word;",
+      "    }",
+      "    free(word);",
+      "    return NULL;",
+      "}"
+     ],
+     "bugIndex": 17,
+     "explain": "סיום המחרוזת ב-`word[i - 1]` חותך את התו האחרון של כל מילה (ריצה אמיתית: `Wh`)."
+    }
+   ],
+   "stepsSource": "ai-draft"
   },
   {
    "num": 4,
@@ -50,7 +492,132 @@
    "solutionSource": "official-pdf",
    "official": true,
    "confidence": "high",
-   "points": 10
+   "points": 10,
+   "rubric": [
+    {
+     "text": "שורות `Print1`: `p2 = p1` מעתיקה את כל השדות, כולל הכתובת שנשמרת ב-`val3`",
+     "points": 2
+    },
+    {
+     "text": "שורות `Print2`: `val2` של `p2` הוא עותק נפרד (רק `p2` משתנה), ו-`val3` משותף לשני המבנים (שניהם משתנים)",
+     "points": 3
+    },
+    {
+     "text": "שורות `Print3`: `func1` מקבלת עותק, ולכן `val1` ו-`val2` של `p1` לא משתנים, אבל `val3[1]` משתנה דרך המצביע המשותף",
+     "points": 3
+    },
+    {
+     "text": "`func2` מקבלת כתובת ומשנה את `p2` עצמו: `val1 = 222`, `val2[1] = 'X'`, ואת `val3[1] = 'X'`",
+     "points": 2
+    }
+   ],
+   "rubricSource": "ai-draft",
+   "pitfalls": [
+    "לחשוב ש-`p2 = p1` מעתיקה גם את המחרוזת ש-`val3` מצביע עליה, ולכתוב ש-`p1.val3` נשאר `aaa` אחרי השינוי דרך `p2`.",
+    "לחשוב ש-`func1` (העברה by value) משנה את `p1.val1` ל-444 או את `p1.val2`, כשהיא משנה רק את התו המשותף בזיכרון הדינמי.",
+    "לשכוח ש-`val3[1]` נכתב פעמיים (`'Y'` ב-`func1` ואחר כך `'X'` ב-`func2`), והערך הסופי הוא `'X'`."
+   ],
+   "steps": [
+    {
+     "type": "choice",
+     "prompt": "מה מודפס בשורה `p1 Print2`?",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`p1 Print2: 20, bbb, Zaa`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`p1 Print2: 20, bbb, aaa`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`p1 Print2: 20, Zbb, Zaa`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`p1 Print2: 20, Zbb, aaa`"
+      }
+     ],
+     "correctId": "a",
+     "explain": "`val2` הוא מערך בתוך המבנה והועתק, ולכן `p1.val2` נשאר `bbb`. `val3` הוא מצביע משותף, ולכן התו הראשון שונה ל-`Z` גם ב-`p1` (ריצה אמיתית: `20, bbb, Zaa`)."
+    },
+    {
+     "type": "choice",
+     "prompt": "למה `p1.val3` השתנה ל-`Zaa` למרות שהשינוי בוצע דרך `p2`?",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`p2 = p1` מעתיקה את הכתובת שב-`val3` ולא את המחרוזת, ולכן שני המצביעים מצביעים לאותו מקום בזיכרון"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`p2 = p1` מעתיקה את המחרוזת ש-`val3` מצביע עליה, אבל `printf` מעדכנת את `p1` לפי `p2`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "המערך `val2` משותף בין `p1` ל-`p2` ולכן `p1.val2` אמור היה להשתנות גם הוא"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "הפונקציה `malloc` מקצה זיכרון שמשותף אוטומטית לכל המבנים בתוכנית"
+      }
+     ],
+     "correctId": "a",
+     "explain": "העתקת מבנה היא העתקה של כל שדה. מצביע מועתק ככתובת בלבד. `p1.val2` נשאר `bbb` ולכן המערך לא משותף (ריצה אמיתית)."
+    },
+    {
+     "type": "choice",
+     "prompt": "מה מודפס בשורה `p1 Print3`?",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`p1 Print3: 20, bbb, ZXa`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`p1 Print3: 444, bbb, ZYa`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`p1 Print3: 20, bYb, ZYa`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`p1 Print3: 222, bbb, ZXa`"
+      }
+     ],
+     "correctId": "a",
+     "explain": "`func1` מקבלת עותק ולכן `val1` ו-`val2` של `p1` לא משתנים. `val3[1]` נכתב `'Y'` ואחר כך `'X'` על אותה מחרוזת (ריצה אמיתית: `20, bbb, ZXa`)."
+    },
+    {
+     "type": "order",
+     "prompt": "סדרו את ששת שורות הפלט של התוכנית, מהראשונה לאחרונה.",
+     "code": true,
+     "lines": [
+      "p1 Print1: 20, bbb, aaa",
+      "p2 Print1: 20, bbb, aaa",
+      "p1 Print2: 20, bbb, Zaa",
+      "p2 Print2: 20, Zbb, Zaa",
+      "p1 Print3: 20, bbb, ZXa",
+      "p2 Print3: 222, ZXb, ZXa"
+     ],
+     "explain": "שני `printf` אחרי ההעתקה, שניים אחרי השינוי של `p2`, ושניים אחרי הקריאות לפונקציות (ריצה אמיתית: אותן שש שורות)."
+    }
+   ],
+   "stepsSource": "ai-draft"
   },
   {
    "num": 5,
@@ -152,7 +719,52 @@
    "solutionSource": "official-pdf",
    "official": true,
    "confidence": "high",
-   "points": 10
+   "points": 10,
+   "rubric": [
+    {
+     "text": "חישוב איברי המערך: שני תווי `'^'` ראשונים, והאיבר השלישי הוא `'^' ^ '^'` (XOR) ולא תו נוסף",
+     "points": 4
+    },
+    {
+     "text": "XOR של שני ערכים שווים הוא 0, שהוא `'\\0'` (תו סיום המחרוזת)",
+     "points": 3
+    },
+    {
+     "text": "`printf` עם `%s` מדפיסה עד ה-`'\\0'` הראשון, ולכן הפלט הוא `^^`",
+     "points": 3
+    }
+   ],
+   "rubricSource": "ai-draft",
+   "pitfalls": [
+    "לקרוא את הסוגריים כחמישה תווי `^` ולהדפיס `^^^^^`, כשהביטוי `'^'^'^'` הוא פעולת XOR אחת שנותנת איבר אחד.",
+    "לחשוב שהתו האחרון `'^'` מודפס גם הוא, אף שהוא נמצא אחרי ה-`'\\0'`."
+   ],
+   "steps": [
+    {
+     "type": "numeric",
+     "prompt": "כמה איברים יש במערך `s`? (`sizeof(s)`)",
+     "answer": 4,
+     "tol": 0,
+     "explain": "האיברים: `'^'`, `'^'`, `'^'^'^'`, `'^'` (ריצה אמיתית: 4)."
+    },
+    {
+     "type": "numeric",
+     "prompt": "מה הערך של `s[2]`, כלומר של `'^' ^ '^'`?",
+     "answer": 0,
+     "tol": 0,
+     "explain": "XOR של ערכים שווים נותן 0 (ריצה אמיתית: 0)."
+    },
+    {
+     "type": "text",
+     "prompt": "מה מודפס? (כתבו את התווים בלבד)",
+     "accept": [
+      "^^"
+     ],
+     "normalize": "none",
+     "explain": "`printf(\"%s\", s)` עוצרת ב-`s[2] = 0`, ולכן מודפסים רק `s[0]` ו-`s[1]` (ריצה אמיתית: `^^`)."
+    }
+   ],
+   "stepsSource": "ai-draft"
   }
  ]
 }

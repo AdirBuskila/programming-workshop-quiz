@@ -368,6 +368,210 @@ questions = [
     Q(6, "code", "bit_manipulation", Q6_TEXT, Q6_SOL, points=10),
 ]
 
+# ---- rubric / pitfalls / steps (ai-draft). Every expected value comes from a real clang run: tools/verify/23B-B/steps_check.py
+# (probes + order/fillblank/findbug checks through verify/step_lib.py). Lines of order/findbug/fillblank come from the stored solutions.
+def rub(*items):
+    return [{"text": t, "points": p} for t, p in items]
+
+
+def lines_of(src):
+    return [ln for ln in src.strip("\n").split("\n") if ln.strip() and not ln.startswith("```")]
+
+
+def func_lines(src, header_start):
+    """The code lines of the function whose header line starts with header_start, to its closing brace."""
+    ls = lines_of(src)
+    i0 = [i for i, ln in enumerate(ls) if ln.startswith(header_start)]
+    assert len(i0) == 1, header_start
+    i1 = next(i for i in range(i0[0], len(ls)) if ls[i] == "}")
+    return ls[i0[0]:i1 + 1]
+
+
+def swap(lines, old, new, nth=0):
+    idx = [i for i, ln in enumerate(lines) if ln.strip() == old.strip()]
+    assert len(idx) > nth and (nth > 0 or len(idx) == 1), old
+    out = list(lines)
+    out[idx[nth]] = out[idx[nth]].replace(old.strip(), new.strip())
+    return out, idx[nth]
+
+
+def blank(lines, target, nth=0):
+    idx = [i for i, ln in enumerate(lines) if ln.strip() == target]
+    assert len(idx) > nth and (nth > 0 or len(idx) == 1), target
+    return [("___" if i == idx[nth] else ln) for i, ln in enumerate(lines)], idx[nth]
+
+
+def add(num, part=None, **kw):
+    for q in questions:
+        if q["num"] == num and q.get("part") == part:
+            q.update(kw)
+            return
+    raise KeyError(num)
+
+
+# Q1
+F1 = func_lines(Q1_SOL, "node* JosephusPermutation")
+b1, i1 = swap(F1, "for (i = 0; i < m - 2; i++)", "for (i = 0; i < m - 1; i++)")
+f1, j1 = blank(F1, "lst->next = tmp->next;")
+add(1,
+    rubric=rub(("לולאה חיצונית שרצה כל עוד הרשימה המעגלית אינה ריקה (`lst != NULL`)", 6),
+               ("התקדמות של `m-2` צעדים, כך ש-`lst` מצביע על האיבר שלפני האיבר ה-`m` בספירה", 10),
+               ("ניתוק האיבר מהרשימה המעגלית (`lst->next = tmp->next`) ואיפוס `tmp->next = NULL`, בלי להקצות איברים חדשים", 12),
+               ("הוספה לסוף הרשימה החדשה: טיפול באיבר הראשון (`head`) ועדכון `tail`", 8),
+               ("המשך הספירה מהאיבר שאחרי המנותק (`lst = lst->next`) והחזרת `head`", 4)),
+    rubricSource="ai-draft",
+    pitfalls=["להתקדם `m` צעדים (או `m-1`) במקום `m-2`: `lst` חייב לעצור על האיבר שלפני האיבר שמנתקים, כי כך אפשר לעדכן את `next` שלו.",
+              "לשכוח `tmp->next = NULL`, ואז הרשימה החדשה נשארת מחוברת לשאר האיברים של הרשימה המעגלית.",
+              "לא לטפל באיבר הראשון של הרשימה החדשה (`head == NULL`) ולכתוב ל-`tail->next` כשה-`tail` עדיין `NULL`."],
+    steps=[
+        {"type": "numeric",
+         "prompt": "הרשימה המעגלית היא `1,2,...,8` והספירה מתחילה ב-`1`. עבור `m = 2`, מהו הערך של האיבר האחרון שעובר לרשימה החדשה?",
+         "answer": 1, "tol": 0,
+         "explain": "סדר ההוצאה הוא `2 4 6 8 3 7 5 1`, ולכן האחרון הוא 1 (ריצה אמיתית: 1)."},
+        {"type": "choice",
+         "prompt": "הרשימה היא `1,2,...,8`, `m = 3`, והספירה מתחילה ב-`1`. על איזה איבר מצביע `lst` מיד אחרי הלולאה `for (i = 0; i < m - 2; i++)`?",
+         "options": opts("על האיבר שלפני האיבר שמנתקים (הערך 2)", "על האיבר שמנתקים (הערך 3)",
+                         "על האיבר שאחרי האיבר שמנתקים (הערך 4)", "על האיבר שהספירה התחילה בו (הערך 1)"), "correctId": "a",
+         "explain": "הלולאה מתקדמת צעד אחד, ולכן `lst` מצביע על 2 ו-`tmp = lst->next` הוא 3 (ריצה אמיתית: `lst->value = 2`, `tmp->value = 3`)."},
+        {"type": "fillblank", "prompt": "השלימו את השורה החסרה שמנתקת את `tmp` מהרשימה המעגלית.", "code": True,
+         "lines": f1, "blankIndex": j1,
+         "options": opts("lst->next = tmp->next;", "lst->next = tmp;", "tmp->next = lst->next;", "lst = tmp->next;"),
+         "correctId": "a",
+         "explain": "האיבר שלפני `tmp` צריך לדלג עליו ולהצביע על האיבר שאחריו. בכל אחת מהחלופות האחרות האיבר נשאר ברשימה או שהרשימה נשברת, והפלט שונה (ריצה אמיתית)."},
+        {"type": "findbug",
+         "prompt": "בגרסה הבאה שורה אחת שונתה, ועבור `1,...,8` ו-`m = 3` מתקבל סדר הוצאה שונה מ-`3 6 1 5 2 8 4 7`. מצאו אותה.",
+         "code": True, "lines": b1, "bugIndex": i1,
+         "explain": "`m - 1` צעדים במקום `m - 2` גורמים לניתוק האיבר הלא נכון (ריצה אמיתית: הפלט שונה מהמצופה)."},
+    ],
+    stepsSource="ai-draft")
+
+# Q2
+F2 = func_lines(Q2_SOL, "film* appropriateFilm")
+b2, i2 = swap(F2, "if (unit.copies <= copies_limit && unit.year <= last_year)",
+              "if (unit.copies < copies_limit && unit.year <= last_year)", nth=1)
+f2, j2 = blank(F2, "rewind(fptr);")
+add(2,
+    rubric=rub(("פתיחת הקובץ בבינארי (`\"rb\"`), איפוס `*size` והחזרת `NULL` כשהפתיחה נכשלת", 8),
+               ("מעבר ראשון על הקובץ שסופר את הרשומות שעומדות בשני התנאים (`copies <= copies_limit` ו-`year <= last_year`)", 10),
+               ("החזרת `NULL` כשאין רשומה מתאימה, אחרת הקצאת מערך בגודל המדויק `*size`", 10),
+               ("חזרה לתחילת הקובץ (`rewind`) ומעבר שני שמעתיק את הרשומות המתאימות, סגירת הקובץ והחזרת המערך", 12)),
+    rubricSource="ai-draft",
+    pitfalls=["לכתוב `<` במקום `<=` (או `>=` לשנה): הסרט עם בדיוק `copies_limit` עותקים או בדיוק `last_year` חייב להיכלל.",
+              "לשכוח `rewind` (או `fseek`) בין שני המעברים, ואז המעבר השני לא קורא אף רשומה והמערך נשאר אפסים.",
+              "לבדוק `feof` לפני הקריאה הראשונה, ואז הרשומה האחרונה נספרת פעמיים."],
+    steps=[
+        {"type": "numeric",
+         "prompt": "בקובץ הדוגמה (חמש הרשומות) קוראים לפונקציה עם `copies_limit = 3` ו-`last_year = 1972`. כמה רשומות יעמדו בשני התנאים?",
+         "answer": 3, "tol": 0,
+         "explain": "מתאימות `A346-f`, `S516-t` ו-`R11-v`. `D8120-fx` נפסל בגלל 4 עותקים, ו-`G555-xx` בגלל שנת 2010 (ריצה אמיתית: 3)."},
+        {"type": "numeric",
+         "prompt": "כל רשומה מטיפוס `film` תופסת 20 בתים (כולל ריפוד). מה גודל קובץ הדוגמה בבתים (חמש רשומות)?",
+         "answer": 100, "tol": 0,
+         "explain": "5 × 20 = 100 (ריצה אמיתית: `sizeof(film) = 20` וגודל הקובץ 100 בתים)."},
+        {"type": "fillblank", "prompt": "השלימו את השורה החסרה שבין שני המעברים על הקובץ.", "code": True,
+         "lines": f2, "blankIndex": j2,
+         "options": opts("rewind(fptr);", "fseek(fptr, 0, SEEK_END);", "fseek(fptr, sizeof(film), SEEK_SET);", "*size = 0;"),
+         "correctId": "a",
+         "explain": "המעבר השני חייב להתחיל מהרשומה הראשונה. בכל חלופה אחרת הוא מדלג על רשומות או לא קורא אותן, והפלט שונה (ריצה אמיתית)."},
+        {"type": "findbug",
+         "prompt": "בגרסה הבאה שורה אחת שונתה. בדוגמה (`copies_limit = 2`, `last_year = 1970`) הרשומה `A346-f` חסרה בתוצאה ובמקומה יש רשומה ריקה בסוף. מצאו את השורה.",
+         "code": True, "lines": b2, "bugIndex": i2,
+         "explain": "במעבר השני נכתב `<` במקום `<=`, ולכן הרשומה עם 2 עותקים לא מועתקת אף שנספרה במעבר הראשון (ריצה אמיתית)."},
+    ],
+    stepsSource="ai-draft")
+
+# Q3
+F3 = func_lines(Q3_SOL, "char* my_strtok")
+b3, i3 = swap(F3, "word[i] = '\\0';", "word[i - 1] = '\\0';")
+f3, j3 = blank(F3, "start = sentence;")
+Q3_BODY = ["int i = 0; char* word; static char* start;",
+           "if (sentence != NULL) start = sentence; word = (char*)malloc(strlen(start) + 1);",
+           "while (*start && strchr(separators, *start)) start++;",
+           "while (*start && !strchr(separators, *start)) { word[i++] = *start; start++; }",
+           "if (i > 0) { word[i] = '\\0'; word = (char*)realloc(word, i + 1); return word; }",
+           "free(word); return NULL;"]
+add(3,
+    rubric=rub(("משתנה `static` ששומר את המיקום בין הקריאות, ואיתחול שלו מהמשפט רק כשהארגומנט אינו `NULL`", 10),
+               ("דילוג על מפרידים לפני המילה (עם בדיקת `*start` כדי לא לעבור את סוף המחרוזת)", 8),
+               ("העתקת תווי המילה למחרוזת דינמית חדשה (בלי לשנות את המשפט) וסיום ב-`'\\0'`", 12),
+               ("החזרת `NULL` (ושחרור הזיכרון) כשאין עוד מילים", 10)),
+    rubricSource="ai-draft",
+    pitfalls=["לא להשתמש ב-`static` ולאבד את המיקום בין הקריאות, או לשנות את המשפט המקורי (כמו ש-`strtok` עושה).",
+              "לשכוח את בדיקת `*start` ב-`strchr(separators, *start)`: `strchr` מוצאת גם את תו הסיום `'\\0'`, ולכן הלולאה תעבור את סוף המחרוזת.",
+              "לא לסיים את המילה ב-`'\\0'` או להחזיר מחרוזת ריקה במקום `NULL` כשאין עוד מילים."],
+    steps=[
+        {"type": "numeric",
+         "prompt": "קוראים ל-`my_strtok` עם המשפט `\"a,,b,c,\"` והמפריד `\",\"`, ואחר כך שוב ושוב עם `NULL` עד לקבלת `NULL`. כמה מילים מוחזרות?",
+         "answer": 3, "tol": 0,
+         "explain": "המילים הן `a`, `b`, `c`. הפסיקים הכפולים והפסיק בסוף לא יוצרים מילים ריקות (ריצה אמיתית: 3)."},
+        {"type": "fillblank", "prompt": "השלימו את השורה החסרה: מה קורה בקריאה הראשונה?", "code": True,
+         "lines": f3, "blankIndex": j3,
+         "options": opts("start = sentence;", "sentence = start;", "start = sentence + 1;", "start = NULL;"),
+         "correctId": "a",
+         "explain": "בקריאה הראשונה `start` מקבל את תחילת המשפט. כל חלופה אחרת קורסת או מדלגת על התו הראשון, ולכן הפלט שונה (ריצה אמיתית)."},
+        {"type": "order", "prompt": "סדרו את גוף הפונקציה `my_strtok`. כל שורה היא בלוק לוגי אחד.", "code": True,
+         "lines": Q3_BODY,
+         "explain": "הצהרות, אתחול `start` והקצאה, דילוג על מפרידים, קריאת המילה, החזרתה אם נמצאה, ואחרת שחרור והחזרת `NULL`. כל החלפה של שני בלוקים משנה את הפלט או שוברת את הקומפילציה (ריצה אמיתית)."},
+        {"type": "findbug",
+         "prompt": "בגרסה הבאה שורה אחת שונתה, ועבור `\"   Why?! That's why.\"` כל מילה מוחזרת בלי התו האחרון שלה (`Wh` במקום `Why`). מצאו אותה.",
+         "code": True, "lines": b3, "bugIndex": i3,
+         "explain": "סיום המחרוזת ב-`word[i - 1]` חותך את התו האחרון של כל מילה (ריצה אמיתית: `Wh`)."},
+    ],
+    stepsSource="ai-draft")
+
+# Q4 (output verified by running the program from the question)
+Q4_LINES = ["p1 Print1: 20, bbb, aaa", "p2 Print1: 20, bbb, aaa", "p1 Print2: 20, bbb, Zaa",
+            "p2 Print2: 20, Zbb, Zaa", "p1 Print3: 20, bbb, ZXa", "p2 Print3: 222, ZXb, ZXa"]
+add(4,
+    rubric=rub(("שורות `Print1`: `p2 = p1` מעתיקה את כל השדות, כולל הכתובת שנשמרת ב-`val3`", 2),
+               ("שורות `Print2`: `val2` של `p2` הוא עותק נפרד (רק `p2` משתנה), ו-`val3` משותף לשני המבנים (שניהם משתנים)", 3),
+               ("שורות `Print3`: `func1` מקבלת עותק, ולכן `val1` ו-`val2` של `p1` לא משתנים, אבל `val3[1]` משתנה דרך המצביע המשותף", 3),
+               ("`func2` מקבלת כתובת ומשנה את `p2` עצמו: `val1 = 222`, `val2[1] = 'X'`, ואת `val3[1] = 'X'`", 2)),
+    rubricSource="ai-draft",
+    pitfalls=["לחשוב ש-`p2 = p1` מעתיקה גם את המחרוזת ש-`val3` מצביע עליה, ולכתוב ש-`p1.val3` נשאר `aaa` אחרי השינוי דרך `p2`.",
+              "לחשוב ש-`func1` (העברה by value) משנה את `p1.val1` ל-444 או את `p1.val2`, כשהיא משנה רק את התו המשותף בזיכרון הדינמי.",
+              "לשכוח ש-`val3[1]` נכתב פעמיים (`'Y'` ב-`func1` ואחר כך `'X'` ב-`func2`), והערך הסופי הוא `'X'`."],
+    steps=[
+        {"type": "choice", "prompt": "מה מודפס בשורה `p1 Print2`?",
+         "options": opts("`p1 Print2: 20, bbb, Zaa`", "`p1 Print2: 20, bbb, aaa`", "`p1 Print2: 20, Zbb, Zaa`", "`p1 Print2: 20, Zbb, aaa`"),
+         "correctId": "a",
+         "explain": "`val2` הוא מערך בתוך המבנה והועתק, ולכן `p1.val2` נשאר `bbb`. `val3` הוא מצביע משותף, ולכן התו הראשון שונה ל-`Z` גם ב-`p1` (ריצה אמיתית: `20, bbb, Zaa`)."},
+        {"type": "choice", "prompt": "למה `p1.val3` השתנה ל-`Zaa` למרות שהשינוי בוצע דרך `p2`?",
+         "options": opts("`p2 = p1` מעתיקה את הכתובת שב-`val3` ולא את המחרוזת, ולכן שני המצביעים מצביעים לאותו מקום בזיכרון",
+                         "`p2 = p1` מעתיקה את המחרוזת ש-`val3` מצביע עליה, אבל `printf` מעדכנת את `p1` לפי `p2`",
+                         "המערך `val2` משותף בין `p1` ל-`p2` ולכן `p1.val2` אמור היה להשתנות גם הוא",
+                         "הפונקציה `malloc` מקצה זיכרון שמשותף אוטומטית לכל המבנים בתוכנית"),
+         "correctId": "a",
+         "explain": "העתקת מבנה היא העתקה של כל שדה. מצביע מועתק ככתובת בלבד. `p1.val2` נשאר `bbb` ולכן המערך לא משותף (ריצה אמיתית)."},
+        {"type": "choice", "prompt": "מה מודפס בשורה `p1 Print3`?",
+         "options": opts("`p1 Print3: 20, bbb, ZXa`", "`p1 Print3: 444, bbb, ZYa`", "`p1 Print3: 20, bYb, ZYa`", "`p1 Print3: 222, bbb, ZXa`"),
+         "correctId": "a",
+         "explain": "`func1` מקבלת עותק ולכן `val1` ו-`val2` של `p1` לא משתנים. `val3[1]` נכתב `'Y'` ואחר כך `'X'` על אותה מחרוזת (ריצה אמיתית: `20, bbb, ZXa`)."},
+        {"type": "order", "prompt": "סדרו את ששת שורות הפלט של התוכנית, מהראשונה לאחרונה.", "code": True,
+         "lines": Q4_LINES,
+         "explain": "שני `printf` אחרי ההעתקה, שניים אחרי השינוי של `p2`, ושניים אחרי הקריאות לפונקציות (ריצה אמיתית: אותן שש שורות)."},
+    ],
+    stepsSource="ai-draft")
+
+# Q6 (values checked with a probe program)
+add(6,
+    rubric=rub(("חישוב איברי המערך: שני תווי `'^'` ראשונים, והאיבר השלישי הוא `'^' ^ '^'` (XOR) ולא תו נוסף", 4),
+               ("XOR של שני ערכים שווים הוא 0, שהוא `'\\0'` (תו סיום המחרוזת)", 3),
+               ("`printf` עם `%s` מדפיסה עד ה-`'\\0'` הראשון, ולכן הפלט הוא `^^`", 3)),
+    rubricSource="ai-draft",
+    pitfalls=["לקרוא את הסוגריים כחמישה תווי `^` ולהדפיס `^^^^^`, כשהביטוי `'^'^'^'` הוא פעולת XOR אחת שנותנת איבר אחד.",
+              "לחשוב שהתו האחרון `'^'` מודפס גם הוא, אף שהוא נמצא אחרי ה-`'\\0'`."],
+    steps=[
+        {"type": "numeric", "prompt": "כמה איברים יש במערך `s`? (`sizeof(s)`)", "answer": 4, "tol": 0,
+         "explain": "האיברים: `'^'`, `'^'`, `'^'^'^'`, `'^'` (ריצה אמיתית: 4)."},
+        {"type": "numeric", "prompt": "מה הערך של `s[2]`, כלומר של `'^' ^ '^'`?", "answer": 0, "tol": 0,
+         "explain": "XOR של ערכים שווים נותן 0 (ריצה אמיתית: 0)."},
+        {"type": "text", "prompt": "מה מודפס? (כתבו את התווים בלבד)", "accept": ["^^"], "normalize": "none",
+         "explain": "`printf(\"%s\", s)` עוצרת ב-`s[2] = 0`, ולכן מודפסים רק `s[0]` ו-`s[1]` (ריצה אמיתית: `^^`)."},
+    ],
+    stepsSource="ai-draft")
+
+
 exam = {
     "examCode": "23B-B",
     "examLabel": "סדנה מתקדמת בתכנות 61108, סמסטר ב' תשפ\"ג, מועד ב'",
