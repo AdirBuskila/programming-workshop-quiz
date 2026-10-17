@@ -63,7 +63,98 @@
       "מלכודות C"
     ]
   ],
-  "briefs": [],
+  "briefs": [
+    [
+      "01 - c_basics_output.md",
+      "c_basics_output",
+      "c_basics_output",
+      "topic"
+    ],
+    [
+      "02 - strings.md",
+      "strings",
+      "strings",
+      "topic"
+    ],
+    [
+      "03 - arrays_static.md",
+      "arrays_static",
+      "arrays_static",
+      "topic"
+    ],
+    [
+      "04 - pointers.md",
+      "pointers",
+      "pointers",
+      "topic"
+    ],
+    [
+      "05 - pointer_to_pointer.md",
+      "pointer_to_pointer",
+      "pointer_to_pointer",
+      "topic"
+    ],
+    [
+      "06 - dynamic_memory.md",
+      "dynamic_memory",
+      "dynamic_memory",
+      "topic"
+    ],
+    [
+      "07 - dynamic_arrays_2d.md",
+      "dynamic_arrays_2d",
+      "dynamic_arrays_2d",
+      "topic"
+    ],
+    [
+      "08 - structs_unions.md",
+      "structs_unions",
+      "structs_unions",
+      "topic"
+    ],
+    [
+      "09 - files.md",
+      "files",
+      "files",
+      "topic"
+    ],
+    [
+      "10 - linked_lists.md",
+      "linked_lists",
+      "linked_lists",
+      "topic"
+    ],
+    [
+      "11 - list_manipulation.md",
+      "list_manipulation",
+      "list_manipulation",
+      "topic"
+    ],
+    [
+      "12 - storage_classes.md",
+      "storage_classes",
+      "storage_classes",
+      "topic"
+    ],
+    [
+      "13 - bit_manipulation.md",
+      "bit_manipulation",
+      "bit_manipulation",
+      "topic"
+    ],
+    [
+      "14 - c_traps_mcq.md",
+      "c_traps_mcq",
+      "c_traps_mcq",
+      "topic"
+    ],
+    [
+      "15 - cheat_sheet.md",
+      "cheat_sheet",
+      "c_traps_mcq",
+      "cheat"
+    ]
+  ],
   "needHelp": [
     {
       "id": "linked_lists",
