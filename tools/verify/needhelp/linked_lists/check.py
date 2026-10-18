@@ -18,13 +18,13 @@ def check(cond, msg):
         print("FAIL", msg)
 
 
-def run(src, timeout=5):
+def run(src, timeout=5, opt="-O0"):
     """-> ('OK', stdout) | ('CRASH', stdout) | ('TIMEOUT','') | ('BUILD', stderr)"""
     d = pathlib.Path(tempfile.mkdtemp(prefix="nh_ll_"))
     try:
         c, exe = d / "t.c", d / "t.exe"
         c.write_text(src, encoding="utf-8")
-        p = subprocess.run([CLANG, "-w", "-O0", "-o", str(exe), str(c)], capture_output=True, text=True, errors="replace", cwd=d)
+        p = subprocess.run([CLANG, "-w", opt, "-o", str(exe), str(c)], capture_output=True, text=True, errors="replace", cwd=d)
         if p.returncode:
             return ("BUILD", p.stderr[:200])
         try:
@@ -156,8 +156,15 @@ fillblank("C02-Q5", HEAD + TYPES + NEW,
 # ================================================================= C03
 r = run(BASE + main_(lst("h", [5, 1, 4, 3, 8]) + "Item*p; int c=0; for(p=h;p;p=p->next) if(p->data>3) c++; printf(\"%d\",c);"))
 check(r == ("OK", str(int(num("C03-Q1")))), f"C03-Q1 {r}")
+# C03-Q2 is a UB question: the correct option must say UB explicitly and must not promise a crash as a fact.
+q2 = mcq_text("C03-Q2")
+check(q2.startswith("התנהגות לא מוגדרת (UB)") and "בדרך כלל" in q2, f"C03-Q2 stored answer must name UB: {q2}")
+for o in ("-O0", "-O2"):
+    # the guarded form from the lesson is defined behaviour on the empty list: p stays NULL
+    r = run(BASE + main_("Item*h=NULL,*p=h; while(p && p->next) p=p->next; printf(p?\"moved\":\"NULL\");"), opt=o)
+    check(r == ("OK", "NULL"), f"C03-Q2 guarded loop on empty list {o} {r}")
 r = run(BASE + main_("Item*h=NULL,*p=h; while(p->next) p=p->next; printf(\"x\");"))
-check(r[0] == "CRASH" and mcq_text("C03-Q2").startswith("קריסה"), f"C03-Q2 {r}")
+print("info C03-Q2 unguarded loop at -O0 (UB, not asserted):", r[0])
 LASTDRV = main_(lst("h", [1, 2, 3]) + "Item*p=last(h); printf(p?\"%d\":\"NULL\",p?p->data:0);")
 findbug("C03-Q3", "    while (p && p->next)", LASTDRV, BASE, ("OK", "3"), ("OK", "NULL"))
 FINDDRV = main_(lst("h", [4, 9, 1]) + "Item*a=find(h,9),*b=find(h,7),*c=find(h,4); printf(\"%d %s %d\",a?a->data:-1,b?\"found\":\"NULL\",c?c->data:-1);")
@@ -167,8 +174,18 @@ check(fo["b"][1] != "9 NULL 4" and fo["c"][1] != "9 NULL 4", "C03-Q4 distractors
 r_ok = run(BASE + "Item *find(Item*head,int x){Item*p=head; while(p && p->data!=x) p=p->next; return p;}\n" + main_(lst("h", [4, 9, 1]) + "Item*b=find(h,7); printf(b?\"found\":\"NULL\");"))
 r_sw = run(BASE + "Item *find(Item*head,int x){Item*p=head; while(p->data!=x && p) p=p->next; return p;}\n" + main_(lst("h", [4, 9, 1]) + "Item*b=find(h,7); printf(b?\"found\":\"NULL\");"))
 r_sw_found = run(BASE + "Item *find(Item*head,int x){Item*p=head; while(p->data!=x && p) p=p->next; return p;}\n" + main_(lst("h", [4, 9, 1]) + "Item*b=find(h,9); printf(b?\"found\":\"NULL\");"))
-check(r_ok == ("OK", "NULL") and r_sw[0] == "CRASH" and r_sw_found == ("OK", "found"), f"C03-Q5 {r_ok} {r_sw} {r_sw_found}")
-check(mcq_text("C03-Q5").startswith("כש-x לא נמצא"), "C03-Q5 stored answer")
+# only the defined behaviours are asserted: the safe order gives NULL, the swapped order is fine when the value IS found.
+# the missing-value case with the swapped order is UB (NULL->data) and is deliberately not asserted at -O0/-O2.
+check(r_ok == ("OK", "NULL") and r_sw_found == ("OK", "found"), f"C03-Q5 {r_ok} {r_sw_found}")
+for o in ("-O0", "-O2"):
+    for src, want in (("Item *find(Item*head,int x){Item*p=head; while(p && p->data!=x) p=p->next; return p;}\n", "NULL"),
+                      ("Item *find(Item*head,int x){Item*p=head; while(p->data!=x && p) p=p->next; return p;}\n", "found")):
+        x = 7 if want == "NULL" and "p &&" in src else 9
+        r = run(BASE + src + main_(lst("h", [4, 9, 1]) + f"Item*b=find(h,{x}); printf(b?\"found\":\"NULL\");"), opt=o)
+        check(r == ("OK", want), f"C03-Q5 {o} {x} {r}")
+print("info C03-Q5 swapped order, missing value at -O0 (UB, not asserted):", r_sw[0])
+q5 = mcq_text("C03-Q5")
+check(q5.startswith("כש-x לא נמצא") and "UB" in q5 and "התנהגות לא מוגדרת" in q5, f"C03-Q5 stored answer must name UB: {q5}")
 
 # ================================================================= C04
 FREECNT = "static int nfree=0;\n#define free(p) do{nfree++;free(p);}while(0)\n"
@@ -216,8 +233,16 @@ check(r == ("OK", str(int(num("C05-Q5")))), f"C05-Q5 {r}")
 
 # ================================================================= C06
 CIRC = lambda arr, start: lst("h", arr) + f"{{Item*t=h; while(t->next) t=t->next; t->next=h;}} Item*start=h; {{int k; for(k=0;k<{start};k++) start=start->next;}}\n"
-r = run(BASE + main_(CIRC([2, 4, 7, 9], 0) + "Item*p=start; long k=0; while(p->next && k<100000) {p=p->next;k++;} printf(k>=100000?\"inf\":\"stops\");"))
-check(r == ("OK", "inf") and mcq_text("C06-Q1").startswith("הלולאה אינסופית"), f"C06-Q1 {r}")
+q1 = Q["C06-Q1"]
+check("n < 100" in q1["question"] and mcq_text("C06-Q1") == "100", "C06-Q1 stored answer")
+for o in ("-O0", "-O2"):
+    r = run(BASE + main_(CIRC([2, 4, 7, 9], 0) + "int n=0; Item*p=start; while(p->next && n < 100) { p = p->next; n++; } printf(\"%d\", n);"), opt=o)
+    check(r == ("OK", mcq_text("C06-Q1")), f"C06-Q1 circular {o} {r}")
+    # distractor 3: what the same loop prints on a NON-circular 4 item list; distractor 4/0 are not what either list gives
+    r = run(BASE + main_(lst("h", [2, 4, 7, 9]) + "int n=0; Item*p=h; while(p->next && n < 100) { p = p->next; n++; } printf(\"%d\", n);"), opt=o)
+    check(r == ("OK", "3"), f"C06-Q1 plain list {o} {r}")
+opt_vals = {o["id"]: strip(o["value"]) for o in q1["options"]}
+check(sorted(opt_vals.values()) == ["0", "100", "3", "4"], f"C06-Q1 options {opt_vals}")
 r = run(BASE + main_(CIRC([2, 4, 7, 9], 2) + "int s=0; Item*p=start; do{ s+=p->data; p=p->next; }while(p!=start); printf(\"%d\",s);"))
 check(r == ("OK", str(int(num("C06-Q2")))), f"C06-Q2 {r}")
 r = run(BASE + main_("Item a; a.data=5; a.next=&a; Item*L=&a; int c=0; while(L->data < L->next->data){L=L->next;c++;} printf(\"%d\",c);"))

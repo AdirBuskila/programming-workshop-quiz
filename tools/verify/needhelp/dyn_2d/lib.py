@@ -27,7 +27,7 @@ def run(src, flags=()):
     try:
         c, exe = d / "t.c", d / "t.exe"
         c.write_text(src, encoding="utf-8")
-        p = subprocess.run([CLANG, *(flags or ("-w",)), "-O0", "-o", str(exe), str(c)], capture_output=True, text=True, errors="replace", cwd=d)
+        p = subprocess.run([CLANG, *(flags or ("-w",)), *(() if any(f.startswith("-O") for f in flags) else ("-O0",)), "-o", str(exe), str(c)], capture_output=True, text=True, errors="replace", cwd=d)
         if p.returncode:
             return ("BUILD-FAIL", p.stderr[:200])
         try:

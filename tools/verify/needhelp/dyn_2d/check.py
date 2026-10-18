@@ -110,17 +110,25 @@ def c02():
         main_blocks, lambda B: PRE + ALLOC + "int main(void)\n{\n" + "\n".join("    " + b for b in B) + "\n}\n",
         "קודם מקצים (בלי מטריצה אין לאן לכתוב), אחר כך כותבים, אחר כך קוראים ומדפיסים, ורק בסוף `return`.",
         "הקצאה, כתיבה, שימוש, ואז `return`."))
-    o = ["`calloc(3, sizeof(int *))`", "`calloc(3, sizeof(int))`", "`calloc(4, sizeof(int))`", "`calloc(1, sizeof(int *))`"]
-    probe = PRE + 'int main(void){ printf("%d %d %d %d", 3*(int)sizeof(int *), 3*(int)sizeof(int), 4*(int)sizeof(int), 1*(int)sizeof(int *)); return 0; }\n'
+    # Observable, UB-free: each option is run through the logging allocator and the bytes it REQUESTS are compared
+    # with the 24 bytes (3 pointers, 64-bit) the question asks for. Nothing is written into the block.
+    o = ["`calloc(3, sizeof(int *))`", "`calloc(3, sizeof(int))`", "`calloc(4, sizeof(int))`", "`calloc(3, 3 * sizeof(int *))`"]
+    calls = ["calloc(3, sizeof(int *))", "calloc(3, sizeof(int))", "calloc(4, sizeof(int))", "calloc(3, 3 * sizeof(int *))"]
     need = 3 * 8
 
     def v():
-        got = list(map(int, ok_out(probe).split()))
-        good = [i for i, g in enumerate(got) if g >= need]
-        assert len(good) == 1
+        for flags in (("-w",), ("-w", "-O2")):
+            got = []
+            for c in calls:
+                log = ok_out(LOG + "int main(void){ void *p = " + c + "; free(p); return 0; }\n", flags)
+                (n, s), = [(int(x), int(y)) for x, y in re.findall(r"\[calloc (\d+) x (\d+)\]", log)]
+                got.append(n * s)
+            assert got == [24, 12, 16, 72], got
+            good = [i for i, g in enumerate(got) if g == need]
+            assert len(good) == 1
         return good[0]
-    qs.append(mcq("C02-Q2", "צריך את מערך המצביעים של מטריצה עם 3 שורות ו-4 עמודות (64 סיביות). איזו קריאה מקצה אותו נכון?", o, 0,
-        "שלוש שורות = שלושה מצביעים = $3 \\cdot 8 = 24$ בתים, וזה `calloc(3, sizeof(int *))`. `calloc(3, sizeof(int))` נותן רק 12 בתים, `calloc(4, sizeof(int))` נותן 16, ו-`calloc(1, sizeof(int *))` נותן 8: כולם קטנים מ-24, והכתיבה לשורות האחרונות חורגת מהבלוק.",
+    qs.append(mcq("C02-Q2", "צריך להקצות את מערך המצביעים של מטריצה עם 3 שורות ו-4 עמודות, ב-64 סיביות, בגודל של בדיוק מצביע אחד לכל שורה. איזו קריאה מבקשת בדיוק את הכמות הזאת?", o, 0,
+        "שלוש שורות = שלושה מצביעים = $3 \\cdot 8 = 24$ בתים, וזה `calloc(3, sizeof(int *))`. `calloc(3, sizeof(int))` מבקשת $3 \\cdot 4 = 12$ בתים, `calloc(4, sizeof(int))` מבקשת $4 \\cdot 4 = 16$, ו-`calloc(3, 3 * sizeof(int *))` מבקשת $3 \\cdot 24 = 72$. רק הראשונה מבקשת בדיוק 24 (נבדק עם מקצה מתעד).",
         "למערך המצביעים: מספר השורות כפול `sizeof(int *)`.", v))
     lines = ["int **alloc_matrix(int rows, int cols)", "{", "    int i;", "    int **m = (int **)calloc(rows, ___);",
              "    for (i = 0; i < rows; i++)", "        m[i] = (int *)calloc(cols, sizeof(int));", "    return m;", "}"]

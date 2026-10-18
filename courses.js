@@ -1739,7 +1739,7 @@ window.COURSES = {
      },
      {
       "id": "C02-Q2",
-      "question": "צריך את מערך המצביעים של מטריצה עם 3 שורות ו-4 עמודות (64 סיביות). איזו קריאה מקצה אותו נכון?",
+      "question": "צריך להקצות את מערך המצביעים של מטריצה עם 3 שורות ו-4 עמודות, ב-64 סיביות, בגודל של בדיוק מצביע אחד לכל שורה. איזו קריאה מבקשת בדיוק את הכמות הזאת?",
       "options": [
        {
         "id": "a",
@@ -1761,16 +1761,16 @@ window.COURSES = {
        },
        {
         "id": "d",
-        "value": "`calloc(1, sizeof(int *))`",
+        "value": "`calloc(3, 3 * sizeof(int *))`",
         "type": "text",
-        "html": "<code class=\"tok\" dir=\"ltr\">calloc(1, sizeof(int *))</code>"
+        "html": "<code class=\"tok\" dir=\"ltr\">calloc(3, 3 * sizeof(int *))</code>"
        }
       ],
       "correctId": "a",
-      "explanation": "שלוש שורות = שלושה מצביעים = $3 \\cdot 8 = 24$ בתים, וזה `calloc(3, sizeof(int *))`. `calloc(3, sizeof(int))` נותן רק 12 בתים, `calloc(4, sizeof(int))` נותן 16, ו-`calloc(1, sizeof(int *))` נותן 8: כולם קטנים מ-24, והכתיבה לשורות האחרונות חורגת מהבלוק.",
+      "explanation": "שלוש שורות = שלושה מצביעים = $3 \\cdot 8 = 24$ בתים, וזה `calloc(3, sizeof(int *))`. `calloc(3, sizeof(int))` מבקשת $3 \\cdot 4 = 12$ בתים, `calloc(4, sizeof(int))` מבקשת $4 \\cdot 4 = 16$, ו-`calloc(3, 3 * sizeof(int *))` מבקשת $3 \\cdot 24 = 72$. רק הראשונה מבקשת בדיוק 24 (נבדק עם מקצה מתעד).",
       "recap": "למערך המצביעים: מספר השורות כפול `sizeof(int *)`.",
-      "questionHtml": "צריך את מערך המצביעים של מטריצה עם 3 שורות ו-4 עמודות (64 סיביות). איזו קריאה מקצה אותו נכון?",
-      "explanationHtml": "שלוש שורות = שלושה מצביעים = <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mn>3</mn><mo>⋅</mo><mn>8</mn><mo>=</mo><mn>24</mn></mrow><annotation encoding=\"application/x-tex\">3 \\cdot 8 = 24</annotation></semantics></math></span> בתים, וזה <code class=\"tok\" dir=\"ltr\">calloc(3, sizeof(int *))</code>. <code class=\"tok\" dir=\"ltr\">calloc(3, sizeof(int))</code> נותן רק 12 בתים, <code class=\"tok\" dir=\"ltr\">calloc(4, sizeof(int))</code> נותן 16, ו-<code class=\"tok\" dir=\"ltr\">calloc(1, sizeof(int *))</code> נותן 8: כולם קטנים מ-24, והכתיבה לשורות האחרונות חורגת מהבלוק.",
+      "questionHtml": "צריך להקצות את מערך המצביעים של מטריצה עם 3 שורות ו-4 עמודות, ב-64 סיביות, בגודל של בדיוק מצביע אחד לכל שורה. איזו קריאה מבקשת בדיוק את הכמות הזאת?",
+      "explanationHtml": "שלוש שורות = שלושה מצביעים = <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mn>3</mn><mo>⋅</mo><mn>8</mn><mo>=</mo><mn>24</mn></mrow><annotation encoding=\"application/x-tex\">3 \\cdot 8 = 24</annotation></semantics></math></span> בתים, וזה <code class=\"tok\" dir=\"ltr\">calloc(3, sizeof(int *))</code>. <code class=\"tok\" dir=\"ltr\">calloc(3, sizeof(int))</code> מבקשת <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mn>3</mn><mo>⋅</mo><mn>4</mn><mo>=</mo><mn>12</mn></mrow><annotation encoding=\"application/x-tex\">3 \\cdot 4 = 12</annotation></semantics></math></span> בתים, <code class=\"tok\" dir=\"ltr\">calloc(4, sizeof(int))</code> מבקשת <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mn>4</mn><mo>⋅</mo><mn>4</mn><mo>=</mo><mn>16</mn></mrow><annotation encoding=\"application/x-tex\">4 \\cdot 4 = 16</annotation></semantics></math></span>, ו-<code class=\"tok\" dir=\"ltr\">calloc(3, 3 * sizeof(int *))</code> מבקשת <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mn>3</mn><mo>⋅</mo><mn>24</mn><mo>=</mo><mn>72</mn></mrow><annotation encoding=\"application/x-tex\">3 \\cdot 24 = 72</annotation></semantics></math></span>. רק הראשונה מבקשת בדיוק 24 (נבדק עם מקצה מתעד).",
       "recapHtml": "למערך המצביעים: מספר השורות כפול <code class=\"tok\" dir=\"ltr\">sizeof(int *)</code>."
      },
      {
@@ -4336,7 +4336,7 @@ window.COURSES = {
     "source": "ai-verified",
     "boss": false,
     "lesson": {
-     "html": "\n    <p>רוב השאלות על רשימות מתחילות בלולאת מעבר. יש שלוש צורות שכדאי להכיר:</p>\n    <ul>\n      <li><b>לכל איבר</b>: <code>for (p = head; p; p = p-&gt;next)</code>. מתאים לספירה, לסכום ולהדפסה. בסוף הלולאה <code>p == NULL</code>.</li>\n      <li><b>עד האיבר האחרון</b>: <code>while (p-&gt;next) p = p-&gt;next;</code>. בסוף <code>p</code> מצביע על האיבר האחרון עצמו. אבל <code>p</code> חייב להיות לא NULL לפני הלולאה, כלומר צריך לטפל ברשימה ריקה בנפרד.</li>\n      <li><b>חיפוש</b>: מתקדמים כל עוד לא מצאנו וגם לא נגמרה הרשימה.</li>\n    </ul>\n    <pre><code>Item *find(Item *head, int x)\n{\n    Item *p = head;\n    while (p &amp;&amp; p-&gt;data != x)\n        p = p-&gt;next;\n    return p;          /* the found item, or NULL */\n}</code></pre>\n    <div class=\"lesson-rule\">🔑 בתנאי <code>p &amp;&amp; p-&gt;data != x</code> הסדר חשוב. האופרטור <code>&amp;&amp;</code> מעריך משמאל לימין ועוצר ברגע שהתוצאה ידועה, ולכן <code>p-&gt;data</code> נבדק רק אם <code>p</code> אינו NULL.</div>\n    <div class=\"lesson-ex\">דוגמה: חיפוש 9 ברשימה <code>4 → 9 → 1</code>. הלולאה מתקדמת פעם אחת, <code>p</code> מצביע על 9 והתנאי שקר, ולכן מוחזר האיבר 9. חיפוש 7 מתקדם עד NULL ומחזיר NULL.</div>\n    <div class=\"lesson-trap\">⚠️ אם כותבים <code>p-&gt;data != x &amp;&amp; p</code>, כשהערך לא ברשימה <code>p</code> מגיע ל-NULL ומיד אחר כך נקרא <code>p-&gt;data</code>. זו קריסה.</div>"
+     "html": "\n    <p>רוב השאלות על רשימות מתחילות בלולאת מעבר. יש שלוש צורות שכדאי להכיר:</p>\n    <ul>\n      <li><b>לכל איבר</b>: <code>for (p = head; p; p = p-&gt;next)</code>. מתאים לספירה, לסכום ולהדפסה. בסוף הלולאה <code>p == NULL</code>.</li>\n      <li><b>עד האיבר האחרון</b>: <code>while (p-&gt;next) p = p-&gt;next;</code>. בסוף <code>p</code> מצביע על האיבר האחרון עצמו. אבל <code>p</code> חייב להיות לא NULL לפני הלולאה, כלומר צריך לטפל ברשימה ריקה בנפרד.</li>\n      <li><b>חיפוש</b>: מתקדמים כל עוד לא מצאנו וגם לא נגמרה הרשימה.</li>\n    </ul>\n    <pre><code>Item *find(Item *head, int x)\n{\n    Item *p = head;\n    while (p &amp;&amp; p-&gt;data != x)\n        p = p-&gt;next;\n    return p;          /* the found item, or NULL */\n}</code></pre>\n    <div class=\"lesson-rule\">🔑 בתנאי <code>p &amp;&amp; p-&gt;data != x</code> הסדר חשוב. האופרטור <code>&amp;&amp;</code> מעריך משמאל לימין ועוצר ברגע שהתוצאה ידועה, ולכן <code>p-&gt;data</code> נבדק רק אם <code>p</code> אינו NULL.</div>\n    <div class=\"lesson-ex\">דוגמה: חיפוש 9 ברשימה <code>4 → 9 → 1</code>. הלולאה מתקדמת פעם אחת, <code>p</code> מצביע על 9 והתנאי שקר, ולכן מוחזר האיבר 9. חיפוש 7 מתקדם עד NULL ומחזיר NULL.</div>\n    <div class=\"lesson-trap\">⚠️ אם כותבים <code>p-&gt;data != x &amp;&amp; p</code>, כשהערך לא ברשימה <code>p</code> מגיע ל-NULL ומיד אחר כך נקרא <code>p-&gt;data</code>. זו התנהגות לא מוגדרת (UB), בדרך כלל קריסה.</div>"
     },
     "questions": [
      {
@@ -4359,9 +4359,9 @@ window.COURSES = {
       "options": [
        {
         "id": "a",
-        "value": "קריסה: גישה ל-`NULL->next`",
+        "value": "התנהגות לא מוגדרת (UB): קריאת `NULL->next`, בדרך כלל קריסה",
         "type": "text",
-        "html": "קריסה: גישה ל-<code class=\"tok\" dir=\"ltr\">NULL-&gt;next</code>"
+        "html": "התנהגות לא מוגדרת (UB): קריאת <code class=\"tok\" dir=\"ltr\">NULL-&gt;next</code>, בדרך כלל קריסה"
        },
        {
         "id": "b",
@@ -4383,10 +4383,10 @@ window.COURSES = {
        }
       ],
       "correctId": "a",
-      "explanation": "כבר הבדיקה הראשונה קוראת `p->next` כש-`p` הוא NULL, ולכן התוכנית קורסת (נבדק עם clang). בלולאה `while (p)` אין בעיה כזו, אבל כאן הבדיקה נוגעת בשדה של `p`. מי שמשתמש ב-`p->next` חייב לוודא קודם ש-`head != NULL`.",
+      "explanation": "כבר הבדיקה הראשונה קוראת `p->next` כש-`p` הוא NULL, ולכן זו גישה ל-NULL: התנהגות לא מוגדרת (UB). בדרך כלל התוכנית קורסת, אבל התקן לא מבטיח זאת, ולכן גם \"הלולאה לא רצה\" אינה תוצאה מובטחת. בלולאה `while (p)` אין בעיה כזו, אבל כאן הבדיקה נוגעת בשדה של `p`. מי שמשתמש ב-`p->next` חייב לוודא קודם ש-`head != NULL`.",
       "recap": "`p->next` בתנאי לולאה דורש `p != NULL` מראש.",
       "questionHtml": "מריצים <code class=\"tok\" dir=\"ltr\">while (p-&gt;next) p = p-&gt;next;</code> כש-<code class=\"tok\" dir=\"ltr\">p</code> הוא <code class=\"tok\" dir=\"ltr\">head</code> והרשימה ריקה (<code class=\"tok\" dir=\"ltr\">head == NULL</code>). מה קורה?",
-      "explanationHtml": "כבר הבדיקה הראשונה קוראת <code class=\"tok\" dir=\"ltr\">p-&gt;next</code> כש-<code class=\"tok\" dir=\"ltr\">p</code> הוא NULL, ולכן התוכנית קורסת (נבדק עם clang). בלולאה <code class=\"tok\" dir=\"ltr\">while (p)</code> אין בעיה כזו, אבל כאן הבדיקה נוגעת בשדה של <code class=\"tok\" dir=\"ltr\">p</code>. מי שמשתמש ב-<code class=\"tok\" dir=\"ltr\">p-&gt;next</code> חייב לוודא קודם ש-<code class=\"tok\" dir=\"ltr\">head != NULL</code>.",
+      "explanationHtml": "כבר הבדיקה הראשונה קוראת <code class=\"tok\" dir=\"ltr\">p-&gt;next</code> כש-<code class=\"tok\" dir=\"ltr\">p</code> הוא NULL, ולכן זו גישה ל-NULL: התנהגות לא מוגדרת (UB). בדרך כלל התוכנית קורסת, אבל התקן לא מבטיח זאת, ולכן גם \"הלולאה לא רצה\" אינה תוצאה מובטחת. בלולאה <code class=\"tok\" dir=\"ltr\">while (p)</code> אין בעיה כזו, אבל כאן הבדיקה נוגעת בשדה של <code class=\"tok\" dir=\"ltr\">p</code>. מי שמשתמש ב-<code class=\"tok\" dir=\"ltr\">p-&gt;next</code> חייב לוודא קודם ש-<code class=\"tok\" dir=\"ltr\">head != NULL</code>.",
       "recapHtml": "<code class=\"tok\" dir=\"ltr\">p-&gt;next</code> בתנאי לולאה דורש <code class=\"tok\" dir=\"ltr\">p != NULL</code> מראש."
      },
      {
@@ -4486,9 +4486,9 @@ window.COURSES = {
       "options": [
        {
         "id": "a",
-        "value": "כש-`x` לא נמצא ברשימה, `p` מגיע ל-`NULL` ואז נקרא `p->data` לפני הבדיקה: קריסה",
+        "value": "כש-`x` לא נמצא ברשימה, `p` מגיע ל-`NULL` ואז נקרא `p->data` לפני הבדיקה: UB / התנהגות לא מוגדרת, בדרך כלל קריסה",
         "type": "text",
-        "html": "כש-<code class=\"tok\" dir=\"ltr\">x</code> לא נמצא ברשימה, <code class=\"tok\" dir=\"ltr\">p</code> מגיע ל-<code class=\"tok\" dir=\"ltr\">NULL</code> ואז נקרא <code class=\"tok\" dir=\"ltr\">p-&gt;data</code> לפני הבדיקה: קריסה"
+        "html": "כש-<code class=\"tok\" dir=\"ltr\">x</code> לא נמצא ברשימה, <code class=\"tok\" dir=\"ltr\">p</code> מגיע ל-<code class=\"tok\" dir=\"ltr\">NULL</code> ואז נקרא <code class=\"tok\" dir=\"ltr\">p-&gt;data</code> לפני הבדיקה: UB / התנהגות לא מוגדרת, בדרך כלל קריסה"
        },
        {
         "id": "b",
@@ -4510,10 +4510,10 @@ window.COURSES = {
        }
       ],
       "correctId": "a",
-      "explanation": "האופרטור `&&` מוערך משמאל לימין, ולכן `p->data` נקרא לפני שבדקנו אם `p` הוא NULL. כשהערך חסר, זו גישה ל-NULL ותוכנית קורסת (נבדק עם clang). כשהערך נמצא, הלולאה עוצרת כרגיל ואין בעיה, ולכן התשובה האחרונה שגויה. `&&` לא חילופי כשיש תלות בין האגפים, והקוד מתקמפל.",
+      "explanation": "האופרטור `&&` מוערך משמאל לימין, ולכן `p->data` נקרא לפני שבדקנו אם `p` הוא NULL. כשהערך חסר, זו גישה ל-NULL: התנהגות לא מוגדרת (UB), שבדרך כלל מסתיימת בקריסה. כשהערך נמצא, הלולאה עוצרת לפני כן ואין בעיה (נבדק עם clang), ולכן התשובה האחרונה שגויה. `&&` לא חילופי כשיש תלות בין האגפים, והקוד מתקמפל.",
       "recap": "קודם `p`, אחר כך `p->data`.",
       "questionHtml": "מה הבעיה בתנאי הלולאה <code class=\"tok\" dir=\"ltr\">while (p-&gt;data != x &amp;&amp; p)</code> בחיפוש הערך <code class=\"tok\" dir=\"ltr\">x</code> ברשימה?",
-      "explanationHtml": "האופרטור <code class=\"tok\" dir=\"ltr\">&amp;&amp;</code> מוערך משמאל לימין, ולכן <code class=\"tok\" dir=\"ltr\">p-&gt;data</code> נקרא לפני שבדקנו אם <code class=\"tok\" dir=\"ltr\">p</code> הוא NULL. כשהערך חסר, זו גישה ל-NULL ותוכנית קורסת (נבדק עם clang). כשהערך נמצא, הלולאה עוצרת כרגיל ואין בעיה, ולכן התשובה האחרונה שגויה. <code class=\"tok\" dir=\"ltr\">&amp;&amp;</code> לא חילופי כשיש תלות בין האגפים, והקוד מתקמפל.",
+      "explanationHtml": "האופרטור <code class=\"tok\" dir=\"ltr\">&amp;&amp;</code> מוערך משמאל לימין, ולכן <code class=\"tok\" dir=\"ltr\">p-&gt;data</code> נקרא לפני שבדקנו אם <code class=\"tok\" dir=\"ltr\">p</code> הוא NULL. כשהערך חסר, זו גישה ל-NULL: התנהגות לא מוגדרת (UB), שבדרך כלל מסתיימת בקריסה. כשהערך נמצא, הלולאה עוצרת לפני כן ואין בעיה (נבדק עם clang), ולכן התשובה האחרונה שגויה. <code class=\"tok\" dir=\"ltr\">&amp;&amp;</code> לא חילופי כשיש תלות בין האגפים, והקוד מתקמפל.",
       "recapHtml": "קודם <code class=\"tok\" dir=\"ltr\">p</code>, אחר כך <code class=\"tok\" dir=\"ltr\">p-&gt;data</code>."
      }
     ]
@@ -4944,38 +4944,38 @@ window.COURSES = {
     "questions": [
      {
       "id": "C06-Q1",
-      "question": "מה קורה כשמריצים `while (p->next) p = p->next;` על רשימה מעגלית לא ריקה?",
+      "question": "הרשימה המעגלית היא `2 → 4 → 7 → 9` (אחרי 9 חוזרים ל-2), ו-`p` מצביע על 2. מה מדפיס הקוד?\n```c\nint n = 0;\nwhile (p->next && n < 100)\n{\n    p = p->next;\n    n++;\n}\nprintf(\"%d\", n);\n```",
       "options": [
        {
         "id": "a",
-        "value": "הלולאה אינסופית, כי אין איבר ש-`next` שלו `NULL`",
+        "value": "100",
         "type": "text",
-        "html": "הלולאה אינסופית, כי אין איבר ש-<code class=\"tok\" dir=\"ltr\">next</code> שלו <code class=\"tok\" dir=\"ltr\">NULL</code>"
+        "html": "100"
        },
        {
         "id": "b",
-        "value": "הלולאה עוצרת באיבר האחרון",
+        "value": "3",
         "type": "text",
-        "html": "הלולאה עוצרת באיבר האחרון"
+        "html": "3"
        },
        {
         "id": "c",
-        "value": "הלולאה עוצרת כשהיא חוזרת להתחלה",
+        "value": "4",
         "type": "text",
-        "html": "הלולאה עוצרת כשהיא חוזרת להתחלה"
+        "html": "4"
        },
        {
         "id": "d",
-        "value": "קריסה מיידית",
+        "value": "0",
         "type": "text",
-        "html": "קריסה מיידית"
+        "html": "0"
        }
       ],
       "correctId": "a",
-      "explanation": "ברשימה מעגלית כל `next` מצביע על איבר אמיתי, ולכן התנאי תמיד אמת והלולאה לא נגמרת (נבדק עם clang). הלולאה לא יודעת מתי חזרנו להתחלה, אלא אם משווים ל-`start`. אין כאן גישה ל-NULL, ולכן אין קריסה.",
+      "explanation": "ברשימה מעגלית כל `next` מצביע על איבר אמיתי, ולכן התנאי `p->next` תמיד אמת ושום דבר לא עוצר את הלולאה חוץ מהחסם `n < 100`. היא רצה 100 פעמים ומדפיסה 100, ללא קשר לאורך הרשימה (נבדק עם clang). 3 היה מתקבל ברשימה רגילה בת 4 איברים שנגמרת ב-NULL, ו-4 הוא מספר האיברים, שהקוד לא סופר. בלי החסם הלולאה לא הייתה נגמרת.",
       "recap": "ברשימה מעגלית עוצרים בחזרה ל-`start`, לא ב-NULL.",
-      "questionHtml": "מה קורה כשמריצים <code class=\"tok\" dir=\"ltr\">while (p-&gt;next) p = p-&gt;next;</code> על רשימה מעגלית לא ריקה?",
-      "explanationHtml": "ברשימה מעגלית כל <code class=\"tok\" dir=\"ltr\">next</code> מצביע על איבר אמיתי, ולכן התנאי תמיד אמת והלולאה לא נגמרת (נבדק עם clang). הלולאה לא יודעת מתי חזרנו להתחלה, אלא אם משווים ל-<code class=\"tok\" dir=\"ltr\">start</code>. אין כאן גישה ל-NULL, ולכן אין קריסה.",
+      "questionHtml": "הרשימה המעגלית היא <code class=\"tok\" dir=\"ltr\">2 → 4 → 7 → 9</code> (אחרי 9 חוזרים ל-2), ו-<code class=\"tok\" dir=\"ltr\">p</code> מצביע על 2. מה מדפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>int n = 0;\nwhile (p-&gt;next &amp;&amp; n &lt; 100)\n{\n    p = p-&gt;next;\n    n++;\n}\nprintf(\"%d\", n);</code></pre>",
+      "explanationHtml": "ברשימה מעגלית כל <code class=\"tok\" dir=\"ltr\">next</code> מצביע על איבר אמיתי, ולכן התנאי <code class=\"tok\" dir=\"ltr\">p-&gt;next</code> תמיד אמת ושום דבר לא עוצר את הלולאה חוץ מהחסם <code class=\"tok\" dir=\"ltr\">n &lt; 100</code>. היא רצה 100 פעמים ומדפיסה 100, ללא קשר לאורך הרשימה (נבדק עם clang). 3 היה מתקבל ברשימה רגילה בת 4 איברים שנגמרת ב-NULL, ו-4 הוא מספר האיברים, שהקוד לא סופר. בלי החסם הלולאה לא הייתה נגמרת.",
       "recapHtml": "ברשימה מעגלית עוצרים בחזרה ל-<code class=\"tok\" dir=\"ltr\">start</code>, לא ב-NULL."
      },
      {
