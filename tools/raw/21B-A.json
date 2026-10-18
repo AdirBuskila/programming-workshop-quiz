@@ -39,7 +39,7 @@
      "points": 6
     }
    ],
-   "rubricSource": "ai-draft",
+   "rubricSource": "ai-verified",
    "pitfalls": [
     "לסמן שם כחוסר סדר גם כשהוא שווה לקודם (`<= 0` במקום `< 0`): מערך ממוין יכול להכיל שמות זהים.",
     "להשוות מחרוזות עם `<` או `==` (השוואת כתובות) במקום `strcmp`.",
@@ -82,7 +82,7 @@
       {
        "id": "b",
        "type": "text",
-       "value": "if (strcmp(name_arr[i].last_name, name_arr[i - 1].last_name) <= 0)"
+       "value": "if (strcmp(name_arr[i - 1].last_name, name_arr[i].last_name) < 0)"
       },
       {
        "id": "c",
@@ -96,7 +96,7 @@
       }
      ],
      "correctId": "a",
-     "explain": "סדר יורד פירושו שהשם הנוכחי קטן ממש מהקודם. `<= 0` פוסל גם שמות שווים, ו-`> 0` ו-`!= 0` פוסלים מערכים ממוינים (ריצה אמיתית: הדוגמה מחזירה 2 רק עם `< 0`)."
+     "explain": "סדר יורד פירושו שהשם הנוכחי קטן ממש מהקודם. בחלופות האחרות הדוגמה מחזירה 0 במקום 2: `> 0` ו-`!= 0` מזהים גם זוג בסדר עולה כחוסר סדר, וההשוואה עם הארגומנטים בסדר הפוך מזהה בדיוק זוג בסדר עולה (ריצה אמיתית: רק עם `< 0` בסדר המקורי הדוגמה מחזירה 2)."
     },
     {
      "type": "order",
@@ -132,7 +132,7 @@
      "explain": "`> 0` מזהה כל זוג בסדר עולה כחוסר סדר, ולכן הפונקציה עוברת לבדוק שמות משפחה ומחזירה 0 (ריצה אמיתית: 0)."
     }
    ],
-   "stepsSource": "ai-draft"
+   "stepsSource": "ai-verified"
   },
   {
    "num": 2,
@@ -163,9 +163,9 @@
      "points": 6
     }
    ],
-   "rubricSource": "ai-draft",
+   "rubricSource": "ai-verified",
    "pitfalls": [
-    "לא לטפל ברשימה בת איבר אחד: בה `next` מצביע על האיבר עצמו, והחיפוש עם איבר קודם נתקע.",
+    "לא לטפל ברשימה בת איבר אחד (`next` מצביע על האיבר עצמו): למשל כש-`L2` בת איבר אחד, הקוד שמשחרר ומחבר איברים ניגש לזיכרון ששוחרר, והרשימה המאוחדת שגויה (באורך לא נכון).",
     "לדרוס את `p1->next` לפני ששומרים אותו ב-`common`, ולאבד את האיבר המשותף.",
     "להשאיר את האיבר המשותף פעמיים ברשימה המאוחדת (בלי לדלג על העותק שברשימה השנייה)."
    ],
@@ -179,10 +179,10 @@
     },
     {
      "type": "numeric",
-     "prompt": "באותה דוגמה, הפונקציה מחזירה את האיבר המשותף ב-`L1`. איזה ערך מופיע מיד אחריו ברשימה המאוחדת?",
+     "prompt": "באותה דוגמה, הפונקציה מחזירה את האיבר המשותף ב-`L1`. נקבע שבפתרון הרשמי האיברים שאחרי המשותף הם אלה של `L1` (בסדרם הפנימי), ואלה שלפניו הם של `L2`. איזה ערך מופיע מיד אחרי 5 ברשימה המאוחדת?",
      "answer": 3,
      "tol": 0,
-     "explain": "המשכה של `L1` אחרי 5 נשאר כפי שהיה (`3`), ואילו לפני 5 מופיעים איברי `L2`: 8 ואז 7 (ריצה אמיתית: הסדר 5, 3, 1, 2, 8, 7)."
+     "explain": "לפי המוסכמה שנקבעה, המשכה של `L1` אחרי 5 נשאר כפי שהיה (`3`), ואילו לפני 5 מופיעים איברי `L2`: 8 ואז 7 (ריצה אמיתית: הסדר 5, 3, 1, 2, 8, 7). בשאלה עצמה גם הסדר ההפוך תקין, ולכן המוסכמה נקבעת בשאלת הצעד."
     },
     {
      "type": "fillblank",
@@ -252,14 +252,14 @@
      "explain": "אחרי `p1->next = p2` נדלג על כל האיברים שאחרי העותק השני ב-`L2`, ולכן 8 אובד (ריצה אמיתית: 5 איברים)."
     }
    ],
-   "stepsSource": "ai-draft"
+   "stepsSource": "ai-verified"
   },
   {
    "num": 3,
    "kind": "code",
    "topic": "files",
    "question": "כתוב פונקציה אשר מקבלת מחרוזת `fileName` המהווה שם של **קובץ טקסט**. הקובץ שומר תוכן של מערך דו-ממדי של מספרים שלמים שבו כל שורה מורכבת מרצפים של מספרים זהים בדרך חסכונית.\n\nשורה מס' `i` בקובץ מתאימה לשורה מס' `i` של המערך (שורות הקובץ ממוספרות מ-0).\nכל רצף של מספרים זהים בשורת המערך (מתחילתה עד סופה) מוצג בשורת הקובץ (מתחילתה עד סופה) בהתאם כזוג מספרים: ערך האיברים ברצף וכמות האיברים ברצף.\nהמספרים הסמוכים בכל שורה מופרדים ברווח אחד. התו של סוף השורה מופיע מיד אחרי המספר האחרון בכל שורה, כולל השורה האחרונה.\n\nעל הפונקציה לשחזר מערך דו-ממדי דינאמי `A`. יש למלא את `A` בהתאם לתוכן הקובץ.\nבנוסף הפונקציה תיצור מערך דינאמי `S` המורכב מגדלי שורות של `A` כך שאיבר מס' `i` ב-`S` יהיה שווה לגודל שורה מס' `i` ב-`A`.\nהפונקציה תחזיר את `A` ותעביר (`by reference`) את `S` ואת מספר השורות ב-`A`.\n\nניתן להניח שיש בזיכרון מספיק מקום להקצאה.\n\n**דוגמא:**\n```\nתוכן הקובץ        המערך A                    S\n4 2 7 4 3 3       4 4 7 7 7 7 3 3 3          9\n2 6 1 2           2 2 2 2 2 2 1 1            8\n9 1 12 3          9 12 12 12                 4\n3 2 18 5 0 2      3 3 18 18 18 18 18 0 0     9\n```\nהפונקציה תעביר 4 כמספר השורות ב-`A`.\n\n*בחלק זה יש לענות על שתי שאלות מתוך שלוש (שאלות 1, 2 ו-3).*",
-   "solution": "```c\nint **file_to_sequences_in_rows(char* filename, int **S, int *rows)\n{\n    char ch;\n    int **A, num, size, start_row, i, j, k;\n    FILE* fptr = fopen(filename, \"r\");\n    if (!fptr)\n        exit(1);\n\n    /* Estimation of the number of rows */\n    *rows = 0;\n    while ((ch = fgetc(fptr)) != EOF)\n        if (ch == '\\n')\n            (*rows)++;\n\n    A = (int**)calloc(*rows, sizeof(int*)); //pointer array allocation\n    *S = (int*)calloc(*rows, sizeof(int)); //array of row sizes allocation\n\n    rewind(fptr);\n    for (i = 0; i < *rows; i++)\n    {\n        start_row = ftell(fptr);\n        /* Estimation of row size */\n        do\n        {\n            fscanf(fptr, \"%d%d\", &num, &size);\n            (*S)[i] += size;\n        } while ((ch = fgetc(fptr)) != '\\n');\n\n        A[i] = (int*)calloc((*S)[i], sizeof(int)); //row allocation\n\n        /* File row -> array row */\n        fseek(fptr, start_row, SEEK_SET);\n        k = 0;\n        do\n        {\n            fscanf(fptr, \"%d%d\", &num, &size);\n            for (j = 1; j <= size; j++, k++)\n                A[i][k] = num;\n        } while ((ch = fgetc(fptr)) != '\\n');\n    } //for i\n    fclose(fptr);\n    return A;\n}\n```",
+   "solution": "```c\nint **file_to_sequences_in_rows(char* filename, int **S, int *rows)\n{\n    char ch;\n    int **A, num, size, start_row, i, j, k;\n    FILE* fptr = fopen(filename, \"r\");\n    if (!fptr)\n        exit(1);\n\n    /* Estimation of the number of rows */\n    *rows = 0;\n    while ((ch = fgetc(fptr)) != EOF)\n        if (ch == '\\n')\n            (*rows)++;\n\n    A = (int**)calloc(*rows, sizeof(int*)); //pointer array allocation\n    *S = (int*)calloc(*rows, sizeof(int)); //array of row sizes allocation\n\n    rewind(fptr);\n    for (i = 0; i < *rows; i++)\n    {\n        start_row = ftell(fptr);\n        /* Estimation of row size */\n        do\n        {\n            fscanf(fptr, \"%d%d\", &num, &size);\n            (*S)[i] += size;\n        } while ((ch = fgetc(fptr)) != '\\n');\n\n        A[i] = (int*)calloc((*S)[i], sizeof(int)); //row allocation\n\n        /* File row -> array row */\n        fseek(fptr, start_row, SEEK_SET);\n        k = 0;\n        do\n        {\n            fscanf(fptr, \"%d%d\", &num, &size);\n            for (j = 1; j <= size; j++, k++)\n                A[i][k] = num;\n        } while ((ch = fgetc(fptr)) != '\\n');\n    } //for i\n    fclose(fptr);\n    return A;\n}\n```\n\n**הערה:** הפתרון הרשמי תלוי בסוף שורה של Windows (CRLF) ובמצב טקסט של `ftell`/`fseek`. בבדיקה ב-Windows הוא עובד עם קובץ CRLF, אבל עם קובץ שבו סוף השורה הוא `\\n` בלבד הוא עלול להיתקע או לקרוס (המיקום ש-`ftell` מחזיר במצב טקסט אינו מתאים). בלינוקס המצב הפוך: תו `'\\r'` לפני `'\\n'` מפר את בדיקת סוף השורה. בנוסף, `char ch` מושווה ל-`EOF` ולכן הקוד מניח ש-`char` הוא signed. תיקון נייד: לקרוא כל שורה עם `fgets` לתוך מחסנית תווים ולפרק אותה עם `sscanf(\"%d%d%n\")` בלולאה (פעם לחישוב הגודל ופעם למילוי), בלי `ftell`/`fseek` ובלי תלות בסוף השורה, ולהגדיר `int ch`. תיקון זה נבדק בהרצה על קובץ LF ועל קובץ CRLF.",
    "solutionSource": "official-pdf",
    "official": true,
    "confidence": "high",
@@ -282,7 +282,7 @@
      "points": 12
     }
    ],
-   "rubricSource": "ai-draft",
+   "rubricSource": "ai-verified",
    "pitfalls": [
     "לחשוב שהמספר השני בכל זוג הוא ערך ולא כמות, ולהקצות שורה לפי מספר הזוגות במקום סכום הכמויות.",
     "לא לזכור את תחילת השורה (`ftell`) לפני הסריקה הראשונה, ולכן לא ניתן לקרוא אותה שוב כדי למלא.",
@@ -305,7 +305,7 @@
     },
     {
      "type": "fillblank",
-     "prompt": "השלימו את השורה שחוזרת לתחילת השורה הנוכחית בקובץ.",
+     "prompt": "בהנחה שקובץ הקלט נוצר ב-Windows (סוף שורה CRLF), כמו בפתרון הרשמי: השלימו את השורה שחוזרת לתחילת השורה הנוכחית בקובץ.",
      "code": true,
      "lines": [
       "int **file_to_sequences_in_rows(char* filename, int **S, int *rows)",
@@ -367,7 +367,7 @@
     },
     {
      "type": "findbug",
-     "prompt": "בגרסה הבאה שורה אחת שונתה, ובקובץ הדוגמה השורה הראשונה של `A` מסתיימת באפסים (`4 7 7 7 3 3 0 0 0`) במקום `4 4 7 7 7 7 3 3 3`. מצאו אותה.",
+     "prompt": "בהנחה שהקובץ הוא בפורמט Windows (CRLF): בגרסה הבאה שורה אחת שונתה, ובקובץ הדוגמה השורה הראשונה של `A` מסתיימת באפסים (`4 7 7 7 3 3 0 0 0`) במקום `4 4 7 7 7 7 3 3 3`. מצאו אותה.",
      "code": true,
      "lines": [
       "int **file_to_sequences_in_rows(char* filename, int **S, int *rows)",
@@ -410,7 +410,7 @@
      "explain": "`j < size` ממלא כל רצף באיבר אחד פחות מהכמות, ולכן המערך מתמלא בחסר והסוף נשאר אפסים (ריצה אמיתית: `4 7 7 7 3 3 0 0 0`)."
     }
    ],
-   "stepsSource": "ai-draft"
+   "stepsSource": "ai-verified"
   },
   {
    "num": 4,
@@ -598,7 +598,7 @@
      "points": 3
     }
    ],
-   "rubricSource": "ai-draft",
+   "rubricSource": "ai-verified",
    "pitfalls": [
     "לספור את `\\0` כשני תווים, או לעצור את הספירה ב-`\\0` הראשון (כמו `strlen`) ולקבל 2.",
     "לשכוח את תו הסיום האוטומטי שבסוף הליטרל ולהדפיס 10."
@@ -626,7 +626,7 @@
      "explain": "10 תווים ועוד תו סיום: 11 בתים (ריצה אמיתית: 11)."
     }
    ],
-   "stepsSource": "ai-draft"
+   "stepsSource": "ai-verified"
   }
  ]
 }
