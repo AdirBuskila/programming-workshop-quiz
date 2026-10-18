@@ -1,4 +1,1664 @@
 window.COURSES = {
+ "c_traps": {
+  "levels": [
+   {
+    "id": "C01",
+    "order": 1,
+    "icon": "🔤",
+    "title": "תווים הם מספרים",
+    "goal": "אחרי השלב הזה אפשר לחשב מה מדפיס `printf` כשמעבירים לו תו, ולהבדיל בין התו '0' לבין המספר 0.",
+    "source": "ai-verified",
+    "boss": false,
+    "lesson": {
+     "html": "\n    <p>ב-C תו בגרשיים בודדים, כמו <code>'a'</code>, הוא <b>מספר שלם</b>: קוד ה-ASCII שלו. כמה קודים שכדאי לזכור:</p>\n    <table><thead><tr><th>תו</th><th>קוד</th></tr></thead>\n    <tbody><tr><td><code>'\\0'</code></td><td>0</td></tr><tr><td><code>'0'</code></td><td>48</td></tr><tr><td><code>'A'</code></td><td>65</td></tr><tr><td><code>'a'</code></td><td>97</td></tr></tbody></table>\n    <p>הספרות <code>'0'</code> עד <code>'9'</code> רצופות, והאותיות הגדולות והקטנות רצופות גם הן. לכן <code>'a' + 1</code> הוא 98, ו-<code>c - '0'</code> ממיר תו ספרה לערך שלו.</p>\n    <p>ההדפסה תלויה בתבנית: <code>%d</code> מדפיסה את המספר, ו-<code>%c</code> מדפיסה את התו שהמספר מייצג.</p>\n    <pre><code>printf(\"%d\", 'A');      /* 65 */\nprintf(\"%c\", 65);       /* A  */\nprintf(\"%c\", 'A' + 1);  /* B  */</code></pre>\n    <div class=\"lesson-rule\">🔑 התו <code>'0'</code> (קוד 48) אינו המספר 0. רק <code>'\\0'</code> שווה ל-0.</div>\n    <div class=\"lesson-ex\">דוגמה: <code>'7' - '0'</code> הוא <code>55 - 48 = 7</code>, ו-<code>'a' - 'A'</code> הוא <code>97 - 65 = 32</code>.</div>\n    <div class=\"lesson-trap\">⚠️ <code>\"0\"</code> במרכאות כפולות היא מחרוזת, ו-<code>'0'</code> בגרשיים הוא תו. הם לא אותו דבר.</div>"
+    },
+    "questions": [
+     {
+      "id": "C01-Q1",
+      "question": "מה מדפיס הקוד?\n```c\nprintf(\"%d\", '0');\n```",
+      "options": [
+       {
+        "id": "a",
+        "value": "`0`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">0</code>"
+       },
+       {
+        "id": "b",
+        "value": "`48`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">48</code>"
+       },
+       {
+        "id": "c",
+        "value": "`'0'`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">'0'</code>"
+       },
+       {
+        "id": "d",
+        "value": "שגיאת הידור",
+        "type": "text",
+        "html": "שגיאת הידור"
+       }
+      ],
+      "correctId": "b",
+      "explanation": "`'0'` הוא תו הספרה אפס, וקוד ה-ASCII שלו הוא 48. התבנית `%d` מדפיסה את הקוד כמספר. התשובה `0` נכונה רק עבור `'\\0'`, והתבנית `%d` אינה מדפיסה גרשיים.",
+      "recap": "התו '0' שווה 48, לא 0.",
+      "questionHtml": "מה מדפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>printf(\"%d\", '0');</code></pre>",
+      "explanationHtml": "<code class=\"tok\" dir=\"ltr\">'0'</code> הוא תו הספרה אפס, וקוד ה-ASCII שלו הוא 48. התבנית <code class=\"tok\" dir=\"ltr\">%d</code> מדפיסה את הקוד כמספר. התשובה <code class=\"tok\" dir=\"ltr\">0</code> נכונה רק עבור <code class=\"tok\" dir=\"ltr\">'\\0'</code>, והתבנית <code class=\"tok\" dir=\"ltr\">%d</code> אינה מדפיסה גרשיים.",
+      "recapHtml": "התו '0' שווה 48, לא 0."
+     },
+     {
+      "id": "C01-Q2",
+      "step": {
+       "type": "numeric",
+       "prompt": "מה מדפיס הקוד?\n```c\nprintf(\"%d\", '7' - '0');\n```",
+       "answer": 7,
+       "tol": 0,
+       "explain": "`'7'` הוא 55 ו-`'0'` הוא 48, ולכן ההפרש הוא 7. כך ממירים תו ספרה לערכו.",
+       "promptHtml": "מה מדפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>printf(\"%d\", '7' - '0');</code></pre>",
+       "explainHtml": "<code class=\"tok\" dir=\"ltr\">'7'</code> הוא 55 ו-<code class=\"tok\" dir=\"ltr\">'0'</code> הוא 48, ולכן ההפרש הוא 7. כך ממירים תו ספרה לערכו."
+      },
+      "recap": "c - '0' נותן את ערך הספרה.",
+      "recapHtml": "c - '0' נותן את ערך הספרה."
+     },
+     {
+      "id": "C01-Q3",
+      "question": "מה מדפיס הקוד?\n```c\nprintf(\"%c%c%c\", 'a' + 1, 'A' + 2, '0' + 3);\n```",
+      "options": [
+       {
+        "id": "a",
+        "value": "`bC3`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">bC3</code>"
+       },
+       {
+        "id": "b",
+        "value": "`98 67 51`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">98 67 51</code>"
+       },
+       {
+        "id": "c",
+        "value": "`aA0`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">aA0</code>"
+       },
+       {
+        "id": "d",
+        "value": "`b C 3`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">b C 3</code>"
+       }
+      ],
+      "correctId": "a",
+      "explanation": "התבנית `%c` מדפיסה את התו שמייצג הקוד: 98 הוא `b`, 67 הוא `C`, ו-51 הוא `3`. התשובה `98 67 51` הייתה נכונה עם `%d`, ובתבנית אין רווחים ולכן אין רווחים בפלט.",
+      "recap": "%c מדפיסה תו, %d מדפיסה את הקוד.",
+      "questionHtml": "מה מדפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>printf(\"%c%c%c\", 'a' + 1, 'A' + 2, '0' + 3);</code></pre>",
+      "explanationHtml": "התבנית <code class=\"tok\" dir=\"ltr\">%c</code> מדפיסה את התו שמייצג הקוד: 98 הוא <code class=\"tok\" dir=\"ltr\">b</code>, 67 הוא <code class=\"tok\" dir=\"ltr\">C</code>, ו-51 הוא <code class=\"tok\" dir=\"ltr\">3</code>. התשובה <code class=\"tok\" dir=\"ltr\">98 67 51</code> הייתה נכונה עם <code class=\"tok\" dir=\"ltr\">%d</code>, ובתבנית אין רווחים ולכן אין רווחים בפלט.",
+      "recapHtml": "%c מדפיסה תו, %d מדפיסה את הקוד."
+     },
+     {
+      "id": "C01-Q4",
+      "question": "איזו מההוראות הבאות **לא** מדפיסה 0?",
+      "options": [
+       {
+        "id": "a",
+        "value": "`printf(\"%d\", '\\0');`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">printf(\"%d\", '\\0');</code>"
+       },
+       {
+        "id": "b",
+        "value": "`printf(\"%d\", '0');`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">printf(\"%d\", '0');</code>"
+       },
+       {
+        "id": "c",
+        "value": "`printf(\"%d\", '0' - '0');`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">printf(\"%d\", '0' - '0');</code>"
+       },
+       {
+        "id": "d",
+        "value": "`printf(\"%d\", 'a' - 'a');`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">printf(\"%d\", 'a' - 'a');</code>"
+       }
+      ],
+      "correctId": "b",
+      "explanation": "`'0'` שווה 48. `'\\0'` שווה 0, וההפרש של תו עם עצמו (`'0' - '0'` או `'a' - 'a'`) הוא 0.",
+      "recap": "רק '\\0' הוא אפס; '0' הוא 48.",
+      "questionHtml": "איזו מההוראות הבאות <strong>לא</strong> מדפיסה 0?",
+      "explanationHtml": "<code class=\"tok\" dir=\"ltr\">'0'</code> שווה 48. <code class=\"tok\" dir=\"ltr\">'\\0'</code> שווה 0, וההפרש של תו עם עצמו (<code class=\"tok\" dir=\"ltr\">'0' - '0'</code> או <code class=\"tok\" dir=\"ltr\">'a' - 'a'</code>) הוא 0.",
+      "recapHtml": "רק '\\0' הוא אפס; '0' הוא 48."
+     },
+     {
+      "id": "C01-Q5",
+      "step": {
+       "type": "numeric",
+       "prompt": "מה מדפיס הקוד?\n```c\nchar c = 'x';\nc = c - 'a' + 'A';\nprintf(\"%d\", c);\n```",
+       "answer": 88,
+       "tol": 0,
+       "explain": "`'x'` הוא 120, `'a'` הוא 97 ו-`'A'` הוא 65. מקבלים $120 - 97 + 65 = 88$, וזה קוד התו `'X'`. כך ממירים אות קטנה לגדולה.",
+       "promptHtml": "מה מדפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>char c = 'x';\nc = c - 'a' + 'A';\nprintf(\"%d\", c);</code></pre>",
+       "explainHtml": "<code class=\"tok\" dir=\"ltr\">'x'</code> הוא 120, <code class=\"tok\" dir=\"ltr\">'a'</code> הוא 97 ו-<code class=\"tok\" dir=\"ltr\">'A'</code> הוא 65. מקבלים <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mn>120</mn><mo>−</mo><mn>97</mn><mo>+</mo><mn>65</mn><mo>=</mo><mn>88</mn></mrow><annotation encoding=\"application/x-tex\">120 - 97 + 65 = 88</annotation></semantics></math></span>, וזה קוד התו <code class=\"tok\" dir=\"ltr\">'X'</code>. כך ממירים אות קטנה לגדולה."
+      },
+      "recap": "c - 'a' + 'A' הופך אות קטנה לגדולה.",
+      "recapHtml": "c - 'a' + 'A' הופך אות קטנה לגדולה."
+     }
+    ]
+   },
+   {
+    "id": "C02",
+    "order": 2,
+    "icon": "➗",
+    "title": "חילוק שלם ושארית",
+    "goal": "אחרי השלב הזה אפשר לחשב חילוק ושארית של מספרים שלמים (גם שליליים), ולהבחין מתי החילוק הוא שלם ומתי ממשי.",
+    "source": "ai-verified",
+    "boss": false,
+    "lesson": {
+     "html": "\n    <p>כששני האופרנדים של <code>/</code> הם מספרים שלמים, התוצאה היא מספר שלם: החלק השלם של המנה, <b>בלי עיגול</b>. ב-C הביטוי 5 / 2 הוא 2, לא 2.5.</p>\n    <ul>\n      <li><code>7 / 2</code> הוא 3 ו-<code>-7 / 2</code> הוא -3 (החילוק קוטם לכיוון אפס).</li>\n      <li><code>%</code> נותן את השארית, והיא מקבלת את סימן המחולק: <code>7 % 2</code> הוא 1 ו-<code>-7 % 2</code> הוא -1.</li>\n      <li>החילוק ממשי רק אם לפחות אופרנד אחד הוא <code>double</code>: <code>5 / 2.0</code> הוא 2.5.</li>\n    </ul>\n    <div class=\"lesson-rule\">🔑 סדר החישוב קובע. ב-<code>1 / 2 + 1 / 2.0</code> החילוק הראשון שלם (0) והשני ממשי (0.5).</div>\n    <div class=\"lesson-ex\">דוגמה: <code>10 / 4 * 4</code> מחושב משמאל לימין: <code>(10 / 4) * 4 = 2 * 4 = 8</code>, ולא 10.</div>\n    <div class=\"lesson-trap\">⚠️ המרה שמתבצעת אחרי חילוק שלם לא מחזירה את מה שאבד: <code>(double)(7 / 2)</code> הוא 3.0, ואילו <code>(double)7 / 2</code> הוא 3.5.</div>\n    <h3>לולאה שנעצרת באפס</h3>\n    <p>בלולאה <code>for (i = 0; s[i]; i++)</code> התנאי הוא הערך <code>s[i]</code> עצמו. הלולאה נעצרת באיבר הראשון ששווה 0, והאיברים שאחריו לא נקראים. כך גם בחילוק שלם: <code>5 / 5 / 5</code> הוא <code>1 / 5</code>, כלומר 0.</p>"
+    },
+    "questions": [
+     {
+      "id": "C02-Q1",
+      "question": "מה מדפיס הקוד?\n```c\nprintf(\"%d %d\", 7 / 2, -7 / 2);\n```",
+      "options": [
+       {
+        "id": "a",
+        "value": "`3 -3`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">3 -3</code>"
+       },
+       {
+        "id": "b",
+        "value": "`3.5 -3.5`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">3.5 -3.5</code>"
+       },
+       {
+        "id": "c",
+        "value": "`3 -4`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">3 -4</code>"
+       },
+       {
+        "id": "d",
+        "value": "`4 -4`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">4 -4</code>"
+       }
+      ],
+      "correctId": "a",
+      "explanation": "חילוק שלם קוטם לכיוון אפס: 7/2 הוא 3 ו-(-7)/2 הוא -3. התשובה `-4` מניחה עיגול כלפי מטה, ו-`3.5` מניחה חילוק ממשי. אף אחד מהם אינו נכון ב-C.",
+      "recap": "חילוק שלם קוטם לכיוון אפס.",
+      "questionHtml": "מה מדפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>printf(\"%d %d\", 7 / 2, -7 / 2);</code></pre>",
+      "explanationHtml": "חילוק שלם קוטם לכיוון אפס: 7/2 הוא 3 ו-(-7)/2 הוא -3. התשובה <code class=\"tok\" dir=\"ltr\">-4</code> מניחה עיגול כלפי מטה, ו-<code class=\"tok\" dir=\"ltr\">3.5</code> מניחה חילוק ממשי. אף אחד מהם אינו נכון ב-C.",
+      "recapHtml": "חילוק שלם קוטם לכיוון אפס."
+     },
+     {
+      "id": "C02-Q2",
+      "step": {
+       "type": "numeric",
+       "prompt": "מה מדפיס הקוד?\n```c\nprintf(\"%d\", -7 % 3);\n```",
+       "answer": -1,
+       "tol": 0,
+       "explain": "$-7 = (-2)\\cdot 3 + (-1)$. החילוק קוטם ל-2- והשארית מקבלת את סימן המחולק, ולכן התוצאה היא -1.",
+       "promptHtml": "מה מדפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>printf(\"%d\", -7 % 3);</code></pre>",
+       "explainHtml": "<span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mo>−</mo><mn>7</mn><mo>=</mo><mo stretchy=\"false\">(</mo><mo>−</mo><mn>2</mn><mo stretchy=\"false\">)</mo><mo>⋅</mo><mn>3</mn><mo>+</mo><mo stretchy=\"false\">(</mo><mo>−</mo><mn>1</mn><mo stretchy=\"false\">)</mo></mrow><annotation encoding=\"application/x-tex\">-7 = (-2)\\cdot 3 + (-1)</annotation></semantics></math></span>. החילוק קוטם ל-2- והשארית מקבלת את סימן המחולק, ולכן התוצאה היא -1."
+      },
+      "recap": "לשארית יש סימן של המחולק.",
+      "recapHtml": "לשארית יש סימן של המחולק."
+     },
+     {
+      "id": "C02-Q3",
+      "question": "מה מדפיס הקוד?\n```c\ndouble x = 5 / 2;\nprintf(\"%.1f\", x);\n```",
+      "options": [
+       {
+        "id": "a",
+        "value": "`2.5`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">2.5</code>"
+       },
+       {
+        "id": "b",
+        "value": "`2.0`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">2.0</code>"
+       },
+       {
+        "id": "c",
+        "value": "`3.0`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">3.0</code>"
+       },
+       {
+        "id": "d",
+        "value": "`2`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">2</code>"
+       }
+      ],
+      "correctId": "b",
+      "explanation": "הביטוי `5 / 2` מחושב קודם, והוא חילוק שלם ששווה 2. רק אחר כך הערך 2 מומר ל-`double`. ההשמה ל-`double` לא הופכת את החילוק לממשי, ולכן התוצאה 2.0 ולא 2.5. התבנית `%.1f` מדפיסה ספרה אחת אחרי הנקודה, ולכן לא `2`.",
+      "recap": "ההשמה ל-double באה אחרי החילוק השלם.",
+      "questionHtml": "מה מדפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>double x = 5 / 2;\nprintf(\"%.1f\", x);</code></pre>",
+      "explanationHtml": "הביטוי <code class=\"tok\" dir=\"ltr\">5 / 2</code> מחושב קודם, והוא חילוק שלם ששווה 2. רק אחר כך הערך 2 מומר ל-<code class=\"tok\" dir=\"ltr\">double</code>. ההשמה ל-<code class=\"tok\" dir=\"ltr\">double</code> לא הופכת את החילוק לממשי, ולכן התוצאה 2.0 ולא 2.5. התבנית <code class=\"tok\" dir=\"ltr\">%.1f</code> מדפיסה ספרה אחת אחרי הנקודה, ולכן לא <code class=\"tok\" dir=\"ltr\">2</code>.",
+      "recapHtml": "ההשמה ל-double באה אחרי החילוק השלם."
+     },
+     {
+      "id": "C02-Q4",
+      "question": "מה מדפיס הקוד?\n```c\ndouble y = 1 / 2 + 1 / 2.0;\nprintf(\"%.1f\", y);\n```",
+      "options": [
+       {
+        "id": "a",
+        "value": "`1.0`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">1.0</code>"
+       },
+       {
+        "id": "b",
+        "value": "`0.0`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">0.0</code>"
+       },
+       {
+        "id": "c",
+        "value": "`0.5`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">0.5</code>"
+       },
+       {
+        "id": "d",
+        "value": "`1.5`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">1.5</code>"
+       }
+      ],
+      "correctId": "c",
+      "explanation": "`1 / 2` הוא חילוק שלם ושווה 0, ו-`1 / 2.0` הוא חילוק ממשי ושווה 0.5. הסכום הוא 0.5. התשובה 1.0 מניחה ששני החילוקים ממשיים.",
+      "recap": "כל חילוק נבחן בנפרד: שלם או ממשי.",
+      "questionHtml": "מה מדפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>double y = 1 / 2 + 1 / 2.0;\nprintf(\"%.1f\", y);</code></pre>",
+      "explanationHtml": "<code class=\"tok\" dir=\"ltr\">1 / 2</code> הוא חילוק שלם ושווה 0, ו-<code class=\"tok\" dir=\"ltr\">1 / 2.0</code> הוא חילוק ממשי ושווה 0.5. הסכום הוא 0.5. התשובה 1.0 מניחה ששני החילוקים ממשיים.",
+      "recapHtml": "כל חילוק נבחן בנפרד: שלם או ממשי."
+     },
+     {
+      "id": "C02-Q5",
+      "step": {
+       "type": "numeric",
+       "prompt": "מה מדפיס הקוד?\n```c\nprintf(\"%d\", 10 / 4 * 4);\n```",
+       "answer": 8,
+       "tol": 0,
+       "explain": "האופרטורים `/` ו-`*` באותה רמה ומחושבים משמאל לימין: $(10/4)\\cdot 4 = 2\\cdot 4 = 8$.",
+       "promptHtml": "מה מדפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>printf(\"%d\", 10 / 4 * 4);</code></pre>",
+       "explainHtml": "האופרטורים <code class=\"tok\" dir=\"ltr\">/</code> ו-<code class=\"tok\" dir=\"ltr\">*</code> באותה רמה ומחושבים משמאל לימין: <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mo stretchy=\"false\">(</mo><mn>10</mn><mi mathvariant=\"normal\">/</mi><mn>4</mn><mo stretchy=\"false\">)</mo><mo>⋅</mo><mn>4</mn><mo>=</mo><mn>2</mn><mo>⋅</mo><mn>4</mn><mo>=</mo><mn>8</mn></mrow><annotation encoding=\"application/x-tex\">(10/4)\\cdot 4 = 2\\cdot 4 = 8</annotation></semantics></math></span>."
+      },
+      "recap": "משמאל לימין: קודם החילוק השלם.",
+      "recapHtml": "משמאל לימין: קודם החילוק השלם."
+     },
+     {
+      "id": "C02-Q6",
+      "question": "מה מדפיס הקוד?\n```c\nint s[] = {5, 5 / 5, 5 / 5 / 5, 7};\nint i;\nfor (i = 0; s[i]; i++)\n    printf(\"%d\", s[i]);\n```",
+      "options": [
+       {
+        "id": "a",
+        "value": "`5107`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">5107</code>"
+       },
+       {
+        "id": "b",
+        "value": "`51`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">51</code>"
+       },
+       {
+        "id": "c",
+        "value": "`517`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">517</code>"
+       },
+       {
+        "id": "d",
+        "value": "`5`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">5</code>"
+       }
+      ],
+      "correctId": "b",
+      "explanation": "האיברים הם 5, 1 (שווה ל-5/5), 0 (שווה ל-1/5 בחילוק שלם) ו-7. הלולאה נעצרת באיבר השלישי כי הוא 0, ולכן מודפסים רק 5 ו-1: `51`. התשובות עם 7 מניחות שהלולאה ממשיכה אחרי האפס.",
+      "recap": "הלולאה נעצרת באיבר הראשון ששווה 0.",
+      "questionHtml": "מה מדפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>int s[] = {5, 5 / 5, 5 / 5 / 5, 7};\nint i;\nfor (i = 0; s[i]; i++)\n    printf(\"%d\", s[i]);</code></pre>",
+      "explanationHtml": "האיברים הם 5, 1 (שווה ל-5/5), 0 (שווה ל-1/5 בחילוק שלם) ו-7. הלולאה נעצרת באיבר השלישי כי הוא 0, ולכן מודפסים רק 5 ו-1: <code class=\"tok\" dir=\"ltr\">51</code>. התשובות עם 7 מניחות שהלולאה ממשיכה אחרי האפס.",
+      "recapHtml": "הלולאה נעצרת באיבר הראשון ששווה 0."
+     }
+    ]
+   }
+  ]
+ },
+ "dyn_2d": {
+  "levels": [
+   {
+    "id": "C01",
+    "order": 1,
+    "icon": "🧱",
+    "title": "מערך של מצביעים: int **",
+    "goal": "אחרי השלב הזה אפשר להסביר מה מטריצה דינמית היא בזיכרון, מה הטיפוס של m, של m[i] ושל m[i][j], וכמה הקצאות היא דורשת.",
+    "source": "ai-verified",
+    "boss": false,
+    "lesson": {
+     "html": "\n    <p>מטריצה דינמית אינה בלוק אחד. היא <b>מערך של מצביעים</b>, וכל מצביע מראה על שורה שהוקצתה בנפרד. את המערך החיצוני מחזיקים במצביע מסוג <code>int **</code>.</p>\n    <pre><code>m ──► [ m[0] ][ m[1] ][ m[2] ]     (int **)\n         │        │        └──► [ . . . . ]   row 2\n         │        └───────────► [ . . . . ]   row 1\n         └────────────────────► [ . . . . ]   row 0</code></pre>\n    <ul>\n      <li><code>m[i]</code> הוא מצביע <code>int *</code> לשורה <code>i</code>.</li>\n      <li><code>m[i][j]</code> הוא האיבר בשורה <code>i</code> ובעמודה <code>j</code>, מסוג <code>int</code>. זה שקול ל-<code>*(*(m + i) + j)</code>.</li>\n      <li>ב-64 סיביות <code>sizeof(int *)</code> הוא 8 בתים, ו-<code>sizeof(int)</code> הוא 4.</li>\n    </ul>\n    <div class=\"lesson-rule\">🔑 אינדקס אחד על <code>int **</code> נותן שורה. שני אינדקסים נותנים איבר. ומטריצה עם <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>r</mi></mrow><annotation encoding=\"application/x-tex\">r</annotation></semantics></math></span> שורות דורשת <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>r</mi><mo>+</mo><mn>1</mn></mrow><annotation encoding=\"application/x-tex\">r+1</annotation></semantics></math></span> הקצאות: אחת למערך המצביעים ועוד אחת לכל שורה.</div>\n    <div class=\"lesson-ex\">דוגמה: אחרי הבנייה של מטריצה 2×3 עם <code>m[i][j] = i * 10 + j</code> מתקבל <code>m[0] = {0, 1, 2}</code> ו-<code>m[1] = {10, 11, 12}</code>. אז <code>m[1][2]</code> הוא 12, וגם <code>*(*m + 1)</code> הוא <code>m[0][1]</code>, כלומר 1.</div>\n    <div class=\"lesson-trap\">⚠️ <code>m[j][i]</code> במקום <code>m[i][j]</code> מדפיס את המטריצה המשוחלפת, ובמטריצה לא ריבועית גם קורא מחוץ לגבולות.</div>"
+    },
+    "questions": [
+     {
+      "id": "C01-Q1",
+      "question": "מגדירים `int **m;` ו-`m` מצביע על מערך מצביעים שהוקצה. מהו הטיפוס של הביטוי `m[1]`?",
+      "options": [
+       {
+        "id": "a",
+        "value": "`int`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">int</code>"
+       },
+       {
+        "id": "b",
+        "value": "`int *`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">int *</code>"
+       },
+       {
+        "id": "c",
+        "value": "`int **`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">int **</code>"
+       },
+       {
+        "id": "d",
+        "value": "`int ***`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">int ***</code>"
+       }
+      ],
+      "correctId": "b",
+      "explanation": "`m` הוא `int **`, ו-`m[1]` הוא איבר אחד במערך המצביעים, כלומר `int *`: כתובת של שורה שלמה. `int` הוא רק `m[1][j]`, אחרי שני אינדקסים. `int **` הוא `m` עצמו, ו-`int ***` הוא `&m`.",
+      "recap": "אינדקס אחד על `int **` נותן שורה (`int *`), שני אינדקסים נותנים איבר (`int`).",
+      "questionHtml": "מגדירים <code class=\"tok\" dir=\"ltr\">int **m;</code> ו-<code class=\"tok\" dir=\"ltr\">m</code> מצביע על מערך מצביעים שהוקצה. מהו הטיפוס של הביטוי <code class=\"tok\" dir=\"ltr\">m[1]</code>?",
+      "explanationHtml": "<code class=\"tok\" dir=\"ltr\">m</code> הוא <code class=\"tok\" dir=\"ltr\">int <strong></code>, ו-<code class=\"tok\" dir=\"ltr\">m[1]</code> הוא איבר אחד במערך המצביעים, כלומר <code class=\"tok\" dir=\"ltr\">int *</code>: כתובת של שורה שלמה. <code class=\"tok\" dir=\"ltr\">int</code> הוא רק <code class=\"tok\" dir=\"ltr\">m[1][j]</code>, אחרי שני אינדקסים. <code class=\"tok\" dir=\"ltr\">int </strong></code> הוא <code class=\"tok\" dir=\"ltr\">m</code> עצמו, ו-<code class=\"tok\" dir=\"ltr\">int ***</code> הוא <code class=\"tok\" dir=\"ltr\">&amp;m</code>.",
+      "recapHtml": "אינדקס אחד על <code class=\"tok\" dir=\"ltr\">int **</code> נותן שורה (<code class=\"tok\" dir=\"ltr\">int *</code>), שני אינדקסים נותנים איבר (<code class=\"tok\" dir=\"ltr\">int</code>)."
+     },
+     {
+      "id": "C01-Q2",
+      "question": "מה מדפיס הקוד? (כל ההקצאות מצליחות)\n```c\nint main(void)\n{\n    int **m = (int **)calloc(2, sizeof(int *));\n    int i, j;\n    for (i = 0; i < 2; i++)\n    {\n        m[i] = (int *)calloc(3, sizeof(int));\n        for (j = 0; j < 3; j++)\n            m[i][j] = i * 10 + j;\n    }\n    printf(\"%d %d\", m[1][2], *(*m + 1));\n    return 0;\n}\n```",
+      "options": [
+       {
+        "id": "a",
+        "value": "`12 10`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">12 10</code>"
+       },
+       {
+        "id": "b",
+        "value": "`12 1`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">12 1</code>"
+       },
+       {
+        "id": "c",
+        "value": "`2 1`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">2 1</code>"
+       },
+       {
+        "id": "d",
+        "value": "`21 1`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">21 1</code>"
+       }
+      ],
+      "correctId": "b",
+      "explanation": "האיבר בשורה 1 ובעמודה 2 הוא `1 * 10 + 2 = 12`. הביטוי `*m` הוא `m[0]`, כלומר שורה 0, ו-`*(*m + 1)` הוא `m[0][1] = 0 * 10 + 1 = 1`. הפלט `12 10` מתעלם מכך ש-`m[0][1]` הוא 1 ולא 10. `2 1` ו-`21 1` מחליפים ספרות או אינדקסים.",
+      "recap": "`m[i][j]` שווה ל-`*(*(m + i) + j)`.",
+      "questionHtml": "מה מדפיס הקוד? (כל ההקצאות מצליחות)<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>int main(void)\n{\n    int **m = (int **)calloc(2, sizeof(int *));\n    int i, j;\n    for (i = 0; i &lt; 2; i++)\n    {\n        m[i] = (int *)calloc(3, sizeof(int));\n        for (j = 0; j &lt; 3; j++)\n            m[i][j] = i * 10 + j;\n    }\n    printf(\"%d %d\", m[1][2], *(*m + 1));\n    return 0;\n}</code></pre>",
+      "explanationHtml": "האיבר בשורה 1 ובעמודה 2 הוא <code class=\"tok\" dir=\"ltr\">1 * 10 + 2 = 12</code>. הביטוי <code class=\"tok\" dir=\"ltr\">*m</code> הוא <code class=\"tok\" dir=\"ltr\">m[0]</code>, כלומר שורה 0, ו-<code class=\"tok\" dir=\"ltr\">*(*m + 1)</code> הוא <code class=\"tok\" dir=\"ltr\">m[0][1] = 0 * 10 + 1 = 1</code>. הפלט <code class=\"tok\" dir=\"ltr\">12 10</code> מתעלם מכך ש-<code class=\"tok\" dir=\"ltr\">m[0][1]</code> הוא 1 ולא 10. <code class=\"tok\" dir=\"ltr\">2 1</code> ו-<code class=\"tok\" dir=\"ltr\">21 1</code> מחליפים ספרות או אינדקסים.",
+      "recapHtml": "<code class=\"tok\" dir=\"ltr\">m[i][j]</code> שווה ל-<code class=\"tok\" dir=\"ltr\">*(*(m + i) + j)</code>."
+     },
+     {
+      "id": "C01-Q3",
+      "step": {
+       "type": "numeric",
+       "prompt": "כמה קריאות להקצאה (`calloc`) נדרשות כדי לבנות מטריצה דינמית עם 4 שורות ו-5 עמודות?",
+       "answer": 5,
+       "tol": 0,
+       "explain": "קריאה אחת למערך המצביעים ועוד קריאה לכל שורה: $1 + 4 = 5$. אין קריאה אחת לכל התאים.",
+       "promptHtml": "כמה קריאות להקצאה (<code class=\"tok\" dir=\"ltr\">calloc</code>) נדרשות כדי לבנות מטריצה דינמית עם 4 שורות ו-5 עמודות?",
+       "explainHtml": "קריאה אחת למערך המצביעים ועוד קריאה לכל שורה: <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mn>1</mn><mo>+</mo><mn>4</mn><mo>=</mo><mn>5</mn></mrow><annotation encoding=\"application/x-tex\">1 + 4 = 5</annotation></semantics></math></span>. אין קריאה אחת לכל התאים."
+      },
+      "recap": "מטריצה עם $r$ שורות = $r + 1$ הקצאות.",
+      "recapHtml": "מטריצה עם <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>r</mi></mrow><annotation encoding=\"application/x-tex\">r</annotation></semantics></math></span> שורות = <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>r</mi><mo>+</mo><mn>1</mn></mrow><annotation encoding=\"application/x-tex\">r + 1</annotation></semantics></math></span> הקצאות."
+     },
+     {
+      "id": "C01-Q4",
+      "question": "בהידור ל-64 סיביות, כמה בתים תופס מצביע, כלומר מהו `sizeof(int *)`?",
+      "options": [
+       {
+        "id": "a",
+        "value": "`2`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">2</code>"
+       },
+       {
+        "id": "b",
+        "value": "`4`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">4</code>"
+       },
+       {
+        "id": "c",
+        "value": "`8`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">8</code>"
+       },
+       {
+        "id": "d",
+        "value": "`16`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">16</code>"
+       }
+      ],
+      "correctId": "c",
+      "explanation": "במחשב 64 סיביות כל כתובת היא 8 בתים. הערך 4 הוא `sizeof(int)` ולא גודל מצביע. לכן מערך של $r$ מצביעים דורש $8r$ בתים, ולא $4r$.",
+      "recap": "מצביע = 8 בתים ב-64 סיביות; `int` = 4 בתים.",
+      "questionHtml": "בהידור ל-64 סיביות, כמה בתים תופס מצביע, כלומר מהו <code class=\"tok\" dir=\"ltr\">sizeof(int *)</code>?",
+      "explanationHtml": "במחשב 64 סיביות כל כתובת היא 8 בתים. הערך 4 הוא <code class=\"tok\" dir=\"ltr\">sizeof(int)</code> ולא גודל מצביע. לכן מערך של <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>r</mi></mrow><annotation encoding=\"application/x-tex\">r</annotation></semantics></math></span> מצביעים דורש <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mn>8</mn><mi>r</mi></mrow><annotation encoding=\"application/x-tex\">8r</annotation></semantics></math></span> בתים, ולא <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mn>4</mn><mi>r</mi></mrow><annotation encoding=\"application/x-tex\">4r</annotation></semantics></math></span>.",
+      "recapHtml": "מצביע = 8 בתים ב-64 סיביות; <code class=\"tok\" dir=\"ltr\">int</code> = 4 בתים."
+     },
+     {
+      "id": "C01-Q5",
+      "step": {
+       "type": "findbug",
+       "prompt": "הקוד אמור להדפיס את המטריצה שורה אחר שורה: `0 1 2` ואז `3 4 5` ואז `6 7 8`. מצאו את השורה השגויה.",
+       "code": true,
+       "lines": [
+        "int **m = (int **)calloc(3, sizeof(int *));",
+        "int i, j;",
+        "for (i = 0; i < 3; i++)",
+        "{",
+        "    m[i] = (int *)calloc(3, sizeof(int));",
+        "    for (j = 0; j < 3; j++)",
+        "        m[i][j] = i * 3 + j;",
+        "}",
+        "for (i = 0; i < 3; i++)",
+        "{",
+        "    for (j = 0; j < 3; j++)",
+        "        printf(\"%d \", m[j][i]);",
+        "    printf(\"\\n\");",
+        "}"
+       ],
+       "bugIndex": 11,
+       "explain": "האינדקס הראשון הוא השורה והשני העמודה. `m[j][i]` מחליף ביניהם, ולכן מודפסת המטריצה המשוחלפת (`0 3 6` בשורה הראשונה).",
+       "promptHtml": "הקוד אמור להדפיס את המטריצה שורה אחר שורה: <code class=\"tok\" dir=\"ltr\">0 1 2</code> ואז <code class=\"tok\" dir=\"ltr\">3 4 5</code> ואז <code class=\"tok\" dir=\"ltr\">6 7 8</code>. מצאו את השורה השגויה.",
+       "explainHtml": "האינדקס הראשון הוא השורה והשני העמודה. <code class=\"tok\" dir=\"ltr\">m[j][i]</code> מחליף ביניהם, ולכן מודפסת המטריצה המשוחלפת (<code class=\"tok\" dir=\"ltr\">0 3 6</code> בשורה הראשונה).",
+       "linesHtml": [
+        "int **m = (int **)calloc(3, sizeof(int *));",
+        "int i, j;",
+        "for (i = 0; i &lt; 3; i++)",
+        "{",
+        "    m[i] = (int *)calloc(3, sizeof(int));",
+        "    for (j = 0; j &lt; 3; j++)",
+        "        m[i][j] = i * 3 + j;",
+        "}",
+        "for (i = 0; i &lt; 3; i++)",
+        "{",
+        "    for (j = 0; j &lt; 3; j++)",
+        "        printf(\"%d \", m[j][i]);",
+        "    printf(\"\\n\");",
+        "}"
+       ]
+      },
+      "recap": "`m[i][j]`: קודם שורה (`i`), אחר כך עמודה (`j`).",
+      "recapHtml": "<code class=\"tok\" dir=\"ltr\">m[i][j]</code>: קודם שורה (<code class=\"tok\" dir=\"ltr\">i</code>), אחר כך עמודה (<code class=\"tok\" dir=\"ltr\">j</code>)."
+     }
+    ]
+   },
+   {
+    "id": "C02",
+    "order": 2,
+    "icon": "🏗️",
+    "title": "הקצאת מטריצה rows × cols",
+    "goal": "אחרי השלב הזה אפשר לכתוב פונקציה שמקצה מטריצה דינמית מאופסת, ולחשב כמה בתים היא תופסת.",
+    "source": "ai-verified",
+    "boss": false,
+    "lesson": {
+     "html": "\n    <p>בונים מטריצה <code>rows × cols</code> בשני שלבים: קודם <b>מערך המצביעים</b>, ואז <b>כל שורה בנפרד</b> בלולאה.</p>\n    <pre><code>int **alloc_matrix(int rows, int cols)\n{\n    int i;\n    int **m = (int **)calloc(rows, sizeof(int *));\n    for (i = 0; i &lt; rows; i++)\n        m[i] = (int *)calloc(cols, sizeof(int));\n    return m;\n}</code></pre>\n    <ul>\n      <li><code>calloc(n, size)</code> מקצה <code>n</code> איברים בגודל <code>size</code> ומאפס אותם. <code>malloc</code> לא מאפס, והתאים מכילים זבל.</li>\n      <li>גודל איבר במערך המצביעים: <code>sizeof(int *)</code> (8 בתים). גודל איבר בשורה: <code>sizeof(int)</code> (4 בתים).</li>\n      <li>סך הבתים הוא <code>n * size</code> של כל קריאה: למטריצה 3×4 מקבלים <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mn>3</mn><mo>⋅</mo><mn>8</mn><mo>+</mo><mn>3</mn><mo>⋅</mo><mn>4</mn><mo>⋅</mo><mn>4</mn><mo>=</mo><mn>72</mn></mrow><annotation encoding=\"application/x-tex\">3 \\cdot 8 + 3 \\cdot 4 \\cdot 4 = 72</annotation></semantics></math></span>.</li>\n    </ul>\n    <div class=\"lesson-rule\">🔑 מערך המצביעים: <code>rows</code> איברים של <code>sizeof(int *)</code>. כל שורה: <code>cols</code> איברים של <code>sizeof(int)</code>.</div>\n    <div class=\"lesson-ex\">דוגמה: <code>alloc_matrix(2, 3)</code> קורא ל-<code>calloc(2, 8)</code> ואז פעמיים ל-<code>calloc(3, 4)</code>. כל התאים מתחילים באפס.</div>\n    <div class=\"lesson-trap\">⚠️ <code>calloc(rows, sizeof(int))</code> למערך המצביעים מקצה חצי ממה שצריך ב-64 סיביות. ו-<code>malloc</code> במקום <code>calloc</code> משאיר ערכי זבל כשהמטריצה אמורה להתחיל באפסים.</div>"
+    },
+    "questions": [
+     {
+      "id": "C02-Q1",
+      "step": {
+       "type": "order",
+       "prompt": "הפונקציה `alloc_matrix` כבר כתובה. סדרו את הפקודות ב-`main` כך שתוקצה מטריצה, יוכנס 7 לשורה 1 עמודה 2, והערך יודפס.",
+       "code": true,
+       "lines": [
+        "int **m = alloc_matrix(2, 3);",
+        "m[1][2] = 7;",
+        "printf(\"%d\", m[1][2]);",
+        "return 0;"
+       ],
+       "explain": "קודם מקצים (בלי מטריצה אין לאן לכתוב), אחר כך כותבים, אחר כך קוראים ומדפיסים, ורק בסוף `return`.",
+       "promptHtml": "הפונקציה <code class=\"tok\" dir=\"ltr\">alloc_matrix</code> כבר כתובה. סדרו את הפקודות ב-<code class=\"tok\" dir=\"ltr\">main</code> כך שתוקצה מטריצה, יוכנס 7 לשורה 1 עמודה 2, והערך יודפס.",
+       "explainHtml": "קודם מקצים (בלי מטריצה אין לאן לכתוב), אחר כך כותבים, אחר כך קוראים ומדפיסים, ורק בסוף <code class=\"tok\" dir=\"ltr\">return</code>.",
+       "linesHtml": [
+        "int **m = alloc_matrix(2, 3);",
+        "m[1][2] = 7;",
+        "printf(\"%d\", m[1][2]);",
+        "return 0;"
+       ]
+      },
+      "recap": "הקצאה, כתיבה, שימוש, ואז `return`.",
+      "recapHtml": "הקצאה, כתיבה, שימוש, ואז <code class=\"tok\" dir=\"ltr\">return</code>."
+     },
+     {
+      "id": "C02-Q2",
+      "question": "צריך את מערך המצביעים של מטריצה עם 3 שורות ו-4 עמודות (64 סיביות). איזו קריאה מקצה אותו נכון?",
+      "options": [
+       {
+        "id": "a",
+        "value": "`calloc(3, sizeof(int *))`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">calloc(3, sizeof(int *))</code>"
+       },
+       {
+        "id": "b",
+        "value": "`calloc(3, sizeof(int))`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">calloc(3, sizeof(int))</code>"
+       },
+       {
+        "id": "c",
+        "value": "`calloc(4, sizeof(int))`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">calloc(4, sizeof(int))</code>"
+       },
+       {
+        "id": "d",
+        "value": "`calloc(1, sizeof(int *))`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">calloc(1, sizeof(int *))</code>"
+       }
+      ],
+      "correctId": "a",
+      "explanation": "שלוש שורות = שלושה מצביעים = $3 \\cdot 8 = 24$ בתים, וזה `calloc(3, sizeof(int *))`. `calloc(3, sizeof(int))` נותן רק 12 בתים, `calloc(4, sizeof(int))` נותן 16, ו-`calloc(1, sizeof(int *))` נותן 8: כולם קטנים מ-24, והכתיבה לשורות האחרונות חורגת מהבלוק.",
+      "recap": "למערך המצביעים: מספר השורות כפול `sizeof(int *)`.",
+      "questionHtml": "צריך את מערך המצביעים של מטריצה עם 3 שורות ו-4 עמודות (64 סיביות). איזו קריאה מקצה אותו נכון?",
+      "explanationHtml": "שלוש שורות = שלושה מצביעים = <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mn>3</mn><mo>⋅</mo><mn>8</mn><mo>=</mo><mn>24</mn></mrow><annotation encoding=\"application/x-tex\">3 \\cdot 8 = 24</annotation></semantics></math></span> בתים, וזה <code class=\"tok\" dir=\"ltr\">calloc(3, sizeof(int *))</code>. <code class=\"tok\" dir=\"ltr\">calloc(3, sizeof(int))</code> נותן רק 12 בתים, <code class=\"tok\" dir=\"ltr\">calloc(4, sizeof(int))</code> נותן 16, ו-<code class=\"tok\" dir=\"ltr\">calloc(1, sizeof(int *))</code> נותן 8: כולם קטנים מ-24, והכתיבה לשורות האחרונות חורגת מהבלוק.",
+      "recapHtml": "למערך המצביעים: מספר השורות כפול <code class=\"tok\" dir=\"ltr\">sizeof(int *)</code>."
+     },
+     {
+      "id": "C02-Q3",
+      "step": {
+       "type": "fillblank",
+       "prompt": "השלימו את גודל האיבר בהקצאת מערך המצביעים.",
+       "code": true,
+       "lines": [
+        "int **alloc_matrix(int rows, int cols)",
+        "{",
+        "    int i;",
+        "    int **m = (int **)calloc(rows, ___);",
+        "    for (i = 0; i < rows; i++)",
+        "        m[i] = (int *)calloc(cols, sizeof(int));",
+        "    return m;",
+        "}"
+       ],
+       "blankIndex": 3,
+       "options": [
+        {
+         "id": "a",
+         "type": "text",
+         "value": "sizeof(int *)",
+         "html": "sizeof(int *)"
+        },
+        {
+         "id": "b",
+         "type": "text",
+         "value": "sizeof(int)",
+         "html": "sizeof(int)"
+        },
+        {
+         "id": "c",
+         "type": "text",
+         "value": "cols * sizeof(int)",
+         "html": "cols * sizeof(int)"
+        },
+        {
+         "id": "d",
+         "type": "text",
+         "value": "rows",
+         "html": "rows"
+        }
+       ],
+       "correctId": "a",
+       "explain": "איבר במערך המצביעים הוא `int *`, ולכן גודלו `sizeof(int *)`. כל אחת מהאפשרויות האחרות מבקשת גודל איבר שאינו 8 בתים.",
+       "promptHtml": "השלימו את גודל האיבר בהקצאת מערך המצביעים.",
+       "explainHtml": "איבר במערך המצביעים הוא <code class=\"tok\" dir=\"ltr\">int *</code>, ולכן גודלו <code class=\"tok\" dir=\"ltr\">sizeof(int *)</code>. כל אחת מהאפשרויות האחרות מבקשת גודל איבר שאינו 8 בתים.",
+       "linesHtml": [
+        "int **alloc_matrix(int rows, int cols)",
+        "{",
+        "    int i;",
+        "    int **m = (int **)calloc(rows, ___);",
+        "    for (i = 0; i &lt; rows; i++)",
+        "        m[i] = (int *)calloc(cols, sizeof(int));",
+        "    return m;",
+        "}"
+       ]
+      },
+      "recap": "גודל איבר במערך השורות: `sizeof(int *)`.",
+      "recapHtml": "גודל איבר במערך השורות: <code class=\"tok\" dir=\"ltr\">sizeof(int *)</code>."
+     },
+     {
+      "id": "C02-Q4",
+      "step": {
+       "type": "numeric",
+       "prompt": "כמה בתים בסך הכל מקצה הקריאה `alloc_matrix(3, 4)` ב-64 סיביות, כולל מערך המצביעים?",
+       "answer": 72,
+       "tol": 0,
+       "explain": "מערך המצביעים: $3 \\cdot 8 = 24$ בתים. שלוש שורות של 4 מספרים: $3 \\cdot 4 \\cdot 4 = 48$ בתים. סך הכל $24 + 48 = 72$.",
+       "promptHtml": "כמה בתים בסך הכל מקצה הקריאה <code class=\"tok\" dir=\"ltr\">alloc_matrix(3, 4)</code> ב-64 סיביות, כולל מערך המצביעים?",
+       "explainHtml": "מערך המצביעים: <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mn>3</mn><mo>⋅</mo><mn>8</mn><mo>=</mo><mn>24</mn></mrow><annotation encoding=\"application/x-tex\">3 \\cdot 8 = 24</annotation></semantics></math></span> בתים. שלוש שורות של 4 מספרים: <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mn>3</mn><mo>⋅</mo><mn>4</mn><mo>⋅</mo><mn>4</mn><mo>=</mo><mn>48</mn></mrow><annotation encoding=\"application/x-tex\">3 \\cdot 4 \\cdot 4 = 48</annotation></semantics></math></span> בתים. סך הכל <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mn>24</mn><mo>+</mo><mn>48</mn><mo>=</mo><mn>72</mn></mrow><annotation encoding=\"application/x-tex\">24 + 48 = 72</annotation></semantics></math></span>."
+      },
+      "recap": "בתים = שורות$\\cdot 8$ + שורות$\\cdot$עמודות$\\cdot 4$.",
+      "recapHtml": "בתים = שורות<span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mo>⋅</mo><mn>8</mn></mrow><annotation encoding=\"application/x-tex\">\\cdot 8</annotation></semantics></math></span> + שורות<span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mo>⋅</mo></mrow><annotation encoding=\"application/x-tex\">\\cdot</annotation></semantics></math></span>עמודות<span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mo>⋅</mo><mn>4</mn></mrow><annotation encoding=\"application/x-tex\">\\cdot 4</annotation></semantics></math></span>."
+     },
+     {
+      "id": "C02-Q5",
+      "step": {
+       "type": "findbug",
+       "prompt": "הפונקציה אמורה להקצות מטריצה `rows` על `cols`, אבל במטריצה 2 על 3 השורות קצרות מדי. מצאו את השורה השגויה.",
+       "code": true,
+       "lines": [
+        "int **alloc_matrix(int rows, int cols)",
+        "{",
+        "    int i;",
+        "    int **m = (int **)calloc(rows, sizeof(int *));",
+        "    for (i = 0; i < rows; i++)",
+        "        m[i] = (int *)calloc(rows, sizeof(int));",
+        "    return m;",
+        "}"
+       ],
+       "bugIndex": 5,
+       "explain": "אורך כל שורה הוא מספר העמודות. `calloc(rows, ...)` מקצה שורות באורך `rows`, ובמטריצה לא ריבועית זה קטן (או גדול) מדי.",
+       "promptHtml": "הפונקציה אמורה להקצות מטריצה <code class=\"tok\" dir=\"ltr\">rows</code> על <code class=\"tok\" dir=\"ltr\">cols</code>, אבל במטריצה 2 על 3 השורות קצרות מדי. מצאו את השורה השגויה.",
+       "explainHtml": "אורך כל שורה הוא מספר העמודות. <code class=\"tok\" dir=\"ltr\">calloc(rows, ...)</code> מקצה שורות באורך <code class=\"tok\" dir=\"ltr\">rows</code>, ובמטריצה לא ריבועית זה קטן (או גדול) מדי.",
+       "linesHtml": [
+        "int **alloc_matrix(int rows, int cols)",
+        "{",
+        "    int i;",
+        "    int **m = (int **)calloc(rows, sizeof(int *));",
+        "    for (i = 0; i &lt; rows; i++)",
+        "        m[i] = (int *)calloc(rows, sizeof(int));",
+        "    return m;",
+        "}"
+       ]
+      },
+      "recap": "אורך שורה = `cols`, מספר השורות = `rows`.",
+      "recapHtml": "אורך שורה = <code class=\"tok\" dir=\"ltr\">cols</code>, מספר השורות = <code class=\"tok\" dir=\"ltr\">rows</code>."
+     }
+    ]
+   },
+   {
+    "id": "C03",
+    "order": 3,
+    "icon": "🧹",
+    "title": "שחרור: שורות ואז המערך החיצוני",
+    "goal": "אחרי השלב הזה אפשר לשחרר מטריצה דינמית נכון, לספור את השחרורים הנדרשים ולזהות דליפות.",
+    "source": "ai-verified",
+    "boss": false,
+    "lesson": {
+     "html": "\n    <p>כל <code>calloc</code> צריך <code>free</code> אחד. במטריצה דינמית יש <b><span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>r</mi><mo>+</mo><mn>1</mn></mrow><annotation encoding=\"application/x-tex\">r + 1</annotation></semantics></math></span> בלוקים נפרדים</b>, ולכן <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>r</mi><mo>+</mo><mn>1</mn></mrow><annotation encoding=\"application/x-tex\">r + 1</annotation></semantics></math></span> שחרורים.</p>\n    <pre><code>void free_matrix(int **m, int rows)\n{\n    int i;\n    for (i = 0; i &lt; rows; i++)\n        free(m[i]);\n    free(m);\n}</code></pre>\n    <ul>\n      <li><b>קודם השורות, אחר כך מערך המצביעים.</b> השורות מוכרות רק דרך <code>m[i]</code>; אחרי <code>free(m)</code> הכתובות האלה אבדו.</li>\n      <li><code>free(m)</code> לבד משחרר רק את מערך המצביעים, והשורות דולפות (דליפת זיכרון).</li>\n      <li><code>free(NULL)</code> בטוח ולא עושה כלום. אבל <code>free</code> פעמיים על אותה כתובת אמיתית הוא באג.</li>\n      <li>מערך סטטי (<code>int A[3][3]</code>) לא הוקצה ב-<code>calloc</code>, ולכן אסור לעשות לו <code>free</code>.</li>\n    </ul>\n    <div class=\"lesson-rule\">🔑 שחרור מטריצה: לולאה על כל השורות עם <code>free(m[i])</code>, ורק אחריה <code>free(m)</code>.</div>\n    <div class=\"lesson-ex\">דוגמה: עבור מטריצה עם 3 שורות מבצעים <code>free(m[0])</code>, <code>free(m[1])</code>, <code>free(m[2])</code> ואז <code>free(m)</code>: ארבעה שחרורים לארבע הקצאות.</div>\n    <div class=\"lesson-trap\">⚠️ לולאת שחרור שמתחילה מ-<code>i = 1</code>, או שמסתיימת מוקדם מדי, משאירה שורה בלי שחרור. ולולאה עם <code>i &lt;= rows</code> קוראת את <code>m[rows]</code> שאינו קיים.</div>"
+    },
+    "questions": [
+     {
+      "id": "C03-Q1",
+      "step": {
+       "type": "numeric",
+       "prompt": "כמה קריאות ל-`free` נדרשות כדי לשחרר מטריצה דינמית עם 5 שורות?",
+       "answer": 6,
+       "tol": 0,
+       "explain": "כל שורה משוחררת בנפרד (5 קריאות) ועוד מערך המצביעים עצמו: $5 + 1 = 6$, בדיוק כמספר ההקצאות.",
+       "promptHtml": "כמה קריאות ל-<code class=\"tok\" dir=\"ltr\">free</code> נדרשות כדי לשחרר מטריצה דינמית עם 5 שורות?",
+       "explainHtml": "כל שורה משוחררת בנפרד (5 קריאות) ועוד מערך המצביעים עצמו: <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mn>5</mn><mo>+</mo><mn>1</mn><mo>=</mo><mn>6</mn></mrow><annotation encoding=\"application/x-tex\">5 + 1 = 6</annotation></semantics></math></span>, בדיוק כמספר ההקצאות."
+      },
+      "recap": "כל `calloc` מקבל `free`: $r + 1$ שחרורים.",
+      "recapHtml": "כל <code class=\"tok\" dir=\"ltr\">calloc</code> מקבל <code class=\"tok\" dir=\"ltr\">free</code>: <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>r</mi><mo>+</mo><mn>1</mn></mrow><annotation encoding=\"application/x-tex\">r + 1</annotation></semantics></math></span> שחרורים."
+     },
+     {
+      "id": "C03-Q2",
+      "step": {
+       "type": "order",
+       "prompt": "סדרו את הפקודות כך שהמטריצה תשוחרר נכון: קודם השורות ואחר כך מערך המצביעים.",
+       "code": true,
+       "lines": [
+        "int i, **m = alloc_matrix(3, 2);",
+        "for (i = 0; i < 3; i++)\n        free(m[i]);",
+        "free(m);"
+       ],
+       "explain": "אם משחררים את `m` לפני השורות, כתובות השורות (`m[i]`) אבדו ואי אפשר לשחרר אותן אחרי כן באופן חוקי. הסדר הנכון הוא שורות ואז `m`.",
+       "promptHtml": "סדרו את הפקודות כך שהמטריצה תשוחרר נכון: קודם השורות ואחר כך מערך המצביעים.",
+       "explainHtml": "אם משחררים את <code class=\"tok\" dir=\"ltr\">m</code> לפני השורות, כתובות השורות (<code class=\"tok\" dir=\"ltr\">m[i]</code>) אבדו ואי אפשר לשחרר אותן אחרי כן באופן חוקי. הסדר הנכון הוא שורות ואז <code class=\"tok\" dir=\"ltr\">m</code>.",
+       "linesHtml": [
+        "int i, **m = alloc_matrix(3, 2);",
+        "for (i = 0; i &lt; 3; i++)\n        free(m[i]);",
+        "free(m);"
+       ]
+      },
+      "recap": "קודם השורות, אחר כך המערך החיצוני.",
+      "recapHtml": "קודם השורות, אחר כך המערך החיצוני."
+     },
+     {
+      "id": "C03-Q3",
+      "question": "בסוף התוכנית הבאה, כמה בלוקים שהוקצו נשארו בלי שחרור (דליפה)?\n```c\nint **alloc_matrix(int rows, int cols)\n{\n    int i;\n    int **m = (int **)calloc(rows, sizeof(int *));\n    for (i = 0; i < rows; i++)\n        m[i] = (int *)calloc(cols, sizeof(int));\n    return m;\n}\n\nint main(void)\n{\n    int **m = alloc_matrix(3, 4);\n    free(m);\n    return 0;\n}\n```",
+      "options": [
+       {
+        "id": "a",
+        "value": "`0`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">0</code>"
+       },
+       {
+        "id": "b",
+        "value": "`1`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">1</code>"
+       },
+       {
+        "id": "c",
+        "value": "`3`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">3</code>"
+       },
+       {
+        "id": "d",
+        "value": "`4`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">4</code>"
+       }
+      ],
+      "correctId": "c",
+      "explanation": "הוקצו 4 בלוקים: מערך המצביעים ו-3 שורות. שוחרר רק מערך המצביעים, ולכן 3 שורות דלפו. התשובה 4 שוכחת שאחד מהם שוחרר, ו-1 סופרת רק את המערך החיצוני.",
+      "recap": "`free(m)` לבד משחרר רק את מערך המצביעים; השורות דולפות.",
+      "questionHtml": "בסוף התוכנית הבאה, כמה בלוקים שהוקצו נשארו בלי שחרור (דליפה)?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>int **alloc_matrix(int rows, int cols)\n{\n    int i;\n    int **m = (int **)calloc(rows, sizeof(int *));\n    for (i = 0; i &lt; rows; i++)\n        m[i] = (int *)calloc(cols, sizeof(int));\n    return m;\n}\n\nint main(void)\n{\n    int **m = alloc_matrix(3, 4);\n    free(m);\n    return 0;\n}</code></pre>",
+      "explanationHtml": "הוקצו 4 בלוקים: מערך המצביעים ו-3 שורות. שוחרר רק מערך המצביעים, ולכן 3 שורות דלפו. התשובה 4 שוכחת שאחד מהם שוחרר, ו-1 סופרת רק את המערך החיצוני.",
+      "recapHtml": "<code class=\"tok\" dir=\"ltr\">free(m)</code> לבד משחרר רק את מערך המצביעים; השורות דולפות."
+     },
+     {
+      "id": "C03-Q4",
+      "step": {
+       "type": "findbug",
+       "prompt": "הפונקציה אמורה לשחרר את כל המטריצה בלי דליפות, אבל שורה אחת נשארת. מצאו את השורה השגויה.",
+       "code": true,
+       "lines": [
+        "void free_matrix(int **m, int rows)",
+        "{",
+        "    int i;",
+        "    for (i = 1; i < rows; i++)",
+        "        free(m[i]);",
+        "    free(m);",
+        "}"
+       ],
+       "bugIndex": 3,
+       "explain": "הלולאה מתחילה מ-`i = 1` ולכן שורה 0 לא משוחררת. אינדקסים בלולאה על שורות מתחילים מ-0.",
+       "promptHtml": "הפונקציה אמורה לשחרר את כל המטריצה בלי דליפות, אבל שורה אחת נשארת. מצאו את השורה השגויה.",
+       "explainHtml": "הלולאה מתחילה מ-<code class=\"tok\" dir=\"ltr\">i = 1</code> ולכן שורה 0 לא משוחררת. אינדקסים בלולאה על שורות מתחילים מ-0.",
+       "linesHtml": [
+        "void free_matrix(int **m, int rows)",
+        "{",
+        "    int i;",
+        "    for (i = 1; i &lt; rows; i++)",
+        "        free(m[i]);",
+        "    free(m);",
+        "}"
+       ]
+      },
+      "recap": "לולאה על שורות: `i` מ-0 עד `rows - 1`.",
+      "recapHtml": "לולאה על שורות: <code class=\"tok\" dir=\"ltr\">i</code> מ-0 עד <code class=\"tok\" dir=\"ltr\">rows - 1</code>."
+     },
+     {
+      "id": "C03-Q5",
+      "question": "מה קורה בקוד הבא?\n```c\nint main(void)\n{\n    int *p = NULL;\n    free(p);\n    printf(\"A\");\n    free(p);\n    printf(\"B\");\n    return 0;\n}\n```",
+      "options": [
+       {
+        "id": "a",
+        "value": "`AB`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">AB</code>"
+       },
+       {
+        "id": "b",
+        "value": "`A`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">A</code>"
+       },
+       {
+        "id": "c",
+        "value": "קריסה לפני כל פלט",
+        "type": "text",
+        "html": "קריסה לפני כל פלט"
+       },
+       {
+        "id": "d",
+        "value": "שגיאת הידור",
+        "type": "text",
+        "html": "שגיאת הידור"
+       }
+      ],
+      "correctId": "a",
+      "explanation": "`free(NULL)` מוגדר היטב ולא עושה כלום, גם פעמיים. לכן מודפס `AB`. לא קורסים ולא מקבלים שגיאת הידור. (`free` כפול על כתובת שאינה NULL הוא כבר באג.)",
+      "recap": "`free(NULL)` בטוח ולא עושה כלום.",
+      "questionHtml": "מה קורה בקוד הבא?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>int main(void)\n{\n    int *p = NULL;\n    free(p);\n    printf(\"A\");\n    free(p);\n    printf(\"B\");\n    return 0;\n}</code></pre>",
+      "explanationHtml": "<code class=\"tok\" dir=\"ltr\">free(NULL)</code> מוגדר היטב ולא עושה כלום, גם פעמיים. לכן מודפס <code class=\"tok\" dir=\"ltr\">AB</code>. לא קורסים ולא מקבלים שגיאת הידור. (<code class=\"tok\" dir=\"ltr\">free</code> כפול על כתובת שאינה NULL הוא כבר באג.)",
+      "recapHtml": "<code class=\"tok\" dir=\"ltr\">free(NULL)</code> בטוח ולא עושה כלום."
+     }
+    ]
+   },
+   {
+    "id": "C04",
+    "order": 4,
+    "icon": "📋",
+    "title": "מטריצה סטטית לדינמית",
+    "goal": "אחרי השלב הזה אפשר להעתיק מטריצה סטטית A[][N] למטריצה דינמית חדשה ולהבחין בין int A[][N] ל-int **.",
+    "source": "ai-verified",
+    "boss": false,
+    "lesson": {
+     "html": "\n    <p>במבחן הקלט הוא לעיתים מטריצה <b>סטטית</b> והפלט מבנה <b>דינמי</b>. הפרמטר הסטטי נכתב עם קבוע עמודות:</p>\n    <pre><code>#define N 3\nint **copy_matrix(int A[][N], int n);</code></pre>\n    <ul>\n      <li><code>int A[][N]</code> הוא מצביע לשורה של <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>N</mi></mrow><annotation encoding=\"application/x-tex\">N</annotation></semantics></math></span> מספרים. מעבירים לו מערך כמו <code>int S[3][3]</code>.</li>\n      <li><code>int **m</code> הוא מערך מצביעים, <b>טיפוס אחר</b>: לא מעבירים אחד במקום השני.</li>\n      <li>הפלט הדינמי נבנה בנפרד (<code>calloc</code>), מועתק מהקלט, ומוחזר ב-<code>return</code>. ההעתק עצמאי מהמקור.</li>\n      <li>תא שלא כותבים אליו נשאר 0, כי <code>calloc</code> מאפס.</li>\n    </ul>\n    <pre><code>#define N 3\nint **copy_matrix(int A[][N], int n)\n{\n    int i, j;\n    int **B = (int **)calloc(n, sizeof(int *));\n    for (i = 0; i &lt; n; i++)\n    {\n        B[i] = (int *)calloc(n, sizeof(int));\n        for (j = 0; j &lt; n; j++)\n            B[i][j] = A[i][j];\n    }\n    return B;\n}</code></pre>\n    <div class=\"lesson-rule\">🔑 העתקה: מקצים מטריצה חדשה בגודל המתאים, ואז <code>B[i][j] = A[i][j]</code> בלולאה כפולה.</div>\n    <div class=\"lesson-ex\">דוגמה: אחרי <code>B = copy_matrix(A, 3)</code>, השינוי <code>B[0][0] = 9</code> לא משנה את <code>A[0][0]</code>.</div>\n    <div class=\"lesson-trap\">⚠️ מערך סטטי שהועבר לפונקציה לא משחררים עם <code>free</code>: הוא לא הוקצה ב-<code>calloc</code>.</div>"
+    },
+    "questions": [
+     {
+      "id": "C04-Q1",
+      "question": "הפונקציה `int sum(int A[][N], int n)` מקבלת מטריצה סטטית (`N` קבוע). יש `int S[3][3]` ו-`int **m` (מטריצה דינמית). איזו קריאה תקינה?",
+      "options": [
+       {
+        "id": "a",
+        "value": "`sum(S, 3)`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">sum(S, 3)</code>"
+       },
+       {
+        "id": "b",
+        "value": "`sum(m, 3)`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">sum(m, 3)</code>"
+       },
+       {
+        "id": "c",
+        "value": "`sum(&m, 3)`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">sum(&amp;m, 3)</code>"
+       },
+       {
+        "id": "d",
+        "value": "`sum(*m, 3)`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">sum(*m, 3)</code>"
+       }
+      ],
+      "correctId": "a",
+      "explanation": "הפרמטר `int A[][N]` הוא מצביע לשורה של $N$ מספרים, וזה מה שמתקבל משם של מערך דו-ממדי סטטי. `int **m` הוא מערך מצביעים, טיפוס אחר: ההידור נכשל או מתקבלת אזהרה, ואם מריצים, הקריאה מפרשת מצביעים כמספרים. גם `&m` וגם `*m` אינם מצביע-לשורה.",
+      "recap": "`int A[][N]` לא שווה ל-`int **`. סטטי ודינמי אינם ניתנים להחלפה.",
+      "questionHtml": "הפונקציה <code class=\"tok\" dir=\"ltr\">int sum(int A[][N], int n)</code> מקבלת מטריצה סטטית (<code class=\"tok\" dir=\"ltr\">N</code> קבוע). יש <code class=\"tok\" dir=\"ltr\">int S[3][3]</code> ו-<code class=\"tok\" dir=\"ltr\">int **m</code> (מטריצה דינמית). איזו קריאה תקינה?",
+      "explanationHtml": "הפרמטר <code class=\"tok\" dir=\"ltr\">int A[][N]</code> הוא מצביע לשורה של <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>N</mi></mrow><annotation encoding=\"application/x-tex\">N</annotation></semantics></math></span> מספרים, וזה מה שמתקבל משם של מערך דו-ממדי סטטי. <code class=\"tok\" dir=\"ltr\">int **m</code> הוא מערך מצביעים, טיפוס אחר: ההידור נכשל או מתקבלת אזהרה, ואם מריצים, הקריאה מפרשת מצביעים כמספרים. גם <code class=\"tok\" dir=\"ltr\">&amp;m</code> וגם <code class=\"tok\" dir=\"ltr\">*m</code> אינם מצביע-לשורה.",
+      "recapHtml": "<code class=\"tok\" dir=\"ltr\">int A[][N]</code> לא שווה ל-<code class=\"tok\" dir=\"ltr\">int **</code>. סטטי ודינמי אינם ניתנים להחלפה."
+     },
+     {
+      "id": "C04-Q2",
+      "question": "מה מדפיס הקוד?\n```c\n#define N 2\nint **copy_matrix(int A[][N], int n)\n{\n    int i, j;\n    int **B = (int **)calloc(n, sizeof(int *));\n    for (i = 0; i < n; i++)\n    {\n        B[i] = (int *)calloc(n, sizeof(int));\n        for (j = 0; j < n; j++)\n            B[i][j] = A[i][j];\n    }\n    return B;\n}\n\nint main(void)\n{\n    int A[2][2] = {{1, 2}, {3, 4}};\n    int **B = copy_matrix(A, 2);\n    B[0][0] = 9;\n    printf(\"%d %d\", A[0][0], B[0][0]);\n    return 0;\n}\n```",
+      "options": [
+       {
+        "id": "a",
+        "value": "`9 9`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">9 9</code>"
+       },
+       {
+        "id": "b",
+        "value": "`1 9`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">1 9</code>"
+       },
+       {
+        "id": "c",
+        "value": "`1 1`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">1 1</code>"
+       },
+       {
+        "id": "d",
+        "value": "`9 1`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">9 1</code>"
+       }
+      ],
+      "correctId": "b",
+      "explanation": "`copy_matrix` בונה מטריצה דינמית חדשה ומעתיקה אליה ערכים. שינוי `B[0][0]` משנה רק את ההעתק, ולכן `A[0][0]` נשאר 1 ו-`B[0][0]` הוא 9. תשובות אחרות מניחות שהמטריצות חולקות זיכרון.",
+      "recap": "ההעתק עצמאי: שינוי בו לא משנה את המקור.",
+      "questionHtml": "מה מדפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>#define N 2\nint **copy_matrix(int A[][N], int n)\n{\n    int i, j;\n    int **B = (int **)calloc(n, sizeof(int *));\n    for (i = 0; i &lt; n; i++)\n    {\n        B[i] = (int *)calloc(n, sizeof(int));\n        for (j = 0; j &lt; n; j++)\n            B[i][j] = A[i][j];\n    }\n    return B;\n}\n\nint main(void)\n{\n    int A[2][2] = {{1, 2}, {3, 4}};\n    int **B = copy_matrix(A, 2);\n    B[0][0] = 9;\n    printf(\"%d %d\", A[0][0], B[0][0]);\n    return 0;\n}</code></pre>",
+      "explanationHtml": "<code class=\"tok\" dir=\"ltr\">copy_matrix</code> בונה מטריצה דינמית חדשה ומעתיקה אליה ערכים. שינוי <code class=\"tok\" dir=\"ltr\">B[0][0]</code> משנה רק את ההעתק, ולכן <code class=\"tok\" dir=\"ltr\">A[0][0]</code> נשאר 1 ו-<code class=\"tok\" dir=\"ltr\">B[0][0]</code> הוא 9. תשובות אחרות מניחות שהמטריצות חולקות זיכרון.",
+      "recapHtml": "ההעתק עצמאי: שינוי בו לא משנה את המקור."
+     },
+     {
+      "id": "C04-Q3",
+      "step": {
+       "type": "fillblank",
+       "prompt": "השלימו את השורה שמעתיקה איבר מהמטריצה הסטטית `A` להעתק `B`, כך ש-`B` זהה ל-`A`.",
+       "code": true,
+       "lines": [
+        "int **copy_matrix(int A[][N], int n)",
+        "{",
+        "    int i, j;",
+        "    int **B = (int **)calloc(n, sizeof(int *));",
+        "    for (i = 0; i < n; i++)",
+        "    {",
+        "        B[i] = (int *)calloc(n, sizeof(int));",
+        "        for (j = 0; j < n; j++)",
+        "            B[i][j] = ___;",
+        "    }",
+        "    return B;",
+        "}"
+       ],
+       "blankIndex": 8,
+       "options": [
+        {
+         "id": "a",
+         "type": "text",
+         "value": "A[i][j]",
+         "html": "A[i][j]"
+        },
+        {
+         "id": "b",
+         "type": "text",
+         "value": "A[j][i]",
+         "html": "A[j][i]"
+        },
+        {
+         "id": "c",
+         "type": "text",
+         "value": "A[i][j] * 2",
+         "html": "A[i][j] * 2"
+        },
+        {
+         "id": "d",
+         "type": "text",
+         "value": "A[i][j] + i",
+         "html": "A[i][j] + i"
+        }
+       ],
+       "correctId": "a",
+       "explain": "ההעתק זהה למקור כשכל תא מועתק מאותו מקום: `A[i][j]`. `A[j][i]` משחלף, והאחרות משנות את הערך.",
+       "promptHtml": "השלימו את השורה שמעתיקה איבר מהמטריצה הסטטית <code class=\"tok\" dir=\"ltr\">A</code> להעתק <code class=\"tok\" dir=\"ltr\">B</code>, כך ש-<code class=\"tok\" dir=\"ltr\">B</code> זהה ל-<code class=\"tok\" dir=\"ltr\">A</code>.",
+       "explainHtml": "ההעתק זהה למקור כשכל תא מועתק מאותו מקום: <code class=\"tok\" dir=\"ltr\">A[i][j]</code>. <code class=\"tok\" dir=\"ltr\">A[j][i]</code> משחלף, והאחרות משנות את הערך.",
+       "linesHtml": [
+        "int **copy_matrix(int A[][N], int n)",
+        "{",
+        "    int i, j;",
+        "    int **B = (int **)calloc(n, sizeof(int *));",
+        "    for (i = 0; i &lt; n; i++)",
+        "    {",
+        "        B[i] = (int *)calloc(n, sizeof(int));",
+        "        for (j = 0; j &lt; n; j++)",
+        "            B[i][j] = ___;",
+        "    }",
+        "    return B;",
+        "}"
+       ]
+      },
+      "recap": "העתקה: `B[i][j] = A[i][j]`.",
+      "recapHtml": "העתקה: <code class=\"tok\" dir=\"ltr\">B[i][j] = A[i][j]</code>."
+     },
+     {
+      "id": "C04-Q4",
+      "step": {
+       "type": "numeric",
+       "prompt": "מה מדפיס הקוד הבא?\n```c\nint main(void)\n{\n    int A[3][3] = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};\n    int **B = (int **)calloc(3, sizeof(int *));\n    int i, j, s = 0;\n    for (i = 0; i < 3; i++)\n    {\n        B[i] = (int *)calloc(3, sizeof(int));\n        for (j = 0; j <= i; j++)\n            B[i][j] = A[i][j];\n    }\n    for (i = 0; i < 3; i++)\n        for (j = 0; j < 3; j++)\n            s += B[i][j];\n    printf(\"%d\", s);\n    return 0;\n}\n```",
+       "answer": 34,
+       "tol": 0,
+       "explain": "רק התאים עם $j \\le i$ מועתקים, והשאר נשארים אפס (`calloc`): $1 + 4 + 5 + 7 + 8 + 9 = 34$. האיברים $2, 3, 6$ מעל האלכסון לא נכנסים.",
+       "promptHtml": "מה מדפיס הקוד הבא?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>int main(void)\n{\n    int A[3][3] = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};\n    int **B = (int **)calloc(3, sizeof(int *));\n    int i, j, s = 0;\n    for (i = 0; i &lt; 3; i++)\n    {\n        B[i] = (int *)calloc(3, sizeof(int));\n        for (j = 0; j &lt;= i; j++)\n            B[i][j] = A[i][j];\n    }\n    for (i = 0; i &lt; 3; i++)\n        for (j = 0; j &lt; 3; j++)\n            s += B[i][j];\n    printf(\"%d\", s);\n    return 0;\n}</code></pre>",
+       "explainHtml": "רק התאים עם <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>j</mi><mo>≤</mo><mi>i</mi></mrow><annotation encoding=\"application/x-tex\">j \\le i</annotation></semantics></math></span> מועתקים, והשאר נשארים אפס (<code class=\"tok\" dir=\"ltr\">calloc</code>): <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mn>1</mn><mo>+</mo><mn>4</mn><mo>+</mo><mn>5</mn><mo>+</mo><mn>7</mn><mo>+</mo><mn>8</mn><mo>+</mo><mn>9</mn><mo>=</mo><mn>34</mn></mrow><annotation encoding=\"application/x-tex\">1 + 4 + 5 + 7 + 8 + 9 = 34</annotation></semantics></math></span>. האיברים <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mn>2</mn><mo separator=\"true\">,</mo><mn>3</mn><mo separator=\"true\">,</mo><mn>6</mn></mrow><annotation encoding=\"application/x-tex\">2, 3, 6</annotation></semantics></math></span> מעל האלכסון לא נכנסים."
+      },
+      "recap": "תא שלא הועתק נשאר 0.",
+      "recapHtml": "תא שלא הועתק נשאר 0."
+     },
+     {
+      "id": "C04-Q5",
+      "step": {
+       "type": "order",
+       "prompt": "סדרו את גוף `copy_matrix`, שמשתמשת ב-`alloc_matrix` שכבר כתובה: להקצות, להעתיק, להחזיר.",
+       "code": true,
+       "lines": [
+        "int **B = alloc_matrix(n, n);",
+        "for (i = 0; i < n; i++) for (j = 0; j < n; j++) B[i][j] = A[i][j];",
+        "return B;"
+       ],
+       "explain": "קודם מקצים את `B` (אחרת אין לאן להעתיק), אחר כך מעתיקים, ורק אז מחזירים. `return` לפני ההעתקה מחזיר מטריצה מאופסת.",
+       "promptHtml": "סדרו את גוף <code class=\"tok\" dir=\"ltr\">copy_matrix</code>, שמשתמשת ב-<code class=\"tok\" dir=\"ltr\">alloc_matrix</code> שכבר כתובה: להקצות, להעתיק, להחזיר.",
+       "explainHtml": "קודם מקצים את <code class=\"tok\" dir=\"ltr\">B</code> (אחרת אין לאן להעתיק), אחר כך מעתיקים, ורק אז מחזירים. <code class=\"tok\" dir=\"ltr\">return</code> לפני ההעתקה מחזיר מטריצה מאופסת.",
+       "linesHtml": [
+        "int **B = alloc_matrix(n, n);",
+        "for (i = 0; i &lt; n; i++) for (j = 0; j &lt; n; j++) B[i][j] = A[i][j];",
+        "return B;"
+       ]
+      },
+      "recap": "הקצאה, העתקה, `return`.",
+      "recapHtml": "הקצאה, העתקה, <code class=\"tok\" dir=\"ltr\">return</code>."
+     }
+    ]
+   },
+   {
+    "id": "C05",
+    "order": 5,
+    "icon": "📐",
+    "title": "מערך משונן: משולשים",
+    "goal": "אחרי השלב הזה אפשר להקצות משולש תחתון או עליון עם שורות באורכים שונים ולחשב אורכי שורות ואינדקסים.",
+    "source": "ai-verified",
+    "boss": false,
+    "lesson": {
+     "html": "\n    <p>שורות המטריצה הדינמית יכולות להיות <b>באורכים שונים</b>: מערך משונן (jagged). כך חוסכים זיכרון כשצריך רק חלק מהמטריצה, והמבחן אוהב את זה.</p>\n    <pre><code>#define N 4\nint **low_triangle(int A[][N], int n)\n{\n    int i, j;\n    int **low = (int **)calloc(n, sizeof(int *));\n    for (i = 0; i &lt; n; i++)\n    {\n        low[i] = (int *)calloc(i + 1, sizeof(int));\n        for (j = 0; j &lt;= i; j++)\n            low[i][j] = A[i][j];\n    }\n    return low;\n}</code></pre>\n    <ul>\n      <li><b>משולש תחתון</b> (כולל האלכסון): שורה <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>i</mi></mrow><annotation encoding=\"application/x-tex\">i</annotation></semantics></math></span> מכילה את <code>A[i][0..i]</code>, כלומר <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>i</mi><mo>+</mo><mn>1</mn></mrow><annotation encoding=\"application/x-tex\">i+1</annotation></semantics></math></span> איברים. סך הכל <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mfrac><mrow><mi>n</mi><mo stretchy=\"false\">(</mo><mi>n</mi><mo>+</mo><mn>1</mn><mo stretchy=\"false\">)</mo></mrow><mn>2</mn></mfrac></mrow><annotation encoding=\"application/x-tex\">\\frac{n(n+1)}{2}</annotation></semantics></math></span>.</li>\n      <li><b>משולש עליון ממש</b> (בלי האלכסון): שורה <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>i</mi></mrow><annotation encoding=\"application/x-tex\">i</annotation></semantics></math></span> מכילה את <code>A[i][i+1..n-1]</code>, כלומר <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>n</mi><mo>−</mo><mn>1</mn><mo>−</mo><mi>i</mi></mrow><annotation encoding=\"application/x-tex\">n-1-i</annotation></semantics></math></span> איברים. הערך <code>A[i][j]</code> נשמר באינדקס <code>j - i - 1</code>.</li>\n      <li>השורה האחרונה במשולש העליון ריקה (אורך 0), ו-<code>calloc(0, ...)</code> תלוי במימוש. בשאלה אמיתית קראו כמה איברים יש בכל שורה.</li>\n    </ul>\n    <pre><code>#define N 4\nint **strict_upper(int A[][N], int n)\n{\n    int i, j;\n    int **up = (int **)calloc(n, sizeof(int *));\n    for (i = 0; i &lt; n; i++)\n    {\n        up[i] = (int *)calloc(n - 1 - i, sizeof(int));\n        for (j = i + 1; j &lt; n; j++)\n            up[i][j - i - 1] = A[i][j];\n    }\n    return up;\n}</code></pre>\n    <div class=\"lesson-rule\">🔑 לפני שכותבים קוד: רשמו אורך כל שורה ונוסחה של אינדקס מקור מול אינדקס יעד. אחר כך הקצו שורה בגודל הנכון והעתיקו.</div>\n    <div class=\"lesson-ex\">דוגמה: עבור <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>n</mi><mo>=</mo><mn>4</mn></mrow><annotation encoding=\"application/x-tex\">n = 4</annotation></semantics></math></span> אורכי השורות במשולש העליון הם <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mn>3</mn><mo separator=\"true\">,</mo><mn>2</mn><mo separator=\"true\">,</mo><mn>1</mn><mo separator=\"true\">,</mo><mn>0</mn></mrow><annotation encoding=\"application/x-tex\">3, 2, 1, 0</annotation></semantics></math></span>. האיבר <code>A[1][3]</code> נשמר ב-<code>up[1][1]</code> כי <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mn>3</mn><mo>−</mo><mn>1</mn><mo>−</mo><mn>1</mn><mo>=</mo><mn>1</mn></mrow><annotation encoding=\"application/x-tex\">3 - 1 - 1 = 1</annotation></semantics></math></span>.</div>\n    <div class=\"lesson-trap\">⚠️ <code>up[i][j]</code> במקום <code>up[i][j - i - 1]</code> כותב מחוץ לגבולות השורה הקצרה.</div>"
+    },
+    "questions": [
+     {
+      "id": "C05-Q1",
+      "step": {
+       "type": "numeric",
+       "prompt": "כמה איברים נשמרים בסך הכל במשולש התחתון (כולל האלכסון) של מטריצה 6 על 6, כששורה $i$ מקבלת $i+1$ איברים?",
+       "answer": 21,
+       "tol": 0,
+       "explain": "$1 + 2 + 3 + 4 + 5 + 6 = 21$, כלומר $\\frac{6 \\cdot 7}{2}$. זה חצי ממטריצה מלאה (36), בלי מקום מבוזבז.",
+       "promptHtml": "כמה איברים נשמרים בסך הכל במשולש התחתון (כולל האלכסון) של מטריצה 6 על 6, כששורה <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>i</mi></mrow><annotation encoding=\"application/x-tex\">i</annotation></semantics></math></span> מקבלת <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>i</mi><mo>+</mo><mn>1</mn></mrow><annotation encoding=\"application/x-tex\">i+1</annotation></semantics></math></span> איברים?",
+       "explainHtml": "<span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mn>1</mn><mo>+</mo><mn>2</mn><mo>+</mo><mn>3</mn><mo>+</mo><mn>4</mn><mo>+</mo><mn>5</mn><mo>+</mo><mn>6</mn><mo>=</mo><mn>21</mn></mrow><annotation encoding=\"application/x-tex\">1 + 2 + 3 + 4 + 5 + 6 = 21</annotation></semantics></math></span>, כלומר <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mfrac><mrow><mn>6</mn><mo>⋅</mo><mn>7</mn></mrow><mn>2</mn></mfrac></mrow><annotation encoding=\"application/x-tex\">\\frac{6 \\cdot 7}{2}</annotation></semantics></math></span>. זה חצי ממטריצה מלאה (36), בלי מקום מבוזבז."
+      },
+      "recap": "משולש עם $n$ שורות: $\\frac{n(n+1)}{2}$ איברים.",
+      "recapHtml": "משולש עם <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>n</mi></mrow><annotation encoding=\"application/x-tex\">n</annotation></semantics></math></span> שורות: <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mfrac><mrow><mi>n</mi><mo stretchy=\"false\">(</mo><mi>n</mi><mo>+</mo><mn>1</mn><mo stretchy=\"false\">)</mo></mrow><mn>2</mn></mfrac></mrow><annotation encoding=\"application/x-tex\">\\frac{n(n+1)}{2}</annotation></semantics></math></span> איברים."
+     },
+     {
+      "id": "C05-Q2",
+      "question": "ב-`strict_upper` למטריצה 4 על 4 (המשולש שמעל האלכסון, בלי האלכסון), מה אורכי השורות `up[0]` עד `up[3]`?",
+      "options": [
+       {
+        "id": "a",
+        "value": "`3 2 1 0`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">3 2 1 0</code>"
+       },
+       {
+        "id": "b",
+        "value": "`4 3 2 1`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">4 3 2 1</code>"
+       },
+       {
+        "id": "c",
+        "value": "`3 3 3 3`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">3 3 3 3</code>"
+       },
+       {
+        "id": "d",
+        "value": "`1 2 3 4`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">1 2 3 4</code>"
+       }
+      ],
+      "correctId": "a",
+      "explanation": "שורה $i$ מכילה את `A[i][i+1..n-1]`, כלומר $n-1-i$ איברים: $3, 2, 1, 0$. הרצף `4 3 2 1` כולל את האלכסון, `1 2 3 4` הפוך, ו-`3 3 3 3` שומר מקום מבוזבז.",
+      "recap": "משולש עליון ממש: שורה $i$ באורך $n-1-i$.",
+      "questionHtml": "ב-<code class=\"tok\" dir=\"ltr\">strict_upper</code> למטריצה 4 על 4 (המשולש שמעל האלכסון, בלי האלכסון), מה אורכי השורות <code class=\"tok\" dir=\"ltr\">up[0]</code> עד <code class=\"tok\" dir=\"ltr\">up[3]</code>?",
+      "explanationHtml": "שורה <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>i</mi></mrow><annotation encoding=\"application/x-tex\">i</annotation></semantics></math></span> מכילה את <code class=\"tok\" dir=\"ltr\">A[i][i+1..n-1]</code>, כלומר <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>n</mi><mo>−</mo><mn>1</mn><mo>−</mo><mi>i</mi></mrow><annotation encoding=\"application/x-tex\">n-1-i</annotation></semantics></math></span> איברים: <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mn>3</mn><mo separator=\"true\">,</mo><mn>2</mn><mo separator=\"true\">,</mo><mn>1</mn><mo separator=\"true\">,</mo><mn>0</mn></mrow><annotation encoding=\"application/x-tex\">3, 2, 1, 0</annotation></semantics></math></span>. הרצף <code class=\"tok\" dir=\"ltr\">4 3 2 1</code> כולל את האלכסון, <code class=\"tok\" dir=\"ltr\">1 2 3 4</code> הפוך, ו-<code class=\"tok\" dir=\"ltr\">3 3 3 3</code> שומר מקום מבוזבז.",
+      "recapHtml": "משולש עליון ממש: שורה <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>i</mi></mrow><annotation encoding=\"application/x-tex\">i</annotation></semantics></math></span> באורך <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>n</mi><mo>−</mo><mn>1</mn><mo>−</mo><mi>i</mi></mrow><annotation encoding=\"application/x-tex\">n-1-i</annotation></semantics></math></span>."
+     },
+     {
+      "id": "C05-Q3",
+      "step": {
+       "type": "numeric",
+       "prompt": "ב-`strict_upper` נשמר האיבר `A[i][j]` (עבור $j > i$) בתא `up[i][j - i - 1]`. באיזה אינדקס בתוך `up[1]` נשמר `A[1][3]`?",
+       "answer": 1,
+       "tol": 0,
+       "explain": "$j - i - 1 = 3 - 1 - 1 = 1$. השורה `up[1]` מחזיקה את `A[1][2]` באינדקס 0 ואת `A[1][3]` באינדקס 1.",
+       "promptHtml": "ב-<code class=\"tok\" dir=\"ltr\">strict_upper</code> נשמר האיבר <code class=\"tok\" dir=\"ltr\">A[i][j]</code> (עבור <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>j</mi><mo>&gt;</mo><mi>i</mi></mrow><annotation encoding=\"application/x-tex\">j &gt; i</annotation></semantics></math></span>) בתא <code class=\"tok\" dir=\"ltr\">up[i][j - i - 1]</code>. באיזה אינדקס בתוך <code class=\"tok\" dir=\"ltr\">up[1]</code> נשמר <code class=\"tok\" dir=\"ltr\">A[1][3]</code>?",
+       "explainHtml": "<span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>j</mi><mo>−</mo><mi>i</mi><mo>−</mo><mn>1</mn><mo>=</mo><mn>3</mn><mo>−</mo><mn>1</mn><mo>−</mo><mn>1</mn><mo>=</mo><mn>1</mn></mrow><annotation encoding=\"application/x-tex\">j - i - 1 = 3 - 1 - 1 = 1</annotation></semantics></math></span>. השורה <code class=\"tok\" dir=\"ltr\">up[1]</code> מחזיקה את <code class=\"tok\" dir=\"ltr\">A[1][2]</code> באינדקס 0 ואת <code class=\"tok\" dir=\"ltr\">A[1][3]</code> באינדקס 1."
+      },
+      "recap": "אינדקס בתוך שורת המשולש העליון: $j - i - 1$.",
+      "recapHtml": "אינדקס בתוך שורת המשולש העליון: <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>j</mi><mo>−</mo><mi>i</mi><mo>−</mo><mn>1</mn></mrow><annotation encoding=\"application/x-tex\">j - i - 1</annotation></semantics></math></span>."
+     },
+     {
+      "id": "C05-Q4",
+      "step": {
+       "type": "fillblank",
+       "prompt": "השלימו את אורך השורה `i` במשולש התחתון (עם האלכסון).",
+       "code": true,
+       "lines": [
+        "#define N 4",
+        "int **low_triangle(int A[][N], int n)",
+        "{",
+        "    int i, j;",
+        "    int **low = (int **)calloc(n, sizeof(int *));",
+        "    for (i = 0; i < n; i++)",
+        "    {",
+        "        low[i] = (int *)calloc(___, sizeof(int));",
+        "        for (j = 0; j <= i; j++)",
+        "            low[i][j] = A[i][j];",
+        "    }",
+        "    return low;",
+        "}"
+       ],
+       "blankIndex": 7,
+       "options": [
+        {
+         "id": "a",
+         "type": "text",
+         "value": "i + 1",
+         "html": "i + 1"
+        },
+        {
+         "id": "b",
+         "type": "text",
+         "value": "i",
+         "html": "i"
+        },
+        {
+         "id": "c",
+         "type": "text",
+         "value": "n",
+         "html": "n"
+        },
+        {
+         "id": "d",
+         "type": "text",
+         "value": "n - i",
+         "html": "n - i"
+        }
+       ],
+       "correctId": "a",
+       "explain": "שורה $i$ מכילה את `A[i][0..i]`, כלומר $i+1$ איברים. עם `i` הלולאה `j <= i` כותבת איבר אחד מעבר לסוף. עם `n` כל השורות ארוכות (בזבוז), ועם `n - i` המשולש הפוך.",
+       "promptHtml": "השלימו את אורך השורה <code class=\"tok\" dir=\"ltr\">i</code> במשולש התחתון (עם האלכסון).",
+       "explainHtml": "שורה <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>i</mi></mrow><annotation encoding=\"application/x-tex\">i</annotation></semantics></math></span> מכילה את <code class=\"tok\" dir=\"ltr\">A[i][0..i]</code>, כלומר <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>i</mi><mo>+</mo><mn>1</mn></mrow><annotation encoding=\"application/x-tex\">i+1</annotation></semantics></math></span> איברים. עם <code class=\"tok\" dir=\"ltr\">i</code> הלולאה <code class=\"tok\" dir=\"ltr\">j &lt;= i</code> כותבת איבר אחד מעבר לסוף. עם <code class=\"tok\" dir=\"ltr\">n</code> כל השורות ארוכות (בזבוז), ועם <code class=\"tok\" dir=\"ltr\">n - i</code> המשולש הפוך.",
+       "linesHtml": [
+        "#define N 4",
+        "int **low_triangle(int A[][N], int n)",
+        "{",
+        "    int i, j;",
+        "    int **low = (int **)calloc(n, sizeof(int *));",
+        "    for (i = 0; i &lt; n; i++)",
+        "    {",
+        "        low[i] = (int *)calloc(___, sizeof(int));",
+        "        for (j = 0; j &lt;= i; j++)",
+        "            low[i][j] = A[i][j];",
+        "    }",
+        "    return low;",
+        "}"
+       ]
+      },
+      "recap": "משולש תחתון: שורה $i$ באורך $i+1$.",
+      "recapHtml": "משולש תחתון: שורה <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>i</mi></mrow><annotation encoding=\"application/x-tex\">i</annotation></semantics></math></span> באורך <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>i</mi><mo>+</mo><mn>1</mn></mrow><annotation encoding=\"application/x-tex\">i+1</annotation></semantics></math></span>."
+     },
+     {
+      "id": "C05-Q5",
+      "step": {
+       "type": "findbug",
+       "prompt": "הפונקציה אמורה לשמור בשורה $i$ את `A[i][i+1..n-1]` החל מאינדקס 0, אבל התוצאה שגויה. מצאו את השורה השגויה.",
+       "code": true,
+       "lines": [
+        "#define N 4",
+        "int **strict_upper(int A[][N], int n)",
+        "{",
+        "    int i, j;",
+        "    int **up = (int **)calloc(n, sizeof(int *));",
+        "    for (i = 0; i < n; i++)",
+        "    {",
+        "        up[i] = (int *)calloc(n - 1 - i, sizeof(int));",
+        "        for (j = i + 1; j < n; j++)",
+        "            up[i][j] = A[i][j];",
+        "    }",
+        "    return up;",
+        "}"
+       ],
+       "bugIndex": 9,
+       "explain": "השורה `up[i]` קצרה ($n-1-i$ איברים), ואינדקס `j` הולך עד $n-1$. הכתיבה ל-`up[i][j]` חורגת מהגבולות ומשאירה את התא הראשון ריק. האינדקס הנכון הוא `j - i - 1`.",
+       "promptHtml": "הפונקציה אמורה לשמור בשורה <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>i</mi></mrow><annotation encoding=\"application/x-tex\">i</annotation></semantics></math></span> את <code class=\"tok\" dir=\"ltr\">A[i][i+1..n-1]</code> החל מאינדקס 0, אבל התוצאה שגויה. מצאו את השורה השגויה.",
+       "explainHtml": "השורה <code class=\"tok\" dir=\"ltr\">up[i]</code> קצרה (<span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>n</mi><mo>−</mo><mn>1</mn><mo>−</mo><mi>i</mi></mrow><annotation encoding=\"application/x-tex\">n-1-i</annotation></semantics></math></span> איברים), ואינדקס <code class=\"tok\" dir=\"ltr\">j</code> הולך עד <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>n</mi><mo>−</mo><mn>1</mn></mrow><annotation encoding=\"application/x-tex\">n-1</annotation></semantics></math></span>. הכתיבה ל-<code class=\"tok\" dir=\"ltr\">up[i][j]</code> חורגת מהגבולות ומשאירה את התא הראשון ריק. האינדקס הנכון הוא <code class=\"tok\" dir=\"ltr\">j - i - 1</code>.",
+       "linesHtml": [
+        "#define N 4",
+        "int **strict_upper(int A[][N], int n)",
+        "{",
+        "    int i, j;",
+        "    int **up = (int **)calloc(n, sizeof(int *));",
+        "    for (i = 0; i &lt; n; i++)",
+        "    {",
+        "        up[i] = (int *)calloc(n - 1 - i, sizeof(int));",
+        "        for (j = i + 1; j &lt; n; j++)",
+        "            up[i][j] = A[i][j];",
+        "    }",
+        "    return up;",
+        "}"
+       ]
+      },
+      "recap": "מקור בעמודה $j$ הולך ליעד $j - i - 1$.",
+      "recapHtml": "מקור בעמודה <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>j</mi></mrow><annotation encoding=\"application/x-tex\">j</annotation></semantics></math></span> הולך ליעד <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>j</mi><mo>−</mo><mi>i</mi><mo>−</mo><mn>1</mn></mrow><annotation encoding=\"application/x-tex\">j - i - 1</annotation></semantics></math></span>."
+     }
+    ]
+   },
+   {
+    "id": "C06",
+    "order": 6,
+    "icon": "🔁",
+    "title": "החזרה by reference: ***out ו-*size",
+    "goal": "אחרי השלב הזה אפשר להחזיר מערך או מטריצה וגם גודל דרך פרמטרים, עם הכתובות והסוגריים הנכונים.",
+    "source": "ai-verified",
+    "boss": false,
+    "lesson": {
+     "html": "\n    <p>פונקציה יכולה להחזיר ב-<code>return</code> רק דבר אחד. כשצריך שניים (מבנה וגם גודל), את השני מעבירים <b>by reference</b>: הקורא שולח <b>כתובת</b> של משתנה, והפונקציה כותבת דרכה.</p>\n    <ul>\n      <li>כדי להחזיר מערך (<code>int *</code>) דרך פרמטר, הפרמטר הוא <code>int **out</code> והקריאה שולחת <code>&amp;a</code>. כדי להחזיר מטריצה (<code>int **</code>) הפרמטר הוא <code>int ***out</code>.</li>\n      <li>כותבים <code>*out = ...</code> כדי לשנות את המשתנה של הקורא. <code>out = ...</code> משנה רק עותק מקומי.</li>\n      <li>איבר במערך המוחזר: <code>(*out)[k]</code>. הסוגריים חובה: <code>*out[k]</code> פירושו <code>*(out[k])</code>.</li>\n      <li>גודל: <code>int *cnt</code>, והעלאה כ-<code>(*cnt)++</code> (בלי סוגריים, <code>*cnt++</code> מקדם את המצביע עצמו).</li>\n    </ul>\n    <pre><code>void evens(int *A, int n, int **out, int *cnt)\n{\n    int i, k;\n    *cnt = 0;\n    for (i = 0; i &lt; n; i++)\n        if (A[i] % 2 == 0)\n            (*cnt)++;\n    *out = (int *)calloc(*cnt, sizeof(int));\n    k = 0;\n    for (i = 0; i &lt; n; i++)\n        if (A[i] % 2 == 0)\n            (*out)[k++] = A[i];\n}</code></pre>\n    <div class=\"lesson-rule\">🔑 פרמטר פלט מסוג <code>T</code> מוגדר <code>T *p</code>, נכתב <code>*p = ...</code>, ומועבר בקריאה כ-<code>&amp;x</code>.</div>\n    <div class=\"lesson-ex\">דוגמה: הקורא כותב <code>int *a; int c; evens(A, 5, &amp;a, &amp;c);</code>. אחרי הקריאה <code>a</code> מצביע על המערך החדש ו-<code>c</code> מחזיק את אורכו.</div>\n    <div class=\"lesson-trap\">⚠️ <code>*cnt++</code> במקום <code>(*cnt)++</code>, ו-<code>*out[k]</code> במקום <code>(*out)[k]</code>: שתי טעויות סוגריים נפוצות.</div>"
+    },
+    "questions": [
+     {
+      "id": "C06-Q1",
+      "question": "הפונקציה מחזירה את המשולש התחתון דרך הפרמטר `int ***out` (הקורא מעביר `&T` כש-`T` הוא `int **`). איזו פקודה במקום `___` מוסרת את התוצאה לקורא?\n```c\n#define N 3\nvoid low_triangle(int A[][N], int n, int ***out)\n{\n    int i, j;\n    int **low = (int **)calloc(n, sizeof(int *));\n    for (i = 0; i < n; i++)\n    {\n        low[i] = (int *)calloc(i + 1, sizeof(int));\n        for (j = 0; j <= i; j++)\n            low[i][j] = A[i][j];\n    }\n    ___\n}\n```",
+      "options": [
+       {
+        "id": "a",
+        "value": "`*out = low;`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">*out = low;</code>"
+       },
+       {
+        "id": "b",
+        "value": "`out = low;`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">out = low;</code>"
+       },
+       {
+        "id": "c",
+        "value": "`**out = low;`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">**out = low;</code>"
+       },
+       {
+        "id": "d",
+        "value": "`out[0] = *low;`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">out[0] = *low;</code>"
+       }
+      ],
+      "correctId": "a",
+      "explanation": "`out` הוא כתובת של משתנה `int **` אצל הקורא. כדי לשנות את אותו משתנה כותבים דרך הכתובת: `*out = low`. `out = low` משנה רק את העותק המקומי של הפרמטר (וגם הטיפוס לא תואם), ו-`**out = low` ו-`out[0] = *low` מערבבים רמות הפניה: ההידור נכשל.",
+      "recap": "מחזירים דרך פרמטר `X *p` בכתיבה `*p = ...`. כאן `X` הוא `int **`.",
+      "questionHtml": "הפונקציה מחזירה את המשולש התחתון דרך הפרמטר <code class=\"tok\" dir=\"ltr\">int <strong>*out</code> (הקורא מעביר <code class=\"tok\" dir=\"ltr\">&amp;T</code> כש-<code class=\"tok\" dir=\"ltr\">T</code> הוא <code class=\"tok\" dir=\"ltr\">int </strong></code>). איזו פקודה במקום <code class=\"tok\" dir=\"ltr\">___</code> מוסרת את התוצאה לקורא?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>#define N 3\nvoid low_triangle(int A[][N], int n, int ***out)\n{\n    int i, j;\n    int **low = (int **)calloc(n, sizeof(int *));\n    for (i = 0; i &lt; n; i++)\n    {\n        low[i] = (int *)calloc(i + 1, sizeof(int));\n        for (j = 0; j &lt;= i; j++)\n            low[i][j] = A[i][j];\n    }\n    ___\n}</code></pre>",
+      "explanationHtml": "<code class=\"tok\" dir=\"ltr\">out</code> הוא כתובת של משתנה <code class=\"tok\" dir=\"ltr\">int <strong></code> אצל הקורא. כדי לשנות את אותו משתנה כותבים דרך הכתובת: <code class=\"tok\" dir=\"ltr\">*out = low</code>. <code class=\"tok\" dir=\"ltr\">out = low</code> משנה רק את העותק המקומי של הפרמטר (וגם הטיפוס לא תואם), ו-<code class=\"tok\" dir=\"ltr\"></strong>out = low</code> ו-<code class=\"tok\" dir=\"ltr\">out[0] = *low</code> מערבבים רמות הפניה: ההידור נכשל.",
+      "recapHtml": "מחזירים דרך פרמטר <code class=\"tok\" dir=\"ltr\">X *p</code> בכתיבה <code class=\"tok\" dir=\"ltr\">*p = ...</code>. כאן <code class=\"tok\" dir=\"ltr\">X</code> הוא <code class=\"tok\" dir=\"ltr\">int **</code>."
+     },
+     {
+      "id": "C06-Q2",
+      "question": "מה מדפיס הקוד?\n```c\nvoid fill(int **out, int *cnt)\n{\n    *out = (int *)calloc(3, sizeof(int));\n    (*out)[0] = 4;\n    (*out)[2] = 9;\n    *cnt = 3;\n}\n\nint main(void)\n{\n    int *a;\n    int c;\n    fill(&a, &c);\n    printf(\"%d %d\", a[2], c);\n    return 0;\n}\n```",
+      "options": [
+       {
+        "id": "a",
+        "value": "`9 3`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">9 3</code>"
+       },
+       {
+        "id": "b",
+        "value": "`4 3`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">4 3</code>"
+       },
+       {
+        "id": "c",
+        "value": "`9 9`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">9 9</code>"
+       },
+       {
+        "id": "d",
+        "value": "`3 9`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">3 9</code>"
+       }
+      ],
+      "correctId": "a",
+      "explanation": "`fill` כותבת דרך `out` אל `a`, וגם דרך `cnt` אל `c`. אחרי הקריאה `a` מצביע על מערך `{4, 0, 9}` ו-`c` הוא 3, ולכן `a[2]` הוא 9 והפלט `9 3`. ב-`4 3` נבחר האיבר הראשון, ושתי האפשרויות האחרות מחליפות ערכים.",
+      "recap": "`*out` הוא המצביע של הקורא; `(*out)[k]` הוא האיבר ה-`k` במערך שלו.",
+      "questionHtml": "מה מדפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>void fill(int **out, int *cnt)\n{\n    *out = (int *)calloc(3, sizeof(int));\n    (*out)[0] = 4;\n    (*out)[2] = 9;\n    *cnt = 3;\n}\n\nint main(void)\n{\n    int *a;\n    int c;\n    fill(&amp;a, &amp;c);\n    printf(\"%d %d\", a[2], c);\n    return 0;\n}</code></pre>",
+      "explanationHtml": "<code class=\"tok\" dir=\"ltr\">fill</code> כותבת דרך <code class=\"tok\" dir=\"ltr\">out</code> אל <code class=\"tok\" dir=\"ltr\">a</code>, וגם דרך <code class=\"tok\" dir=\"ltr\">cnt</code> אל <code class=\"tok\" dir=\"ltr\">c</code>. אחרי הקריאה <code class=\"tok\" dir=\"ltr\">a</code> מצביע על מערך <code class=\"tok\" dir=\"ltr\">{4, 0, 9}</code> ו-<code class=\"tok\" dir=\"ltr\">c</code> הוא 3, ולכן <code class=\"tok\" dir=\"ltr\">a[2]</code> הוא 9 והפלט <code class=\"tok\" dir=\"ltr\">9 3</code>. ב-<code class=\"tok\" dir=\"ltr\">4 3</code> נבחר האיבר הראשון, ושתי האפשרויות האחרות מחליפות ערכים.",
+      "recapHtml": "<code class=\"tok\" dir=\"ltr\">*out</code> הוא המצביע של הקורא; <code class=\"tok\" dir=\"ltr\">(*out)[k]</code> הוא האיבר ה-<code class=\"tok\" dir=\"ltr\">k</code> במערך שלו."
+     },
+     {
+      "id": "C06-Q3",
+      "step": {
+       "type": "numeric",
+       "prompt": "מה מדפיס הקוד?\n```c\nvoid evens(int *A, int n, int **out, int *cnt)\n{\n    int i, k;\n    *cnt = 0;\n    for (i = 0; i < n; i++)\n        if (A[i] % 2 == 0)\n            (*cnt)++;\n    *out = (int *)calloc(*cnt, sizeof(int));\n    k = 0;\n    for (i = 0; i < n; i++)\n        if (A[i] % 2 == 0)\n            (*out)[k++] = A[i];\n}\n\nint main(void)\n{\n    int A[5] = {3, 4, 8, 5, 6};\n    int *a = NULL;\n    int c = 77;\n    evens(A, 5, &a, &c);\n    printf(\"%d\", c);\n    return 0;\n}\n```",
+       "answer": 3,
+       "tol": 0,
+       "explain": "`evens` סופרת את הזוגיים (4, 8, 6) ושומרת 3 ב-`*cnt`. הערך ההתחלתי 77 נדרס בפקודה `*cnt = 0` בתחילת הפונקציה.",
+       "promptHtml": "מה מדפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>void evens(int *A, int n, int **out, int *cnt)\n{\n    int i, k;\n    *cnt = 0;\n    for (i = 0; i &lt; n; i++)\n        if (A[i] % 2 == 0)\n            (*cnt)++;\n    *out = (int *)calloc(*cnt, sizeof(int));\n    k = 0;\n    for (i = 0; i &lt; n; i++)\n        if (A[i] % 2 == 0)\n            (*out)[k++] = A[i];\n}\n\nint main(void)\n{\n    int A[5] = {3, 4, 8, 5, 6};\n    int *a = NULL;\n    int c = 77;\n    evens(A, 5, &amp;a, &amp;c);\n    printf(\"%d\", c);\n    return 0;\n}</code></pre>",
+       "explainHtml": "<code class=\"tok\" dir=\"ltr\">evens</code> סופרת את הזוגיים (4, 8, 6) ושומרת 3 ב-<code class=\"tok\" dir=\"ltr\">*cnt</code>. הערך ההתחלתי 77 נדרס בפקודה <code class=\"tok\" dir=\"ltr\">*cnt = 0</code> בתחילת הפונקציה."
+      },
+      "recap": "ערך שמוחזר בפרמטר נקבע בתוך הפונקציה (`*cnt = ...`).",
+      "recapHtml": "ערך שמוחזר בפרמטר נקבע בתוך הפונקציה (<code class=\"tok\" dir=\"ltr\">*cnt = ...</code>)."
+     },
+     {
+      "id": "C06-Q4",
+      "step": {
+       "type": "order",
+       "prompt": "סדרו את גוף `evens`: לאפס מונה, לספור זוגיים, להקצות בדיוק לפי המונה, ולמלא.",
+       "code": true,
+       "lines": [
+        "*cnt = 0;",
+        "for (i = 0; i < n; i++)\n        if (A[i] % 2 == 0)\n            (*cnt)++;",
+        "*out = (int *)calloc(*cnt, sizeof(int));",
+        "k = 0;\n    for (i = 0; i < n; i++)\n        if (A[i] % 2 == 0)\n            (*out)[k++] = A[i];"
+       ],
+       "explain": "המונה מתאפס קודם, אחר כך נספרים הזוגיים, רק אחר כך מקצים `*cnt` תאים (כך מקצים בדיוק), ובסוף ממלאים. מילוי לפני הקצאה כותב ל-NULL, והקצאה לפני הספירה מקצה לפי הערך הישן.",
+       "promptHtml": "סדרו את גוף <code class=\"tok\" dir=\"ltr\">evens</code>: לאפס מונה, לספור זוגיים, להקצות בדיוק לפי המונה, ולמלא.",
+       "explainHtml": "המונה מתאפס קודם, אחר כך נספרים הזוגיים, רק אחר כך מקצים <code class=\"tok\" dir=\"ltr\">*cnt</code> תאים (כך מקצים בדיוק), ובסוף ממלאים. מילוי לפני הקצאה כותב ל-NULL, והקצאה לפני הספירה מקצה לפי הערך הישן.",
+       "linesHtml": [
+        "*cnt = 0;",
+        "for (i = 0; i &lt; n; i++)\n        if (A[i] % 2 == 0)\n            (*cnt)++;",
+        "*out = (int *)calloc(*cnt, sizeof(int));",
+        "k = 0;\n    for (i = 0; i &lt; n; i++)\n        if (A[i] % 2 == 0)\n            (*out)[k++] = A[i];"
+       ]
+      },
+      "recap": "מאפסים, סופרים, מקצים, ממלאים.",
+      "recapHtml": "מאפסים, סופרים, מקצים, ממלאים."
+     },
+     {
+      "id": "C06-Q5",
+      "question": "הפונקציה `evens(int *A, int n, int **out, int *cnt)` מחזירה מערך דרך `out` וגודלו דרך `cnt`. הקורא הצהיר `int A[5]; int *a; int c;`. איזו קריאה נכונה?",
+      "options": [
+       {
+        "id": "a",
+        "value": "`evens(A, 5, &a, &c);`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">evens(A, 5, &amp;a, &amp;c);</code>"
+       },
+       {
+        "id": "b",
+        "value": "`evens(A, 5, a, c);`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">evens(A, 5, a, c);</code>"
+       },
+       {
+        "id": "c",
+        "value": "`evens(A, 5, &a, c);`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">evens(A, 5, &amp;a, c);</code>"
+       },
+       {
+        "id": "d",
+        "value": "`evens(A, 5, *a, *c);`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">evens(A, 5, *a, *c);</code>"
+       }
+      ],
+      "correctId": "a",
+      "explanation": "כדי שהפונקציה תשנה את `a` ואת `c` מעבירים את הכתובות שלהם: `&a` (מסוג `int **`) ו-`&c` (מסוג `int *`). העברת `a` ו-`c` עצמם, או `&a` עם `c`, או `*a` ו-`*c`, לא מתאימה לטיפוסים ולא משנה דבר אצל הקורא.",
+      "recap": "פרמטר פלט: מעבירים `&משתנה`.",
+      "questionHtml": "הפונקציה <code class=\"tok\" dir=\"ltr\">evens(int *A, int n, int **out, int *cnt)</code> מחזירה מערך דרך <code class=\"tok\" dir=\"ltr\">out</code> וגודלו דרך <code class=\"tok\" dir=\"ltr\">cnt</code>. הקורא הצהיר <code class=\"tok\" dir=\"ltr\">int A[5]; int *a; int c;</code>. איזו קריאה נכונה?",
+      "explanationHtml": "כדי שהפונקציה תשנה את <code class=\"tok\" dir=\"ltr\">a</code> ואת <code class=\"tok\" dir=\"ltr\">c</code> מעבירים את הכתובות שלהם: <code class=\"tok\" dir=\"ltr\">&amp;a</code> (מסוג <code class=\"tok\" dir=\"ltr\">int **</code>) ו-<code class=\"tok\" dir=\"ltr\">&amp;c</code> (מסוג <code class=\"tok\" dir=\"ltr\">int *</code>). העברת <code class=\"tok\" dir=\"ltr\">a</code> ו-<code class=\"tok\" dir=\"ltr\">c</code> עצמם, או <code class=\"tok\" dir=\"ltr\">&amp;a</code> עם <code class=\"tok\" dir=\"ltr\">c</code>, או <code class=\"tok\" dir=\"ltr\">*a</code> ו-<code class=\"tok\" dir=\"ltr\">*c</code>, לא מתאימה לטיפוסים ולא משנה דבר אצל הקורא.",
+      "recapHtml": "פרמטר פלט: מעבירים <code class=\"tok\" dir=\"ltr\">&amp;משתנה</code>."
+     }
+    ]
+   },
+   {
+    "id": "C07",
+    "order": 7,
+    "icon": "🧮",
+    "title": "מערך של מבנים ו-realloc",
+    "goal": "אחרי השלב הזה אפשר לבנות מערך של struct {size, ptr}, למלא כל שורה ולהקטין אותה עם realloc.",
+    "source": "ai-verified",
+    "boss": false,
+    "lesson": {
+     "html": "\n    <p>לפעמים כל שורה היא <b>מבנה</b> שמחזיק גם מערך דינמי וגם את גודלו, ומחזירים מערך של מבנים:</p>\n    <pre><code>typedef struct\n{\n    int size;\n    int *ptr;\n} dyn_array;</code></pre>\n    <ul>\n      <li><code>calloc(n, sizeof(dyn_array))</code> נותן לכל איבר <code>size = 0</code> ו-<code>ptr = NULL</code>, וזה מתאים לשורה ריקה.</li>\n      <li>גישה לשדות באיבר של מערך: <code>B[i].size</code> ו-<code>B[i].ptr[j]</code> (נקודה, כי <code>B[i]</code> הוא מבנה ולא מצביע).</li>\n      <li>גודל המבנה ב-64 סיביות הוא 16 בתים: <code>int</code> (4) + ריפוד (4) + מצביע (8).</li>\n      <li><b>הקטנה עם <code>realloc</code></b>: מקצים מערך זמני בגודל המרבי, ממלאים ומחשבים <code>k</code>, ואז <code>p = realloc(p, k * sizeof(int))</code>. הגודל בבתים.</li>\n      <li>אם <code>k == 0</code>, התנהגות <code>realloc(p, 0)</code> תלויה במימוש: עדיף <code>free(p)</code> ולהשאיר <code>NULL</code>.</li>\n    </ul>\n    <pre><code>dyn_array *div_numbers(const int *A, int sz, int n)\n{\n    int i, j, k = 0;\n    dyn_array *B = (dyn_array *)calloc(n - 1, sizeof(dyn_array));\n    for (i = 2; i &lt;= n; i++)\n    {\n        int *tmp = (int *)calloc(sz, sizeof(int));\n        for (j = 0, k = 0; j &lt; sz; j++)\n            if (A[j] % i == 0)\n                tmp[k++] = A[j];\n        B[i - 2].ptr = (int *)realloc(tmp, k * sizeof(int));\n        B[i - 2].size = k;\n    }\n    return B;\n}</code></pre>\n    <div class=\"lesson-rule\">🔑 מערך מבנים: מקצים עם <code>calloc</code>, ממלאים כל איבר בנפרד, ומקטינים כל מערך פנימי עם <code>realloc</code> בגודל <code>k * sizeof(int)</code>.</div>\n    <div class=\"lesson-ex\">דוגמה: עבור <code>A = {4, 6, 8, 9, 10, 12}</code> ו-<code>n = 4</code>: <code>B[0]</code> מחזיק את הזוגיים (5 איברים), <code>B[1]</code> את המתחלקים ב-3, ו-<code>B[2]</code> את המתחלקים ב-4.</div>\n    <div class=\"lesson-trap\">⚠️ <code>realloc(tmp, k)</code> בלי <code>sizeof</code> מקצה <code>k</code> בתים ולא <code>k</code> מספרים. ו-<code>malloc</code> במקום <code>calloc</code> משאיר <code>size</code> ו-<code>ptr</code> עם זבל בשורות שלא מילאתם.</div>"
+    },
+    "questions": [
+     {
+      "id": "C07-Q1",
+      "question": "מה מדפיס הקוד?\n```c\ntypedef struct\n{\n    int size;\n    int *ptr;\n} dyn_array;\n\nint main(void)\n{\n    dyn_array *B = (dyn_array *)calloc(3, sizeof(dyn_array));\n    printf(\"%d %s\", B[1].size, B[1].ptr ? \"ptr\" : \"NULL\");\n    return 0;\n}\n```",
+      "options": [
+       {
+        "id": "a",
+        "value": "`0 NULL`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">0 NULL</code>"
+       },
+       {
+        "id": "b",
+        "value": "`0 ptr`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">0 ptr</code>"
+       },
+       {
+        "id": "c",
+        "value": "`3 NULL`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">3 NULL</code>"
+       },
+       {
+        "id": "d",
+        "value": "ערכי זבל, התוצאה אינה צפויה",
+        "type": "text",
+        "html": "ערכי זבל, התוצאה אינה צפויה"
+       }
+      ],
+      "correctId": "a",
+      "explanation": "`calloc` מאפס את כל הבתים, ולכן בכל איבר `size` הוא 0 ו-`ptr` הוא `NULL`. זה בדיוק מה שמתאים לשורות ריקות. זבל היה מתקבל רק מ-`malloc`.",
+      "recap": "מערך מבנים מ-`calloc`: `size = 0` ו-`ptr = NULL` בכל איבר.",
+      "questionHtml": "מה מדפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>typedef struct\n{\n    int size;\n    int *ptr;\n} dyn_array;\n\nint main(void)\n{\n    dyn_array *B = (dyn_array *)calloc(3, sizeof(dyn_array));\n    printf(\"%d %s\", B[1].size, B[1].ptr ? \"ptr\" : \"NULL\");\n    return 0;\n}</code></pre>",
+      "explanationHtml": "<code class=\"tok\" dir=\"ltr\">calloc</code> מאפס את כל הבתים, ולכן בכל איבר <code class=\"tok\" dir=\"ltr\">size</code> הוא 0 ו-<code class=\"tok\" dir=\"ltr\">ptr</code> הוא <code class=\"tok\" dir=\"ltr\">NULL</code>. זה בדיוק מה שמתאים לשורות ריקות. זבל היה מתקבל רק מ-<code class=\"tok\" dir=\"ltr\">malloc</code>.",
+      "recapHtml": "מערך מבנים מ-<code class=\"tok\" dir=\"ltr\">calloc</code>: <code class=\"tok\" dir=\"ltr\">size = 0</code> ו-<code class=\"tok\" dir=\"ltr\">ptr = NULL</code> בכל איבר."
+     },
+     {
+      "id": "C07-Q2",
+      "step": {
+       "type": "numeric",
+       "prompt": "ב-64 סיביות, מה `sizeof(dyn_array)` של המבנה מהשיעור (`int size; int *ptr;`)?",
+       "answer": 16,
+       "tol": 0,
+       "explain": "`int` תופס 4 בתים, ואחריו 4 בתים ריפוד כדי שהמצביע (8 בתים) יתחיל בכתובת שמתחלקת ב-8. סך הכל $4 + 4 + 8 = 16$.",
+       "promptHtml": "ב-64 סיביות, מה <code class=\"tok\" dir=\"ltr\">sizeof(dyn_array)</code> של המבנה מהשיעור (<code class=\"tok\" dir=\"ltr\">int size; int *ptr;</code>)?",
+       "explainHtml": "<code class=\"tok\" dir=\"ltr\">int</code> תופס 4 בתים, ואחריו 4 בתים ריפוד כדי שהמצביע (8 בתים) יתחיל בכתובת שמתחלקת ב-8. סך הכל <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mn>4</mn><mo>+</mo><mn>4</mn><mo>+</mo><mn>8</mn><mo>=</mo><mn>16</mn></mrow><annotation encoding=\"application/x-tex\">4 + 4 + 8 = 16</annotation></semantics></math></span>."
+      },
+      "recap": "גודל מבנה כולל ריפוד לפי השדה הרחב ביותר.",
+      "recapHtml": "גודל מבנה כולל ריפוד לפי השדה הרחב ביותר."
+     },
+     {
+      "id": "C07-Q3",
+      "step": {
+       "type": "fillblank",
+       "prompt": "השלימו את גודל ההקטנה של `tmp` למספר האיברים שנמצאו בפועל (`k`).",
+       "code": true,
+       "lines": [
+        "dyn_array *div_numbers(const int *A, int sz, int n)",
+        "{",
+        "    int i, j, k = 0;",
+        "    dyn_array *B = (dyn_array *)calloc(n - 1, sizeof(dyn_array));",
+        "    for (i = 2; i <= n; i++)",
+        "    {",
+        "        int *tmp = (int *)calloc(sz, sizeof(int));",
+        "        for (j = 0, k = 0; j < sz; j++)",
+        "            if (A[j] % i == 0)",
+        "                tmp[k++] = A[j];",
+        "        B[i - 2].ptr = (int *)realloc(tmp, ___);",
+        "        B[i - 2].size = k;",
+        "    }",
+        "    return B;",
+        "}"
+       ],
+       "blankIndex": 10,
+       "options": [
+        {
+         "id": "a",
+         "type": "text",
+         "value": "k * sizeof(int)",
+         "html": "k * sizeof(int)"
+        },
+        {
+         "id": "b",
+         "type": "text",
+         "value": "k",
+         "html": "k"
+        },
+        {
+         "id": "c",
+         "type": "text",
+         "value": "sz * sizeof(int)",
+         "html": "sz * sizeof(int)"
+        },
+        {
+         "id": "d",
+         "type": "text",
+         "value": "sizeof(int)",
+         "html": "sizeof(int)"
+        }
+       ],
+       "correctId": "a",
+       "explain": "`realloc` מקבל גודל בבתים, כלומר `k` איברים כפול `sizeof(int)`. `k` לבד הוא `k` בתים בלבד, `sz * sizeof(int)` לא מקטין כלום, ו-`sizeof(int)` משאיר איבר אחד.",
+       "promptHtml": "השלימו את גודל ההקטנה של <code class=\"tok\" dir=\"ltr\">tmp</code> למספר האיברים שנמצאו בפועל (<code class=\"tok\" dir=\"ltr\">k</code>).",
+       "explainHtml": "<code class=\"tok\" dir=\"ltr\">realloc</code> מקבל גודל בבתים, כלומר <code class=\"tok\" dir=\"ltr\">k</code> איברים כפול <code class=\"tok\" dir=\"ltr\">sizeof(int)</code>. <code class=\"tok\" dir=\"ltr\">k</code> לבד הוא <code class=\"tok\" dir=\"ltr\">k</code> בתים בלבד, <code class=\"tok\" dir=\"ltr\">sz * sizeof(int)</code> לא מקטין כלום, ו-<code class=\"tok\" dir=\"ltr\">sizeof(int)</code> משאיר איבר אחד.",
+       "linesHtml": [
+        "dyn_array *div_numbers(const int *A, int sz, int n)",
+        "{",
+        "    int i, j, k = 0;",
+        "    dyn_array *B = (dyn_array *)calloc(n - 1, sizeof(dyn_array));",
+        "    for (i = 2; i &lt;= n; i++)",
+        "    {",
+        "        int *tmp = (int *)calloc(sz, sizeof(int));",
+        "        for (j = 0, k = 0; j &lt; sz; j++)",
+        "            if (A[j] % i == 0)",
+        "                tmp[k++] = A[j];",
+        "        B[i - 2].ptr = (int *)realloc(tmp, ___);",
+        "        B[i - 2].size = k;",
+        "    }",
+        "    return B;",
+        "}"
+       ]
+      },
+      "recap": "`realloc(p, k * sizeof(int))`: הגודל בבתים.",
+      "recapHtml": "<code class=\"tok\" dir=\"ltr\">realloc(p, k * sizeof(int))</code>: הגודל בבתים."
+     },
+     {
+      "id": "C07-Q4",
+      "step": {
+       "type": "order",
+       "prompt": "סדרו את גוף הלולאה של `div_numbers` עבור מחלק `i`: להקצות מערך זמני, למלא אותו, ולהקטין ולשמור.",
+       "code": true,
+       "lines": [
+        "int *tmp = (int *)calloc(sz, sizeof(int));",
+        "for (j = 0, k = 0; j < sz; j++)\n            if (A[j] % i == 0)\n                tmp[k++] = A[j];",
+        "B[i - 2].ptr = (int *)realloc(tmp, k * sizeof(int));\n        B[i - 2].size = k;"
+       ],
+       "explain": "קודם מקצים `tmp` בגודל המרבי, אחר כך ממלאים ומחשבים את `k`, ורק אז מקטינים ל-`k` איברים ושומרים את הגודל. הקטנה לפני המילוי משתמשת ב-`k` שעדיין לא חושב.",
+       "promptHtml": "סדרו את גוף הלולאה של <code class=\"tok\" dir=\"ltr\">div_numbers</code> עבור מחלק <code class=\"tok\" dir=\"ltr\">i</code>: להקצות מערך זמני, למלא אותו, ולהקטין ולשמור.",
+       "explainHtml": "קודם מקצים <code class=\"tok\" dir=\"ltr\">tmp</code> בגודל המרבי, אחר כך ממלאים ומחשבים את <code class=\"tok\" dir=\"ltr\">k</code>, ורק אז מקטינים ל-<code class=\"tok\" dir=\"ltr\">k</code> איברים ושומרים את הגודל. הקטנה לפני המילוי משתמשת ב-<code class=\"tok\" dir=\"ltr\">k</code> שעדיין לא חושב.",
+       "linesHtml": [
+        "int *tmp = (int *)calloc(sz, sizeof(int));",
+        "for (j = 0, k = 0; j &lt; sz; j++)\n            if (A[j] % i == 0)\n                tmp[k++] = A[j];",
+        "B[i - 2].ptr = (int *)realloc(tmp, k * sizeof(int));\n        B[i - 2].size = k;"
+       ]
+      },
+      "recap": "מקצים מקסימום, ממלאים, מקטינים ושומרים.",
+      "recapHtml": "מקצים מקסימום, ממלאים, מקטינים ושומרים."
+     },
+     {
+      "id": "C07-Q5",
+      "step": {
+       "type": "findbug",
+       "prompt": "בשורה $i$ של התוצאה אמורים להיכנס המספרים מ-`A` שמתחלקים ב-`i`. התוצאה שגויה. מצאו את השורה השגויה.",
+       "code": true,
+       "lines": [
+        "dyn_array *div_numbers(const int *A, int sz, int n)",
+        "{",
+        "    int i, j, k = 0;",
+        "    dyn_array *B = (dyn_array *)calloc(n - 1, sizeof(dyn_array));",
+        "    for (i = 2; i <= n; i++)",
+        "    {",
+        "        int *tmp = (int *)calloc(sz, sizeof(int));",
+        "        for (j = 0, k = 0; j < sz; j++)",
+        "            if (i % A[j] == 0)",
+        "                tmp[k++] = A[j];",
+        "        B[i - 2].ptr = (int *)realloc(tmp, k * sizeof(int));",
+        "        B[i - 2].size = k;",
+        "    }",
+        "    return B;",
+        "}"
+       ],
+       "bugIndex": 8,
+       "explain": "התנאי הוא ש-`A[j]` מתחלק ב-`i`: `A[j] % i == 0`. הגרסה `i % A[j] == 0` שואלת את ההפך (האם `i` מתחלק ב-`A[j]`), ולכן אף מספר גדול מ-`i` לא נכנס.",
+       "promptHtml": "בשורה <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>i</mi></mrow><annotation encoding=\"application/x-tex\">i</annotation></semantics></math></span> של התוצאה אמורים להיכנס המספרים מ-<code class=\"tok\" dir=\"ltr\">A</code> שמתחלקים ב-<code class=\"tok\" dir=\"ltr\">i</code>. התוצאה שגויה. מצאו את השורה השגויה.",
+       "explainHtml": "התנאי הוא ש-<code class=\"tok\" dir=\"ltr\">A[j]</code> מתחלק ב-<code class=\"tok\" dir=\"ltr\">i</code>: <code class=\"tok\" dir=\"ltr\">A[j] % i == 0</code>. הגרסה <code class=\"tok\" dir=\"ltr\">i % A[j] == 0</code> שואלת את ההפך (האם <code class=\"tok\" dir=\"ltr\">i</code> מתחלק ב-<code class=\"tok\" dir=\"ltr\">A[j]</code>), ולכן אף מספר גדול מ-<code class=\"tok\" dir=\"ltr\">i</code> לא נכנס.",
+       "linesHtml": [
+        "dyn_array *div_numbers(const int *A, int sz, int n)",
+        "{",
+        "    int i, j, k = 0;",
+        "    dyn_array *B = (dyn_array *)calloc(n - 1, sizeof(dyn_array));",
+        "    for (i = 2; i &lt;= n; i++)",
+        "    {",
+        "        int *tmp = (int *)calloc(sz, sizeof(int));",
+        "        for (j = 0, k = 0; j &lt; sz; j++)",
+        "            if (i % A[j] == 0)",
+        "                tmp[k++] = A[j];",
+        "        B[i - 2].ptr = (int *)realloc(tmp, k * sizeof(int));",
+        "        B[i - 2].size = k;",
+        "    }",
+        "    return B;",
+        "}"
+       ]
+      },
+      "recap": "`x % d == 0`: `x` מתחלק ב-`d`.",
+      "recapHtml": "<code class=\"tok\" dir=\"ltr\">x % d == 0</code>: <code class=\"tok\" dir=\"ltr\">x</code> מתחלק ב-<code class=\"tok\" dir=\"ltr\">d</code>."
+     }
+    ]
+   },
+   {
+    "id": "C08",
+    "order": 8,
+    "icon": "🏆",
+    "title": "אלוף: שאלות אמיתיות ממבחנים",
+    "goal": "אחרי השלב הזה אפשר לפתור שאלות אמיתיות על מטריצות דינמיות, משולשים ומערכי מבנים.",
+    "source": "ai-verified",
+    "boss": true,
+    "lesson": {
+     "html": "\n    <p>זה שלב האלוף: שאלות אמיתיות ממבחנים קודמים. בכל אחת מהן אותו שלד:</p>\n    <ul>\n      <li>שרטטו קלט ופלט עם דוגמה 3×3, וכתבו אורך כל שורה ונוסחת אינדקס (מקור מול יעד).</li>\n      <li>הקצו קודם את מערך המצביעים, ואז כל שורה בלולאה. <code>calloc</code> כשצריך אפסים.</li>\n      <li>החזרה: ב-<code>return</code> או דרך <code>int ***out</code> / <code>int *size</code>, עם <code>*out = ...</code> ו-<code>(*out)[k]</code>.</li>\n      <li>שחרור: קודם השורות ואז המערך החיצוני, ורק אחרי שהעתקתם.</li>\n    </ul>\n    <div class=\"lesson-rule\">🔑 בדקו תמיד מקרה קטן (למשל <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>n</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding=\"application/x-tex\">n = 1</annotation></semantics></math></span>) ואת כל הקצאה: האם יש לה שחרור, והאם הגודל הוא <code>sizeof</code> של הטיפוס הנכון.</div>"
+    },
+    "questions": [
+     {
+      "bankId": "24B-B-Q2",
+      "recap": "מסגרת סביב מטריצה: `calloc` לאפסים, העתקה עם היסט 1, ושחרור המקור אחרי ההעתקה.",
+      "recapHtml": "מסגרת סביב מטריצה: <code class=\"tok\" dir=\"ltr\">calloc</code> לאפסים, העתקה עם היסט 1, ושחרור המקור אחרי ההעתקה."
+     },
+     {
+      "bankId": "24B-A-Q2",
+      "recap": "מערך של מבנים: `calloc` נותן `size = 0` ו-`ptr = NULL`, ו-`realloc` מקטין לגודל הסופי.",
+      "recapHtml": "מערך של מבנים: <code class=\"tok\" dir=\"ltr\">calloc</code> נותן <code class=\"tok\" dir=\"ltr\">size = 0</code> ו-<code class=\"tok\" dir=\"ltr\">ptr = NULL</code>, ו-<code class=\"tok\" dir=\"ltr\">realloc</code> מקטין לגודל הסופי."
+     },
+     {
+      "bankId": "25B-A-Q2",
+      "recap": "ממטריצה סטטית לשני משולשים משוננים דרך `int ***`.",
+      "recapHtml": "ממטריצה סטטית לשני משולשים משוננים דרך <code class=\"tok\" dir=\"ltr\">int ***</code>."
+     },
+     {
+      "bankId": "25B-B-Q2",
+      "recap": "משני משולשים למטריצה $(n+1) \\times (n+1)$ עם אלכסון אפס: נוסחאות אינדקס.",
+      "recapHtml": "משני משולשים למטריצה <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mo stretchy=\"false\">(</mo><mi>n</mi><mo>+</mo><mn>1</mn><mo stretchy=\"false\">)</mo><mo>×</mo><mo stretchy=\"false\">(</mo><mi>n</mi><mo>+</mo><mn>1</mn><mo stretchy=\"false\">)</mo></mrow><annotation encoding=\"application/x-tex\">(n+1) \\times (n+1)</annotation></semantics></math></span> עם אלכסון אפס: נוסחאות אינדקס."
+     },
+     {
+      "bankId": "23B-A-Q2",
+      "recap": "שני מערכי פלט דרך פרמטרים, אורך מקסימלי ואז `realloc`.",
+      "recapHtml": "שני מערכי פלט דרך פרמטרים, אורך מקסימלי ואז <code class=\"tok\" dir=\"ltr\">realloc</code>."
+     }
+    ]
+   }
+  ]
+ },
  "linked_lists": {
   "levels": [
    {

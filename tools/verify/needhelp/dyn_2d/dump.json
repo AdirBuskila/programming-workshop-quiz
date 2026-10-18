@@ -1,0 +1,829 @@
+{
+ "courseId": "dyn_2d",
+ "levels": [
+  {
+   "id": "C01",
+   "order": 1,
+   "boss": false,
+   "questions": [
+    {
+     "id": "C01-Q1",
+     "question": "מגדירים `int **m;` ו-`m` מצביע על מערך מצביעים שהוקצה. מהו הטיפוס של הביטוי `m[1]`?",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`int`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`int *`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`int **`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`int ***`"
+      }
+     ]
+    },
+    {
+     "id": "C01-Q2",
+     "question": "מה מדפיס הקוד? (כל ההקצאות מצליחות)\n```c\nint main(void)\n{\n    int **m = (int **)calloc(2, sizeof(int *));\n    int i, j;\n    for (i = 0; i < 2; i++)\n    {\n        m[i] = (int *)calloc(3, sizeof(int));\n        for (j = 0; j < 3; j++)\n            m[i][j] = i * 10 + j;\n    }\n    printf(\"%d %d\", m[1][2], *(*m + 1));\n    return 0;\n}\n```",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`12 10`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`12 1`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`2 1`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`21 1`"
+      }
+     ]
+    },
+    {
+     "id": "C01-Q3",
+     "step": {
+      "type": "numeric",
+      "prompt": "כמה קריאות להקצאה (`calloc`) נדרשות כדי לבנות מטריצה דינמית עם 4 שורות ו-5 עמודות?"
+     }
+    },
+    {
+     "id": "C01-Q4",
+     "question": "בהידור ל-64 סיביות, כמה בתים תופס מצביע, כלומר מהו `sizeof(int *)`?",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`2`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`4`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`8`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`16`"
+      }
+     ]
+    },
+    {
+     "id": "C01-Q5",
+     "step": {
+      "type": "findbug",
+      "prompt": "הקוד אמור להדפיס את המטריצה שורה אחר שורה: `0 1 2` ואז `3 4 5` ואז `6 7 8`. מצאו את השורה השגויה.",
+      "code": true,
+      "lines": [
+       "int **m = (int **)calloc(3, sizeof(int *));",
+       "int i, j;",
+       "for (i = 0; i < 3; i++)",
+       "{",
+       "    m[i] = (int *)calloc(3, sizeof(int));",
+       "    for (j = 0; j < 3; j++)",
+       "        m[i][j] = i * 3 + j;",
+       "}",
+       "for (i = 0; i < 3; i++)",
+       "{",
+       "    for (j = 0; j < 3; j++)",
+       "        printf(\"%d \", m[j][i]);",
+       "    printf(\"\\n\");",
+       "}"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "C02",
+   "order": 2,
+   "boss": false,
+   "questions": [
+    {
+     "id": "C02-Q1",
+     "step": {
+      "type": "order",
+      "prompt": "הפונקציה `alloc_matrix` כבר כתובה. סדרו את הפקודות ב-`main` כך שתוקצה מטריצה, יוכנס 7 לשורה 1 עמודה 2, והערך יודפס.",
+      "code": true,
+      "lines": [
+       "m[1][2] = 7;",
+       "printf(\"%d\", m[1][2]);",
+       "return 0;",
+       "int **m = alloc_matrix(2, 3);"
+      ]
+     }
+    },
+    {
+     "id": "C02-Q2",
+     "question": "צריך את מערך המצביעים של מטריצה עם 3 שורות ו-4 עמודות (64 סיביות). איזו קריאה מקצה אותו נכון?",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`calloc(3, sizeof(int *))`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`calloc(3, sizeof(int))`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`calloc(4, sizeof(int))`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`calloc(1, sizeof(int *))`"
+      }
+     ]
+    },
+    {
+     "id": "C02-Q3",
+     "step": {
+      "type": "fillblank",
+      "prompt": "השלימו את גודל האיבר בהקצאת מערך המצביעים.",
+      "code": true,
+      "options": [
+       {
+        "id": "a",
+        "type": "text",
+        "value": "sizeof(int *)"
+       },
+       {
+        "id": "b",
+        "type": "text",
+        "value": "sizeof(int)"
+       },
+       {
+        "id": "c",
+        "type": "text",
+        "value": "cols * sizeof(int)"
+       },
+       {
+        "id": "d",
+        "type": "text",
+        "value": "rows"
+       }
+      ],
+      "lines": [
+       "int **alloc_matrix(int rows, int cols)",
+       "{",
+       "    int i;",
+       "    int **m = (int **)calloc(rows, ___);",
+       "    for (i = 0; i < rows; i++)",
+       "        m[i] = (int *)calloc(cols, sizeof(int));",
+       "    return m;",
+       "}"
+      ],
+      "blankIndex": 3
+     }
+    },
+    {
+     "id": "C02-Q4",
+     "step": {
+      "type": "numeric",
+      "prompt": "כמה בתים בסך הכל מקצה הקריאה `alloc_matrix(3, 4)` ב-64 סיביות, כולל מערך המצביעים?"
+     }
+    },
+    {
+     "id": "C02-Q5",
+     "step": {
+      "type": "findbug",
+      "prompt": "הפונקציה אמורה להקצות מטריצה `rows` על `cols`, אבל במטריצה 2 על 3 השורות קצרות מדי. מצאו את השורה השגויה.",
+      "code": true,
+      "lines": [
+       "int **alloc_matrix(int rows, int cols)",
+       "{",
+       "    int i;",
+       "    int **m = (int **)calloc(rows, sizeof(int *));",
+       "    for (i = 0; i < rows; i++)",
+       "        m[i] = (int *)calloc(rows, sizeof(int));",
+       "    return m;",
+       "}"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "C03",
+   "order": 3,
+   "boss": false,
+   "questions": [
+    {
+     "id": "C03-Q1",
+     "step": {
+      "type": "numeric",
+      "prompt": "כמה קריאות ל-`free` נדרשות כדי לשחרר מטריצה דינמית עם 5 שורות?"
+     }
+    },
+    {
+     "id": "C03-Q2",
+     "step": {
+      "type": "order",
+      "prompt": "סדרו את הפקודות כך שהמטריצה תשוחרר נכון: קודם השורות ואחר כך מערך המצביעים.",
+      "code": true,
+      "lines": [
+       "for (i = 0; i < 3; i++)\n        free(m[i]);",
+       "free(m);",
+       "int i, **m = alloc_matrix(3, 2);"
+      ]
+     }
+    },
+    {
+     "id": "C03-Q3",
+     "question": "בסוף התוכנית הבאה, כמה בלוקים שהוקצו נשארו בלי שחרור (דליפה)?\n```c\nint **alloc_matrix(int rows, int cols)\n{\n    int i;\n    int **m = (int **)calloc(rows, sizeof(int *));\n    for (i = 0; i < rows; i++)\n        m[i] = (int *)calloc(cols, sizeof(int));\n    return m;\n}\n\nint main(void)\n{\n    int **m = alloc_matrix(3, 4);\n    free(m);\n    return 0;\n}\n```",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`0`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`1`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`3`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`4`"
+      }
+     ]
+    },
+    {
+     "id": "C03-Q4",
+     "step": {
+      "type": "findbug",
+      "prompt": "הפונקציה אמורה לשחרר את כל המטריצה בלי דליפות, אבל שורה אחת נשארת. מצאו את השורה השגויה.",
+      "code": true,
+      "lines": [
+       "void free_matrix(int **m, int rows)",
+       "{",
+       "    int i;",
+       "    for (i = 1; i < rows; i++)",
+       "        free(m[i]);",
+       "    free(m);",
+       "}"
+      ]
+     }
+    },
+    {
+     "id": "C03-Q5",
+     "question": "מה קורה בקוד הבא?\n```c\nint main(void)\n{\n    int *p = NULL;\n    free(p);\n    printf(\"A\");\n    free(p);\n    printf(\"B\");\n    return 0;\n}\n```",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`AB`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`A`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "קריסה לפני כל פלט"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "שגיאת הידור"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "C04",
+   "order": 4,
+   "boss": false,
+   "questions": [
+    {
+     "id": "C04-Q1",
+     "question": "הפונקציה `int sum(int A[][N], int n)` מקבלת מטריצה סטטית (`N` קבוע). יש `int S[3][3]` ו-`int **m` (מטריצה דינמית). איזו קריאה תקינה?",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`sum(S, 3)`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`sum(m, 3)`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`sum(&m, 3)`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`sum(*m, 3)`"
+      }
+     ]
+    },
+    {
+     "id": "C04-Q2",
+     "question": "מה מדפיס הקוד?\n```c\n#define N 2\nint **copy_matrix(int A[][N], int n)\n{\n    int i, j;\n    int **B = (int **)calloc(n, sizeof(int *));\n    for (i = 0; i < n; i++)\n    {\n        B[i] = (int *)calloc(n, sizeof(int));\n        for (j = 0; j < n; j++)\n            B[i][j] = A[i][j];\n    }\n    return B;\n}\n\nint main(void)\n{\n    int A[2][2] = {{1, 2}, {3, 4}};\n    int **B = copy_matrix(A, 2);\n    B[0][0] = 9;\n    printf(\"%d %d\", A[0][0], B[0][0]);\n    return 0;\n}\n```",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`9 9`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`1 9`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`1 1`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`9 1`"
+      }
+     ]
+    },
+    {
+     "id": "C04-Q3",
+     "step": {
+      "type": "fillblank",
+      "prompt": "השלימו את השורה שמעתיקה איבר מהמטריצה הסטטית `A` להעתק `B`, כך ש-`B` זהה ל-`A`.",
+      "code": true,
+      "options": [
+       {
+        "id": "a",
+        "type": "text",
+        "value": "A[i][j]"
+       },
+       {
+        "id": "b",
+        "type": "text",
+        "value": "A[j][i]"
+       },
+       {
+        "id": "c",
+        "type": "text",
+        "value": "A[i][j] * 2"
+       },
+       {
+        "id": "d",
+        "type": "text",
+        "value": "A[i][j] + i"
+       }
+      ],
+      "lines": [
+       "int **copy_matrix(int A[][N], int n)",
+       "{",
+       "    int i, j;",
+       "    int **B = (int **)calloc(n, sizeof(int *));",
+       "    for (i = 0; i < n; i++)",
+       "    {",
+       "        B[i] = (int *)calloc(n, sizeof(int));",
+       "        for (j = 0; j < n; j++)",
+       "            B[i][j] = ___;",
+       "    }",
+       "    return B;",
+       "}"
+      ],
+      "blankIndex": 8
+     }
+    },
+    {
+     "id": "C04-Q4",
+     "step": {
+      "type": "numeric",
+      "prompt": "מה מדפיס הקוד הבא?\n```c\nint main(void)\n{\n    int A[3][3] = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};\n    int **B = (int **)calloc(3, sizeof(int *));\n    int i, j, s = 0;\n    for (i = 0; i < 3; i++)\n    {\n        B[i] = (int *)calloc(3, sizeof(int));\n        for (j = 0; j <= i; j++)\n            B[i][j] = A[i][j];\n    }\n    for (i = 0; i < 3; i++)\n        for (j = 0; j < 3; j++)\n            s += B[i][j];\n    printf(\"%d\", s);\n    return 0;\n}\n```"
+     }
+    },
+    {
+     "id": "C04-Q5",
+     "step": {
+      "type": "order",
+      "prompt": "סדרו את גוף `copy_matrix`, שמשתמשת ב-`alloc_matrix` שכבר כתובה: להקצות, להעתיק, להחזיר.",
+      "code": true,
+      "lines": [
+       "for (i = 0; i < n; i++) for (j = 0; j < n; j++) B[i][j] = A[i][j];",
+       "return B;",
+       "int **B = alloc_matrix(n, n);"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "C05",
+   "order": 5,
+   "boss": false,
+   "questions": [
+    {
+     "id": "C05-Q1",
+     "step": {
+      "type": "numeric",
+      "prompt": "כמה איברים נשמרים בסך הכל במשולש התחתון (כולל האלכסון) של מטריצה 6 על 6, כששורה $i$ מקבלת $i+1$ איברים?"
+     }
+    },
+    {
+     "id": "C05-Q2",
+     "question": "ב-`strict_upper` למטריצה 4 על 4 (המשולש שמעל האלכסון, בלי האלכסון), מה אורכי השורות `up[0]` עד `up[3]`?",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`3 2 1 0`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`4 3 2 1`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`3 3 3 3`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`1 2 3 4`"
+      }
+     ]
+    },
+    {
+     "id": "C05-Q3",
+     "step": {
+      "type": "numeric",
+      "prompt": "ב-`strict_upper` נשמר האיבר `A[i][j]` (עבור $j > i$) בתא `up[i][j - i - 1]`. באיזה אינדקס בתוך `up[1]` נשמר `A[1][3]`?"
+     }
+    },
+    {
+     "id": "C05-Q4",
+     "step": {
+      "type": "fillblank",
+      "prompt": "השלימו את אורך השורה `i` במשולש התחתון (עם האלכסון).",
+      "code": true,
+      "options": [
+       {
+        "id": "a",
+        "type": "text",
+        "value": "i + 1"
+       },
+       {
+        "id": "b",
+        "type": "text",
+        "value": "i"
+       },
+       {
+        "id": "c",
+        "type": "text",
+        "value": "n"
+       },
+       {
+        "id": "d",
+        "type": "text",
+        "value": "n - i"
+       }
+      ],
+      "lines": [
+       "#define N 4",
+       "int **low_triangle(int A[][N], int n)",
+       "{",
+       "    int i, j;",
+       "    int **low = (int **)calloc(n, sizeof(int *));",
+       "    for (i = 0; i < n; i++)",
+       "    {",
+       "        low[i] = (int *)calloc(___, sizeof(int));",
+       "        for (j = 0; j <= i; j++)",
+       "            low[i][j] = A[i][j];",
+       "    }",
+       "    return low;",
+       "}"
+      ],
+      "blankIndex": 7
+     }
+    },
+    {
+     "id": "C05-Q5",
+     "step": {
+      "type": "findbug",
+      "prompt": "הפונקציה אמורה לשמור בשורה $i$ את `A[i][i+1..n-1]` החל מאינדקס 0, אבל התוצאה שגויה. מצאו את השורה השגויה.",
+      "code": true,
+      "lines": [
+       "#define N 4",
+       "int **strict_upper(int A[][N], int n)",
+       "{",
+       "    int i, j;",
+       "    int **up = (int **)calloc(n, sizeof(int *));",
+       "    for (i = 0; i < n; i++)",
+       "    {",
+       "        up[i] = (int *)calloc(n - 1 - i, sizeof(int));",
+       "        for (j = i + 1; j < n; j++)",
+       "            up[i][j] = A[i][j];",
+       "    }",
+       "    return up;",
+       "}"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "C06",
+   "order": 6,
+   "boss": false,
+   "questions": [
+    {
+     "id": "C06-Q1",
+     "question": "הפונקציה מחזירה את המשולש התחתון דרך הפרמטר `int ***out` (הקורא מעביר `&T` כש-`T` הוא `int **`). איזו פקודה במקום `___` מוסרת את התוצאה לקורא?\n```c\n#define N 3\nvoid low_triangle(int A[][N], int n, int ***out)\n{\n    int i, j;\n    int **low = (int **)calloc(n, sizeof(int *));\n    for (i = 0; i < n; i++)\n    {\n        low[i] = (int *)calloc(i + 1, sizeof(int));\n        for (j = 0; j <= i; j++)\n            low[i][j] = A[i][j];\n    }\n    ___\n}\n```",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`*out = low;`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`out = low;`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`**out = low;`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`out[0] = *low;`"
+      }
+     ]
+    },
+    {
+     "id": "C06-Q2",
+     "question": "מה מדפיס הקוד?\n```c\nvoid fill(int **out, int *cnt)\n{\n    *out = (int *)calloc(3, sizeof(int));\n    (*out)[0] = 4;\n    (*out)[2] = 9;\n    *cnt = 3;\n}\n\nint main(void)\n{\n    int *a;\n    int c;\n    fill(&a, &c);\n    printf(\"%d %d\", a[2], c);\n    return 0;\n}\n```",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`9 3`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`4 3`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`9 9`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`3 9`"
+      }
+     ]
+    },
+    {
+     "id": "C06-Q3",
+     "step": {
+      "type": "numeric",
+      "prompt": "מה מדפיס הקוד?\n```c\nvoid evens(int *A, int n, int **out, int *cnt)\n{\n    int i, k;\n    *cnt = 0;\n    for (i = 0; i < n; i++)\n        if (A[i] % 2 == 0)\n            (*cnt)++;\n    *out = (int *)calloc(*cnt, sizeof(int));\n    k = 0;\n    for (i = 0; i < n; i++)\n        if (A[i] % 2 == 0)\n            (*out)[k++] = A[i];\n}\n\nint main(void)\n{\n    int A[5] = {3, 4, 8, 5, 6};\n    int *a = NULL;\n    int c = 77;\n    evens(A, 5, &a, &c);\n    printf(\"%d\", c);\n    return 0;\n}\n```"
+     }
+    },
+    {
+     "id": "C06-Q4",
+     "step": {
+      "type": "order",
+      "prompt": "סדרו את גוף `evens`: לאפס מונה, לספור זוגיים, להקצות בדיוק לפי המונה, ולמלא.",
+      "code": true,
+      "lines": [
+       "for (i = 0; i < n; i++)\n        if (A[i] % 2 == 0)\n            (*cnt)++;",
+       "*out = (int *)calloc(*cnt, sizeof(int));",
+       "k = 0;\n    for (i = 0; i < n; i++)\n        if (A[i] % 2 == 0)\n            (*out)[k++] = A[i];",
+       "*cnt = 0;"
+      ]
+     }
+    },
+    {
+     "id": "C06-Q5",
+     "question": "הפונקציה `evens(int *A, int n, int **out, int *cnt)` מחזירה מערך דרך `out` וגודלו דרך `cnt`. הקורא הצהיר `int A[5]; int *a; int c;`. איזו קריאה נכונה?",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`evens(A, 5, &a, &c);`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`evens(A, 5, a, c);`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`evens(A, 5, &a, c);`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`evens(A, 5, *a, *c);`"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "C07",
+   "order": 7,
+   "boss": false,
+   "questions": [
+    {
+     "id": "C07-Q1",
+     "question": "מה מדפיס הקוד?\n```c\ntypedef struct\n{\n    int size;\n    int *ptr;\n} dyn_array;\n\nint main(void)\n{\n    dyn_array *B = (dyn_array *)calloc(3, sizeof(dyn_array));\n    printf(\"%d %s\", B[1].size, B[1].ptr ? \"ptr\" : \"NULL\");\n    return 0;\n}\n```",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`0 NULL`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`0 ptr`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`3 NULL`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "ערכי זבל, התוצאה אינה צפויה"
+      }
+     ]
+    },
+    {
+     "id": "C07-Q2",
+     "step": {
+      "type": "numeric",
+      "prompt": "ב-64 סיביות, מה `sizeof(dyn_array)` של המבנה מהשיעור (`int size; int *ptr;`)?"
+     }
+    },
+    {
+     "id": "C07-Q3",
+     "step": {
+      "type": "fillblank",
+      "prompt": "השלימו את גודל ההקטנה של `tmp` למספר האיברים שנמצאו בפועל (`k`).",
+      "code": true,
+      "options": [
+       {
+        "id": "a",
+        "type": "text",
+        "value": "k * sizeof(int)"
+       },
+       {
+        "id": "b",
+        "type": "text",
+        "value": "k"
+       },
+       {
+        "id": "c",
+        "type": "text",
+        "value": "sz * sizeof(int)"
+       },
+       {
+        "id": "d",
+        "type": "text",
+        "value": "sizeof(int)"
+       }
+      ],
+      "lines": [
+       "dyn_array *div_numbers(const int *A, int sz, int n)",
+       "{",
+       "    int i, j, k = 0;",
+       "    dyn_array *B = (dyn_array *)calloc(n - 1, sizeof(dyn_array));",
+       "    for (i = 2; i <= n; i++)",
+       "    {",
+       "        int *tmp = (int *)calloc(sz, sizeof(int));",
+       "        for (j = 0, k = 0; j < sz; j++)",
+       "            if (A[j] % i == 0)",
+       "                tmp[k++] = A[j];",
+       "        B[i - 2].ptr = (int *)realloc(tmp, ___);",
+       "        B[i - 2].size = k;",
+       "    }",
+       "    return B;",
+       "}"
+      ],
+      "blankIndex": 10
+     }
+    },
+    {
+     "id": "C07-Q4",
+     "step": {
+      "type": "order",
+      "prompt": "סדרו את גוף הלולאה של `div_numbers` עבור מחלק `i`: להקצות מערך זמני, למלא אותו, ולהקטין ולשמור.",
+      "code": true,
+      "lines": [
+       "for (j = 0, k = 0; j < sz; j++)\n            if (A[j] % i == 0)\n                tmp[k++] = A[j];",
+       "B[i - 2].ptr = (int *)realloc(tmp, k * sizeof(int));\n        B[i - 2].size = k;",
+       "int *tmp = (int *)calloc(sz, sizeof(int));"
+      ]
+     }
+    },
+    {
+     "id": "C07-Q5",
+     "step": {
+      "type": "findbug",
+      "prompt": "בשורה $i$ של התוצאה אמורים להיכנס המספרים מ-`A` שמתחלקים ב-`i`. התוצאה שגויה. מצאו את השורה השגויה.",
+      "code": true,
+      "lines": [
+       "dyn_array *div_numbers(const int *A, int sz, int n)",
+       "{",
+       "    int i, j, k = 0;",
+       "    dyn_array *B = (dyn_array *)calloc(n - 1, sizeof(dyn_array));",
+       "    for (i = 2; i <= n; i++)",
+       "    {",
+       "        int *tmp = (int *)calloc(sz, sizeof(int));",
+       "        for (j = 0, k = 0; j < sz; j++)",
+       "            if (i % A[j] == 0)",
+       "                tmp[k++] = A[j];",
+       "        B[i - 2].ptr = (int *)realloc(tmp, k * sizeof(int));",
+       "        B[i - 2].size = k;",
+       "    }",
+       "    return B;",
+       "}"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "C08",
+   "order": 8,
+   "boss": true,
+   "questions": [
+    {
+     "id": "bank:24B-B-Q2",
+     "bankId": "24B-B-Q2"
+    },
+    {
+     "id": "bank:24B-A-Q2",
+     "bankId": "24B-A-Q2"
+    },
+    {
+     "id": "bank:25B-A-Q2",
+     "bankId": "25B-A-Q2"
+    },
+    {
+     "id": "bank:25B-B-Q2",
+     "bankId": "25B-B-Q2"
+    },
+    {
+     "id": "bank:23B-A-Q2",
+     "bankId": "23B-A-Q2"
+    }
+   ]
+  }
+ ]
+}
