@@ -6,7 +6,7 @@ window.COURSES = {
     "order": 1,
     "icon": "🔤",
     "title": "תווים הם מספרים",
-    "goal": "אחרי השלב הזה אפשר לחשב מה מדפיס `printf` כשמעבירים לו תו, ולהבדיל בין התו '0' לבין המספר 0.",
+    "goal": "אחרי השלב הזה אפשר לחשב מה מדפיסה printf כשמעבירים לה תו, ולהבדיל בין התו '0' לבין המספר 0.",
     "source": "ai-verified",
     "boss": false,
     "lesson": {
@@ -206,9 +206,9 @@ window.COURSES = {
        "prompt": "מה מדפיס הקוד?\n```c\nprintf(\"%d\", -7 % 3);\n```",
        "answer": -1,
        "tol": 0,
-       "explain": "$-7 = (-2)\\cdot 3 + (-1)$. החילוק קוטם ל-2- והשארית מקבלת את סימן המחולק, ולכן התוצאה היא -1.",
+       "explain": "$-7 = (-2)\\cdot 3 + (-1)$. החילוק קוטם ל-(-2) והשארית מקבלת את סימן המחולק, ולכן התוצאה היא -1.",
        "promptHtml": "מה מדפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>printf(\"%d\", -7 % 3);</code></pre>",
-       "explainHtml": "<span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mo>−</mo><mn>7</mn><mo>=</mo><mo stretchy=\"false\">(</mo><mo>−</mo><mn>2</mn><mo stretchy=\"false\">)</mo><mo>⋅</mo><mn>3</mn><mo>+</mo><mo stretchy=\"false\">(</mo><mo>−</mo><mn>1</mn><mo stretchy=\"false\">)</mo></mrow><annotation encoding=\"application/x-tex\">-7 = (-2)\\cdot 3 + (-1)</annotation></semantics></math></span>. החילוק קוטם ל-2- והשארית מקבלת את סימן המחולק, ולכן התוצאה היא -1."
+       "explainHtml": "<span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mo>−</mo><mn>7</mn><mo>=</mo><mo stretchy=\"false\">(</mo><mo>−</mo><mn>2</mn><mo stretchy=\"false\">)</mo><mo>⋅</mo><mn>3</mn><mo>+</mo><mo stretchy=\"false\">(</mo><mo>−</mo><mn>1</mn><mo stretchy=\"false\">)</mo></mrow><annotation encoding=\"application/x-tex\">-7 = (-2)\\cdot 3 + (-1)</annotation></semantics></math></span>. החילוק קוטם ל-(-2) והשארית מקבלת את סימן המחולק, ולכן התוצאה היא -1."
       },
       "recap": "לשארית יש סימן של המחולק.",
       "recapHtml": "לשארית יש סימן של המחולק."
@@ -334,6 +334,1183 @@ window.COURSES = {
       "questionHtml": "מה מדפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>int s[] = {5, 5 / 5, 5 / 5 / 5, 7};\nint i;\nfor (i = 0; s[i]; i++)\n    printf(\"%d\", s[i]);</code></pre>",
       "explanationHtml": "האיברים הם 5, 1 (שווה ל-5/5), 0 (שווה ל-1/5 בחילוק שלם) ו-7. הלולאה נעצרת באיבר השלישי כי הוא 0, ולכן מודפסים רק 5 ו-1: <code class=\"tok\" dir=\"ltr\">51</code>. התשובות עם 7 מניחות שהלולאה ממשיכה אחרי האפס.",
       "recapHtml": "הלולאה נעצרת באיבר הראשון ששווה 0."
+     }
+    ]
+   },
+   {
+    "id": "C03",
+    "order": 3,
+    "icon": "⚖️",
+    "title": "קדימויות והשמה",
+    "goal": "אחרי השלב הזה אפשר להבחין בין = ל-==, בין פעולות סיביות ללוגיות, ולחשב ביטויים שבהם סדר החישוב מפתיע.",
+    "source": "ai-verified",
+    "boss": false,
+    "lesson": {
+     "html": "\n    <p>סדר החישוב נקבע לפי <b>קדימות</b> האופרטורים. מהחזק לחלש, בקצרה:</p>\n    <table><thead><tr><th>רמה</th><th>אופרטורים</th></tr></thead>\n    <tbody>\n    <tr><td>1</td><td><code>!</code> ו-<code>++</code> ו-<code>--</code> (יחידיים)</td></tr>\n    <tr><td>2</td><td><code>*</code> <code>/</code> <code>%</code>, אחר כך <code>+</code> <code>-</code></td></tr>\n    <tr><td>3</td><td><code>&lt;&lt;</code> <code>&gt;&gt;</code></td></tr>\n    <tr><td>4</td><td><code>&lt;</code> <code>&gt;</code> <code>&lt;=</code> <code>&gt;=</code>, אחר כך <code>==</code> <code>!=</code></td></tr>\n    <tr><td>5</td><td><code>&amp;</code>, אחר כך <code>^</code>, אחר כך <code>|</code></td></tr>\n    <tr><td>6</td><td><code>&amp;&amp;</code>, אחר כך <code>||</code></td></tr>\n    <tr><td>7</td><td><code>=</code> (הכי חלש)</td></tr>\n    </tbody></table>\n    <ul>\n      <li><code>=</code> היא השמה והערך שלה הוא הערך שהושם. <code>==</code> היא השוואה.</li>\n      <li>השוואה (<code>==</code>) חזקה מ-<code>&amp;</code>, ולכן <code>4 &amp; 3 == 3</code> הוא <code>4 &amp; (3 == 3)</code>, כלומר <code>4 &amp; 1</code>, כלומר 0.</li>\n      <li><code>^</code> היא XOR של סיביות ולא חזקה: <code>3 ^ 2</code> הוא 1. ו-<code>1 &lt;&lt; k</code> הוא <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><msup><mn>2</mn><mi>k</mi></msup></mrow><annotation encoding=\"application/x-tex\">2^k</annotation></semantics></math></span>.</li>\n      <li>השוואות משורשרות מחושבות משמאל לימין, וכל השוואה נותנת 0 או 1: <code>5 &gt; 3 &gt; 1</code> הוא <code>1 &gt; 1</code>, כלומר 0.</li>\n      <li><code>&amp;&amp;</code> ו-<code>||</code> מחשבים משמאל לימין ו<b>עוצרים</b> ברגע שהתוצאה ידועה: הצד הימני של <code>&amp;&amp;</code> לא מחושב אם הצד השמאלי שקרי.</li>\n    </ul>\n    <div class=\"lesson-rule\">🔑 בספק, שמים סוגריים. ובתנאי <code>if</code> כותבים <code>==</code>.</div>\n    <div class=\"lesson-ex\">דוגמה: <code>2 + 3 * 4 % 5</code>. קודם <code>3 * 4 = 12</code>, אחר כך <code>12 % 5 = 2</code> (אותה רמה, משמאל לימין), ולבסוף <code>2 + 2 = 4</code>.</div>\n    <div class=\"lesson-trap\">⚠️ <code>if (x = 0)</code> מבצעת השמה, והערך של התנאי הוא 0, כלומר שקר. הקוד מתקמפל, והמשתנה כבר איבד את ערכו.</div>"
+    },
+    "questions": [
+     {
+      "id": "C03-Q1",
+      "question": "מה מדפיס הקוד?\n```c\nint x = 5;\nif (x = 0)\n    printf(\"A\");\nelse\n    printf(\"B\");\nprintf(\"%d\", x);\n```",
+      "options": [
+       {
+        "id": "a",
+        "value": "`B0`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">B0</code>"
+       },
+       {
+        "id": "b",
+        "value": "`A0`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">A0</code>"
+       },
+       {
+        "id": "c",
+        "value": "`B5`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">B5</code>"
+       },
+       {
+        "id": "d",
+        "value": "`A5`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">A5</code>"
+       }
+      ],
+      "correctId": "a",
+      "explanation": "התנאי הוא השמה: `x` מקבל 0 וערך הביטוי הוא 0, כלומר שקר, ולכן מדפיסים `B`. אחרי ההשמה `x` שווה 0 ולא 5. התשובות `A` מניחות שהתנאי אמת, והתשובות עם 5 מניחות ש-`x` לא השתנה.",
+      "recap": "if (x = 0) משנה את x והתנאי שקרי.",
+      "questionHtml": "מה מדפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>int x = 5;\nif (x = 0)\n    printf(\"A\");\nelse\n    printf(\"B\");\nprintf(\"%d\", x);</code></pre>",
+      "explanationHtml": "התנאי הוא השמה: <code class=\"tok\" dir=\"ltr\">x</code> מקבל 0 וערך הביטוי הוא 0, כלומר שקר, ולכן מדפיסים <code class=\"tok\" dir=\"ltr\">B</code>. אחרי ההשמה <code class=\"tok\" dir=\"ltr\">x</code> שווה 0 ולא 5. התשובות <code class=\"tok\" dir=\"ltr\">A</code> מניחות שהתנאי אמת, והתשובות עם 5 מניחות ש-<code class=\"tok\" dir=\"ltr\">x</code> לא השתנה.",
+      "recapHtml": "if (x = 0) משנה את x והתנאי שקרי."
+     },
+     {
+      "id": "C03-Q2",
+      "step": {
+       "type": "numeric",
+       "prompt": "מה מדפיס הקוד?\n```c\nprintf(\"%d\", 4 & 3 == 3);\n```",
+       "answer": 0,
+       "tol": 0,
+       "explain": "`==` חזק מ-`&`, ולכן הביטוי הוא `4 & (3 == 3)`, כלומר `4 & 1`. ב-4 הסיבית הנמוכה כבויה, ולכן התוצאה 0. אילו `&` היה קודם, הייתה התוצאה `(4 & 3) == 3` כלומר 0 == 3, וגם היא 0, אבל מסיבה אחרת.",
+       "promptHtml": "מה מדפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>printf(\"%d\", 4 &amp; 3 == 3);</code></pre>",
+       "explainHtml": "<code class=\"tok\" dir=\"ltr\">==</code> חזק מ-<code class=\"tok\" dir=\"ltr\">&amp;</code>, ולכן הביטוי הוא <code class=\"tok\" dir=\"ltr\">4 &amp; (3 == 3)</code>, כלומר <code class=\"tok\" dir=\"ltr\">4 &amp; 1</code>. ב-4 הסיבית הנמוכה כבויה, ולכן התוצאה 0. אילו <code class=\"tok\" dir=\"ltr\">&amp;</code> היה קודם, הייתה התוצאה <code class=\"tok\" dir=\"ltr\">(4 &amp; 3) == 3</code> כלומר 0 == 3, וגם היא 0, אבל מסיבה אחרת."
+      },
+      "recap": "השוואה חזקה מ-& ו-|.",
+      "recapHtml": "השוואה חזקה מ-&amp; ו-|."
+     },
+     {
+      "id": "C03-Q3",
+      "question": "מה מדפיס הקוד?\n```c\nprintf(\"%d %d\", 3 ^ 2, 1 << 4);\n```",
+      "options": [
+       {
+        "id": "a",
+        "value": "`1 16`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">1 16</code>"
+       },
+       {
+        "id": "b",
+        "value": "`9 16`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">9 16</code>"
+       },
+       {
+        "id": "c",
+        "value": "`1 4`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">1 4</code>"
+       },
+       {
+        "id": "d",
+        "value": "`9 4`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">9 4</code>"
+       }
+      ],
+      "correctId": "a",
+      "explanation": "`^` היא XOR של סיביות: `011 ^ 010 = 001`, כלומר 1, ולא העלאה בחזקה (9). `1 << 4` מזיז את הסיבית ארבע מקומות ונותן $2^4 = 16$, ולא 4.",
+      "recap": "^ היא XOR, לא חזקה.",
+      "questionHtml": "מה מדפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>printf(\"%d %d\", 3 ^ 2, 1 &lt;&lt; 4);</code></pre>",
+      "explanationHtml": "<code class=\"tok\" dir=\"ltr\">^</code> היא XOR של סיביות: <code class=\"tok\" dir=\"ltr\">011 ^ 010 = 001</code>, כלומר 1, ולא העלאה בחזקה (9). <code class=\"tok\" dir=\"ltr\">1 &lt;&lt; 4</code> מזיז את הסיבית ארבע מקומות ונותן <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><msup><mn>2</mn><mn>4</mn></msup><mo>=</mo><mn>16</mn></mrow><annotation encoding=\"application/x-tex\">2^4 = 16</annotation></semantics></math></span>, ולא 4.",
+      "recapHtml": "^ היא XOR, לא חזקה."
+     },
+     {
+      "id": "C03-Q4",
+      "question": "מה מדפיס הקוד?\n```c\nint i = 0, j = 0;\nif (i++ && j++)\n    ;\nprintf(\"%d %d\", i, j);\n```",
+      "options": [
+       {
+        "id": "a",
+        "value": "`1 0`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">1 0</code>"
+       },
+       {
+        "id": "b",
+        "value": "`1 1`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">1 1</code>"
+       },
+       {
+        "id": "c",
+        "value": "`0 0`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">0 0</code>"
+       },
+       {
+        "id": "d",
+        "value": "`0 1`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">0 1</code>"
+       }
+      ],
+      "correctId": "a",
+      "explanation": "`i++` נותן את הערך הישן 0 (שקר) ו-`i` נעשה 1. מכיוון שהצד השמאלי של `&&` שקרי, הצד הימני `j++` לא מחושב, ולכן `j` נשאר 0.",
+      "recap": "&& לא מחשב את הצד הימני אחרי שמאל שקרי.",
+      "questionHtml": "מה מדפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>int i = 0, j = 0;\nif (i++ &amp;&amp; j++)\n    ;\nprintf(\"%d %d\", i, j);</code></pre>",
+      "explanationHtml": "<code class=\"tok\" dir=\"ltr\">i++</code> נותן את הערך הישן 0 (שקר) ו-<code class=\"tok\" dir=\"ltr\">i</code> נעשה 1. מכיוון שהצד השמאלי של <code class=\"tok\" dir=\"ltr\">&amp;&amp;</code> שקרי, הצד הימני <code class=\"tok\" dir=\"ltr\">j++</code> לא מחושב, ולכן <code class=\"tok\" dir=\"ltr\">j</code> נשאר 0.",
+      "recapHtml": "&amp;&amp; לא מחשב את הצד הימני אחרי שמאל שקרי."
+     },
+     {
+      "id": "C03-Q5",
+      "step": {
+       "type": "numeric",
+       "prompt": "מה מדפיס הקוד?\n```c\nprintf(\"%d\", 5 > 3 > 1);\n```",
+       "answer": 0,
+       "tol": 0,
+       "explain": "מחשבים משמאל לימין: `5 > 3` נותן 1, ואז `1 > 1` שקרי ונותן 0. הביטוי אינו בודק ש-3 גדול מ-1.",
+       "promptHtml": "מה מדפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>printf(\"%d\", 5 &gt; 3 &gt; 1);</code></pre>",
+       "explainHtml": "מחשבים משמאל לימין: <code class=\"tok\" dir=\"ltr\">5 &gt; 3</code> נותן 1, ואז <code class=\"tok\" dir=\"ltr\">1 &gt; 1</code> שקרי ונותן 0. הביטוי אינו בודק ש-3 גדול מ-1."
+      },
+      "recap": "השוואות משורשרות נותנות 0 או 1 בכל שלב.",
+      "recapHtml": "השוואות משורשרות נותנות 0 או 1 בכל שלב."
+     },
+     {
+      "id": "C03-Q6",
+      "step": {
+       "type": "numeric",
+       "prompt": "מה מדפיס הקוד?\n```c\nprintf(\"%d\", 2 + 3 * 4 % 5);\n```",
+       "answer": 4,
+       "tol": 0,
+       "explain": "`3 * 4` הוא 12, אחר כך `12 % 5` הוא 2, ולבסוף `2 + 2` הוא 4. הכפל והשארית באותה רמה וחזקים מהחיבור.",
+       "promptHtml": "מה מדפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>printf(\"%d\", 2 + 3 * 4 % 5);</code></pre>",
+       "explainHtml": "<code class=\"tok\" dir=\"ltr\">3 * 4</code> הוא 12, אחר כך <code class=\"tok\" dir=\"ltr\">12 % 5</code> הוא 2, ולבסוף <code class=\"tok\" dir=\"ltr\">2 + 2</code> הוא 4. הכפל והשארית באותה רמה וחזקים מהחיבור."
+      },
+      "recap": "כפל, חילוק ושארית לפני חיבור וחיסור.",
+      "recapHtml": "כפל, חילוק ושארית לפני חיבור וחיסור."
+     }
+    ]
+   },
+   {
+    "id": "C04",
+    "order": 4,
+    "icon": "📏",
+    "title": "sizeof",
+    "goal": "אחרי השלב הזה אפשר לחשב sizeof של מערכים ושל מחרוזות קבועות, ולהבחין בינו לבין strlen.",
+    "source": "ai-verified",
+    "boss": false,
+    "lesson": {
+     "html": "\n    <p><code>sizeof</code> הוא אופרטור (לא פונקציה) שמחשב בזמן ההידור את גודל הטיפוס או הביטוי בבתים. הערך שלו מטיפוס <code>size_t</code> (מספר שלם חיובי), ולכן מדפיסים אותו עם המרה: <code>printf(\"%d\", (int)sizeof x)</code>.</p>\n    <ul>\n      <li><b>מערך</b>: <code>sizeof a</code> הוא מספר האיברים כפול גודל איבר. לכן <code>sizeof a / sizeof a[0]</code> הוא מספר האיברים.</li>\n      <li><b>מחרוזת קבועה</b>: <code>sizeof \"hello\"</code> הוא 6, כי הגודל כולל את <code>'\\0'</code> הסופי. לעומת זאת <code>strlen(\"hello\")</code> הוא 5, והוא סופר רק עד התו האפס.</li>\n      <li>מערך <code>char s[10] = \"abc\"</code>: ה-<code>sizeof</code> הוא 10 (גודל המערך) וה-<code>strlen</code> הוא 3 (אורך הטקסט).</li>\n      <li><code>sizeof</code> <b>לא מריץ</b> את הביטוי שלו: ב-<code>sizeof(i++)</code> המשתנה <code>i</code> לא משתנה.</li>\n      <li>האינדקס <code>[ ]</code> חזק מ-<code>sizeof</code>, ולכן <code>sizeof \"abc\"[1]</code> הוא הגודל של התו <code>\"abc\"[1]</code>, כלומר 1.</li>\n      <li>התו <code>'a'</code> ב-C הוא מטיפוס <code>int</code>, לכן <code>sizeof('a') == sizeof(int)</code>.</li>\n    </ul>\n    <div class=\"lesson-rule\">🔑 פרמטר מערך של פונקציה (<code>void f(int a[])</code>) הוא בעצם מצביע. בתוך הפונקציה <code>sizeof a</code> הוא גודל מצביע ולא גודל המערך, ולכן אי אפשר לחשב שם את מספר האיברים כך.</div>\n    <div class=\"lesson-ex\">דוגמה: <code>int a[10]</code>. מקבלים <code>sizeof a / sizeof a[0]</code>, שזה 10 איברים, בלי קשר לגודל של <code>int</code> במחשב.</div>\n    <div class=\"lesson-trap\">⚠️ גודל של מצביע תלוי במחשב (4 או 8 בתים). בשאלה שתלויה בו חייבים לכתוב את ההנחה, ואם אפשר מעדיפים לא להסתמך עליו.</div>"
+    },
+    "questions": [
+     {
+      "id": "C04-Q1",
+      "step": {
+       "type": "numeric",
+       "prompt": "מה מדפיס הקוד?\n```c\nprintf(\"%d\", (int)sizeof \"hello\");\n```",
+       "answer": 6,
+       "tol": 0,
+       "explain": "המחרוזת הקבועה כוללת 5 תווים ועוד `'\\0'` סופי, ולכן הגודל הוא 6. הערך 5 היה `strlen`.",
+       "promptHtml": "מה מדפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>printf(\"%d\", (int)sizeof \"hello\");</code></pre>",
+       "explainHtml": "המחרוזת הקבועה כוללת 5 תווים ועוד <code class=\"tok\" dir=\"ltr\">'\\0'</code> סופי, ולכן הגודל הוא 6. הערך 5 היה <code class=\"tok\" dir=\"ltr\">strlen</code>."
+      },
+      "recap": "sizeof של מחרוזת כולל את '\\0'.",
+      "recapHtml": "sizeof של מחרוזת כולל את '\\0'."
+     },
+     {
+      "id": "C04-Q2",
+      "question": "מה מדפיס הקוד?\n```c\nchar s[10] = \"abc\";\nprintf(\"%d %d\", (int)sizeof s, (int)strlen(s));\n```",
+      "options": [
+       {
+        "id": "a",
+        "value": "`10 3`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">10 3</code>"
+       },
+       {
+        "id": "b",
+        "value": "`4 3`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">4 3</code>"
+       },
+       {
+        "id": "c",
+        "value": "`3 3`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">3 3</code>"
+       },
+       {
+        "id": "d",
+        "value": "`10 10`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">10 10</code>"
+       }
+      ],
+      "correctId": "a",
+      "explanation": "`sizeof s` הוא גודל המערך כולו, 10 בתים. `strlen(s)` סופר עד התו האפס הראשון, כלומר 3. הערך 4 היה נכון אילו המערך הוגדר `char s[] = \"abc\"`.",
+      "recap": "sizeof הוא גודל המערך; strlen הוא אורך הטקסט.",
+      "questionHtml": "מה מדפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>char s[10] = \"abc\";\nprintf(\"%d %d\", (int)sizeof s, (int)strlen(s));</code></pre>",
+      "explanationHtml": "<code class=\"tok\" dir=\"ltr\">sizeof s</code> הוא גודל המערך כולו, 10 בתים. <code class=\"tok\" dir=\"ltr\">strlen(s)</code> סופר עד התו האפס הראשון, כלומר 3. הערך 4 היה נכון אילו המערך הוגדר <code class=\"tok\" dir=\"ltr\">char s[] = \"abc\"</code>.",
+      "recapHtml": "sizeof הוא גודל המערך; strlen הוא אורך הטקסט."
+     },
+     {
+      "id": "C04-Q3",
+      "step": {
+       "type": "numeric",
+       "prompt": "מה מדפיס הקוד (המספר שמודפס אינו תלוי בגודל של `int`)?\n```c\nint a[10];\nprintf(\"%d\", (int)(sizeof a / sizeof a[0]));\n```",
+       "answer": 10,
+       "tol": 0,
+       "explain": "`sizeof a` הוא 10 איברים כפול גודל איבר, ו-`sizeof a[0]` הוא גודל איבר אחד. המנה היא מספר האיברים, 10.",
+       "promptHtml": "מה מדפיס הקוד (המספר שמודפס אינו תלוי בגודל של <code class=\"tok\" dir=\"ltr\">int</code>)?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>int a[10];\nprintf(\"%d\", (int)(sizeof a / sizeof a[0]));</code></pre>",
+       "explainHtml": "<code class=\"tok\" dir=\"ltr\">sizeof a</code> הוא 10 איברים כפול גודל איבר, ו-<code class=\"tok\" dir=\"ltr\">sizeof a[0]</code> הוא גודל איבר אחד. המנה היא מספר האיברים, 10."
+      },
+      "recap": "sizeof a / sizeof a[0] הוא מספר האיברים.",
+      "recapHtml": "sizeof a / sizeof a[0] הוא מספר האיברים."
+     },
+     {
+      "id": "C04-Q4",
+      "question": "מה מדפיס הקוד?\n```c\nint i = 5;\nint n = sizeof(i++);\nprintf(\"%d\", i);\n```",
+      "options": [
+       {
+        "id": "a",
+        "value": "`5`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">5</code>"
+       },
+       {
+        "id": "b",
+        "value": "`6`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">6</code>"
+       },
+       {
+        "id": "c",
+        "value": "`4`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">4</code>"
+       },
+       {
+        "id": "d",
+        "value": "`n`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">n</code>"
+       }
+      ],
+      "correctId": "a",
+      "explanation": "`sizeof` מחשב רק את הטיפוס של הביטוי ולא מריץ אותו, ולכן `i++` לא מתבצע ו-`i` נשאר 5. התשובה 6 מניחה שההגדלה התבצעה.",
+      "recap": "sizeof לא מריץ את הביטוי.",
+      "questionHtml": "מה מדפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>int i = 5;\nint n = sizeof(i++);\nprintf(\"%d\", i);</code></pre>",
+      "explanationHtml": "<code class=\"tok\" dir=\"ltr\">sizeof</code> מחשב רק את הטיפוס של הביטוי ולא מריץ אותו, ולכן <code class=\"tok\" dir=\"ltr\">i++</code> לא מתבצע ו-<code class=\"tok\" dir=\"ltr\">i</code> נשאר 5. התשובה 6 מניחה שההגדלה התבצעה.",
+      "recapHtml": "sizeof לא מריץ את הביטוי."
+     },
+     {
+      "id": "C04-Q5",
+      "question": "הפונקציה:\n```c\nvoid f(int a[])\n{\n    int n = sizeof a / sizeof a[0];\n}\n```\nנקראת עם מערך של 10 איברים. איזו טענה נכונה?",
+      "options": [
+       {
+        "id": "a",
+        "value": "`sizeof a` בתוך `f` הוא גודל של מצביע, ולכן `n` אינו מספר האיברים של המערך",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">sizeof a</code> בתוך <code class=\"tok\" dir=\"ltr\">f</code> הוא גודל של מצביע, ולכן <code class=\"tok\" dir=\"ltr\">n</code> אינו מספר האיברים של המערך"
+       },
+       {
+        "id": "b",
+        "value": "`n` שווה תמיד ל-10",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">n</code> שווה תמיד ל-10"
+       },
+       {
+        "id": "c",
+        "value": "הקוד לא מתקמפל כי אי אפשר להשתמש ב-`sizeof` על פרמטר",
+        "type": "text",
+        "html": "הקוד לא מתקמפל כי אי אפשר להשתמש ב-<code class=\"tok\" dir=\"ltr\">sizeof</code> על פרמטר"
+       },
+       {
+        "id": "d",
+        "value": "`sizeof a` הוא גודל כל המערך שהועבר",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">sizeof a</code> הוא גודל כל המערך שהועבר"
+       }
+      ],
+      "correctId": "a",
+      "explanation": "פרמטר שנכתב כמערך הוא מצביע לאיבר הראשון. לכן `sizeof a` הוא גודל מצביע ו-`n` אינו מספר האיברים. הקוד מתקמפל, ו-`n` לא שווה בהכרח ל-10.",
+      "recap": "פרמטר מערך הוא מצביע; sizeof שלו הוא גודל מצביע.",
+      "questionHtml": "הפונקציה:<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>void f(int a[])\n{\n    int n = sizeof a / sizeof a[0];\n}</code></pre>נקראת עם מערך של 10 איברים. איזו טענה נכונה?",
+      "explanationHtml": "פרמטר שנכתב כמערך הוא מצביע לאיבר הראשון. לכן <code class=\"tok\" dir=\"ltr\">sizeof a</code> הוא גודל מצביע ו-<code class=\"tok\" dir=\"ltr\">n</code> אינו מספר האיברים. הקוד מתקמפל, ו-<code class=\"tok\" dir=\"ltr\">n</code> לא שווה בהכרח ל-10.",
+      "recapHtml": "פרמטר מערך הוא מצביע; sizeof שלו הוא גודל מצביע."
+     },
+     {
+      "id": "C04-Q6",
+      "step": {
+       "type": "numeric",
+       "prompt": "מה מדפיס הקוד?\n```c\nprintf(\"%d\", (int)sizeof \"abc\"[1]);\n```",
+       "answer": 1,
+       "tol": 0,
+       "explain": "האינדקס `[ ]` חזק מ-`sizeof`, ולכן מחשבים את הגודל של האיבר `\"abc\"[1]`, שהוא תו מטיפוס `char`. הגודל הוא 1. אילו `sizeof` חל על המחרוזת כולה, התוצאה הייתה 4.",
+       "promptHtml": "מה מדפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>printf(\"%d\", (int)sizeof \"abc\"[1]);</code></pre>",
+       "explainHtml": "האינדקס <code class=\"tok\" dir=\"ltr\">[ ]</code> חזק מ-<code class=\"tok\" dir=\"ltr\">sizeof</code>, ולכן מחשבים את הגודל של האיבר <code class=\"tok\" dir=\"ltr\">\"abc\"[1]</code>, שהוא תו מטיפוס <code class=\"tok\" dir=\"ltr\">char</code>. הגודל הוא 1. אילו <code class=\"tok\" dir=\"ltr\">sizeof</code> חל על המחרוזת כולה, התוצאה הייתה 4."
+      },
+      "recap": "[ ] חזק מ-sizeof.",
+      "recapHtml": "[ ] חזק מ-sizeof."
+     }
+    ]
+   },
+   {
+    "id": "C05",
+    "order": 5,
+    "icon": "🧵",
+    "title": "מחרוזות ומצביעים",
+    "goal": "אחרי השלב הזה אפשר להבדיל בין מערך תווים למצביע למחרוזת קבועה, להשוות מחרוזות נכון, ולזהות כתיבה אסורה למחרוזת קבועה.",
+    "source": "ai-verified",
+    "boss": false,
+    "lesson": {
+     "html": "\n    <p>מחרוזת היא מערך תווים שנגמר ב-<code>'\\0'</code>.</p>\n    <ul>\n      <li><code>char a[] = \"hi\";</code> יוצר <b>מערך</b> משלו (3 בתים) שאפשר לשנות.</li>\n      <li><code>char *p = \"hi\";</code> יוצר <b>מצביע</b> למחרוזת קבועה. כתיבה דרכו (<code>p[0] = 'H'</code>) היא התנהגות לא מוגדרת לפי תקן C: ייתכן שהתוכנית תקרוס, וייתכן שלא.</li>\n      <li><code>a == b</code> על שני מערכים או מצביעים משווה <b>כתובות</b>, לא תוכן. שני מערכים נפרדים תמיד בכתובות שונות, ולכן <code>==</code> נותן 0 גם כשהתוכן זהה.</li>\n      <li><code>strcmp(a, b)</code> משווה תוכן ומחזירה <b>0 כשהמחרוזות שוות</b>, מספר שלילי כש-<code>a</code> קודמת ל-<code>b</code>, וחיובי אחרת.</li>\n      <li>מחרוזת קבועה היא כתובת של התו הראשון, ולכן <code>\"hello\" + 2</code> היא המחרוזת <code>\"llo\"</code>.</li>\n      <li>איברים שלא אותחלו במפורש במערך שיש לו אתחול מקבלים 0: ב-<code>char s[6] = \"ab\"</code> האיברים <code>s[2]</code> עד <code>s[5]</code> הם <code>'\\0'</code>.</li>\n    </ul>\n    <div class=\"lesson-rule\">🔑 משווים תוכן עם <code>strcmp</code> והתנאי \"שווה\" הוא <code>strcmp(a, b) == 0</code>, כלומר <code>!strcmp(a, b)</code>.</div>\n    <div class=\"lesson-ex\">דוגמה: אחרי <code>char s[] = \"hello\"; s[2] = '\\0';</code> המחרוזת מסתיימת באינדקס 2, ולכן <code>strlen(s)</code> הוא 2 ו-<code>printf(\"%s\", s)</code> מדפיס <code>he</code>.</div>\n    <div class=\"lesson-trap\">⚠️ <code>if (strcmp(a, b))</code> מתקיים כשהמחרוזות <b>שונות</b>, כי הערך אינו אפס.</div>"
+    },
+    "questions": [
+     {
+      "id": "C05-Q1",
+      "question": "מה מדפיס הקוד?\n```c\nchar a[] = \"hi\";\nchar b[] = \"hi\";\nprintf(\"%d\", a == b);\n```",
+      "options": [
+       {
+        "id": "a",
+        "value": "`0`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">0</code>"
+       },
+       {
+        "id": "b",
+        "value": "`1`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">1</code>"
+       },
+       {
+        "id": "c",
+        "value": "`2`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">2</code>"
+       },
+       {
+        "id": "d",
+        "value": "שגיאת הידור",
+        "type": "text",
+        "html": "שגיאת הידור"
+       }
+      ],
+      "correctId": "a",
+      "explanation": "`a == b` משווה את הכתובות של שני מערכים נפרדים, והן תמיד שונות, ולכן התוצאה 0 למרות שהתוכן זהה. להשוואת תוכן משתמשים ב-`strcmp`.",
+      "recap": "== על מחרוזות משווה כתובות.",
+      "questionHtml": "מה מדפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>char a[] = \"hi\";\nchar b[] = \"hi\";\nprintf(\"%d\", a == b);</code></pre>",
+      "explanationHtml": "<code class=\"tok\" dir=\"ltr\">a == b</code> משווה את הכתובות של שני מערכים נפרדים, והן תמיד שונות, ולכן התוצאה 0 למרות שהתוכן זהה. להשוואת תוכן משתמשים ב-<code class=\"tok\" dir=\"ltr\">strcmp</code>.",
+      "recapHtml": "== על מחרוזות משווה כתובות."
+     },
+     {
+      "id": "C05-Q2",
+      "question": "מה מדפיס הקוד?\n```c\nprintf(\"%s\", \"hello\" + 2);\n```",
+      "options": [
+       {
+        "id": "a",
+        "value": "`llo`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">llo</code>"
+       },
+       {
+        "id": "b",
+        "value": "`hello2`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">hello2</code>"
+       },
+       {
+        "id": "c",
+        "value": "`ello`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">ello</code>"
+       },
+       {
+        "id": "d",
+        "value": "`he`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">he</code>"
+       }
+      ],
+      "correctId": "a",
+      "explanation": "המחרוזת הקבועה היא כתובת של התו הראשון, והוספת 2 מזיזה לתו באינדקס 2. מודפס כל מה שנשאר עד `'\\0'`: `llo`. התשובה `ello` נכונה להוספת 1.",
+      "recap": "s + k מצביע לתו באינדקס k.",
+      "questionHtml": "מה מדפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>printf(\"%s\", \"hello\" + 2);</code></pre>",
+      "explanationHtml": "המחרוזת הקבועה היא כתובת של התו הראשון, והוספת 2 מזיזה לתו באינדקס 2. מודפס כל מה שנשאר עד <code class=\"tok\" dir=\"ltr\">'\\0'</code>: <code class=\"tok\" dir=\"ltr\">llo</code>. התשובה <code class=\"tok\" dir=\"ltr\">ello</code> נכונה להוספת 1.",
+      "recapHtml": "s + k מצביע לתו באינדקס k."
+     },
+     {
+      "id": "C05-Q3",
+      "question": "מה מדפיס הקוד?\n```c\nchar s[] = \"hello\";\ns[2] = '\\0';\nprintf(\"%d %s\", (int)strlen(s), s);\n```",
+      "options": [
+       {
+        "id": "a",
+        "value": "`2 he`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">2 he</code>"
+       },
+       {
+        "id": "b",
+        "value": "`5 hello`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">5 hello</code>"
+       },
+       {
+        "id": "c",
+        "value": "`3 hel`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">3 hel</code>"
+       },
+       {
+        "id": "d",
+        "value": "`2 llo`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">2 llo</code>"
+       }
+      ],
+      "correctId": "a",
+      "explanation": "הכתיבה של `'\\0'` לאינדקס 2 מסיימת את המחרוזת שם. `strlen` סופר 2 תווים (`he`), ו-`%s` מדפיס עד התו האפס. המערך עצמו עדיין באורך 6, אבל המחרוזת הקצרה יותר.",
+      "recap": "'\\0' באמצע מקצר את המחרוזת.",
+      "questionHtml": "מה מדפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>char s[] = \"hello\";\ns[2] = '\\0';\nprintf(\"%d %s\", (int)strlen(s), s);</code></pre>",
+      "explanationHtml": "הכתיבה של <code class=\"tok\" dir=\"ltr\">'\\0'</code> לאינדקס 2 מסיימת את המחרוזת שם. <code class=\"tok\" dir=\"ltr\">strlen</code> סופר 2 תווים (<code class=\"tok\" dir=\"ltr\">he</code>), ו-<code class=\"tok\" dir=\"ltr\">%s</code> מדפיס עד התו האפס. המערך עצמו עדיין באורך 6, אבל המחרוזת הקצרה יותר.",
+      "recapHtml": "'\\0' באמצע מקצר את המחרוזת."
+     },
+     {
+      "id": "C05-Q4",
+      "question": "מה מדפיס הקוד?\n```c\nchar *a = \"x\";\nchar *b = \"x\";\nif (strcmp(a, b))\n    printf(\"diff\");\nelse\n    printf(\"same\");\n```",
+      "options": [
+       {
+        "id": "a",
+        "value": "`same`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">same</code>"
+       },
+       {
+        "id": "b",
+        "value": "`diff`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">diff</code>"
+       },
+       {
+        "id": "c",
+        "value": "`diffsame`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">diffsame</code>"
+       },
+       {
+        "id": "d",
+        "value": "אין פלט",
+        "type": "text",
+        "html": "אין פלט"
+       }
+      ],
+      "correctId": "a",
+      "explanation": "`strcmp` מחזירה 0 כשהמחרוזות שוות, ו-0 הוא שקר, ולכן נבחר ה-`else` ומודפס `same`. התנאי `if (strcmp(a, b))` מתקיים רק כשהמחרוזות שונות.",
+      "recap": "strcmp מחזירה 0 כשהמחרוזות שוות.",
+      "questionHtml": "מה מדפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>char *a = \"x\";\nchar *b = \"x\";\nif (strcmp(a, b))\n    printf(\"diff\");\nelse\n    printf(\"same\");</code></pre>",
+      "explanationHtml": "<code class=\"tok\" dir=\"ltr\">strcmp</code> מחזירה 0 כשהמחרוזות שוות, ו-0 הוא שקר, ולכן נבחר ה-<code class=\"tok\" dir=\"ltr\">else</code> ומודפס <code class=\"tok\" dir=\"ltr\">same</code>. התנאי <code class=\"tok\" dir=\"ltr\">if (strcmp(a, b))</code> מתקיים רק כשהמחרוזות שונות.",
+      "recapHtml": "strcmp מחזירה 0 כשהמחרוזות שוות."
+     },
+     {
+      "id": "C05-Q5",
+      "question": "מה קורה בקוד הבא לפי תקן שפת C?\n```c\nchar *s = \"hi\";\ns[0] = 'H';\n```",
+      "options": [
+       {
+        "id": "a",
+        "value": "התנהגות לא מוגדרת: כתיבה למחרוזת קבועה",
+        "type": "text",
+        "html": "התנהגות לא מוגדרת: כתיבה למחרוזת קבועה"
+       },
+       {
+        "id": "b",
+        "value": "שגיאת הידור, כי `s` מצביע לקבוע",
+        "type": "text",
+        "html": "שגיאת הידור, כי <code class=\"tok\" dir=\"ltr\">s</code> מצביע לקבוע"
+       },
+       {
+        "id": "c",
+        "value": "`s` הופך להיות `\"Hi\"`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">s</code> הופך להיות <code class=\"tok\" dir=\"ltr\">\"Hi\"</code>"
+       },
+       {
+        "id": "d",
+        "value": "נוצר עותק של המחרוזת וה-`H` נכתב אליו",
+        "type": "text",
+        "html": "נוצר עותק של המחרוזת וה-<code class=\"tok\" dir=\"ltr\">H</code> נכתב אליו"
+       }
+      ],
+      "correctId": "a",
+      "explanation": "הקוד מתקמפל, אבל התקן קובע שניסיון לשנות מחרוזת קבועה הוא התנהגות לא מוגדרת. בפועל בדרך כלל הוא קורס בזמן הריצה, אך לא מובטח שיקרה משהו מסוים. כדי שאפשר יהיה לשנות כותבים `char s[] = \"hi\";`.",
+      "recap": "כתיבה למחרוזת קבועה: התנהגות לא מוגדרת.",
+      "questionHtml": "מה קורה בקוד הבא לפי תקן שפת C?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>char *s = \"hi\";\ns[0] = 'H';</code></pre>",
+      "explanationHtml": "הקוד מתקמפל, אבל התקן קובע שניסיון לשנות מחרוזת קבועה הוא התנהגות לא מוגדרת. בפועל בדרך כלל הוא קורס בזמן הריצה, אך לא מובטח שיקרה משהו מסוים. כדי שאפשר יהיה לשנות כותבים <code class=\"tok\" dir=\"ltr\">char s[] = \"hi\";</code>.",
+      "recapHtml": "כתיבה למחרוזת קבועה: התנהגות לא מוגדרת."
+     },
+     {
+      "id": "C05-Q6",
+      "step": {
+       "type": "numeric",
+       "prompt": "מה מדפיס הקוד?\n```c\nchar s[6] = \"ab\";\nprintf(\"%d\", s[4]);\n```",
+       "answer": 0,
+       "tol": 0,
+       "explain": "במערך עם אתחול, האיברים שלא אותחלו במפורש מקבלים 0. לכן `s[4]` הוא `'\\0'` ומודפס 0.",
+       "promptHtml": "מה מדפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>char s[6] = \"ab\";\nprintf(\"%d\", s[4]);</code></pre>",
+       "explainHtml": "במערך עם אתחול, האיברים שלא אותחלו במפורש מקבלים 0. לכן <code class=\"tok\" dir=\"ltr\">s[4]</code> הוא <code class=\"tok\" dir=\"ltr\">'\\0'</code> ומודפס 0."
+      },
+      "recap": "שאר האיברים במערך מאותחל הם 0.",
+      "recapHtml": "שאר האיברים במערך מאותחל הם 0."
+     }
+    ]
+   },
+   {
+    "id": "C06",
+    "order": 6,
+    "icon": "📂",
+    "title": "קריאה מקבצים",
+    "goal": "אחרי השלב הזה אפשר לחשב מה מדפיסה לולאת קריאה מקובץ, ולזהות את המלכודות של EOF, של feof ושל fgets.",
+    "source": "ai-verified",
+    "boss": false,
+    "lesson": {
+     "html": "\n    <p>הפונקציות לקריאה מקובץ מקבלות מצביע <code>FILE *f</code>. כל אחת מהן היא <b>הכללה</b> של פונקציית הקלט הרגילה: היא עובדת על קובץ שנבחר, והרגילה עובדת על המקלדת. <code>fprintf(stdout, ...)</code> שווה ל-<code>printf(...)</code>, <code>fscanf(stdin, ...)</code> שווה ל-<code>scanf(...)</code> ו-<code>fgetc(stdin)</code> שווה ל-<code>getchar()</code>.</p>\n    <ul>\n      <li><code>fgetc(f)</code> מחזירה את התו הבא כמספר, או את הקבוע <code>EOF</code> (בדרך כלל -1) בסוף הקובץ. לכן שומרים את התוצאה ב-<code>int</code>.</li>\n      <li><code>fscanf(f, ...)</code> מחזירה כמה ערכים נקראו בפועל (אפשר גם <code>EOF</code>). כשהקריאה נכשלת היא לא נוגעת במשתנה.</li>\n      <li><code>fgets(st, n, f)</code> קוראת עד <code>n-1</code> תווים, או עד סוף השורה, וכוללת את <code>'\\n'</code> במחרוזת. אם <code>n</code> הוא 2 היא קוראת תו אחד. זה שונה מ-<code>gets</code> שלא מקבלת גודל וזורקת את סוף השורה, ולכן <code>fgets</code> אינה הכללה של <code>gets</code>.</li>\n      <li><code>feof(f)</code> נעשית אמת רק <b>אחרי</b> שניסינו לקרוא מעבר לסוף הקובץ ולא הצלחנו.</li>\n      <li><code>fopen</code> מחזירה <code>NULL</code> אם הפתיחה נכשלה.</li>\n    </ul>\n    <div class=\"lesson-rule\">🔑 הלולאה הנכונה: <code>int c; while ((c = fgetc(f)) != EOF) ...</code>. הסוגריים סביב ההשמה הכרחיים.</div>\n    <div class=\"lesson-ex\">דוגמה: בקובץ <code>abc</code>, הלולאה שלמעלה מקבלת 97, 98 ו-99 ונעצרת כש-<code>fgetc</code> מחזירה <code>EOF</code>.</div>\n    <div class=\"lesson-trap\">⚠️ <code>while (c = fgetc(f) != EOF)</code> מחושב כ-<code>c = (fgetc(f) != EOF)</code>, כי <code>!=</code> חזק מ-<code>=</code>. המשתנה <code>c</code> הוא 1 בכל תו, והלולאה מדפיסה 1 פעם אחת לכל תו בקובץ.</div>"
+    },
+    "questions": [
+     {
+      "id": "C06-Q1",
+      "question": "הקובץ `data.txt` מכיל את הטקסט `abc` (בלי שורה חדשה בסוף). מה מדפיס הקוד?\n```c\nFILE *f = fopen(\"data.txt\", \"r\");\nint c;\nwhile ((c = fgetc(f)) != EOF)\n    printf(\"%d \", c);\nfclose(f);\n```",
+      "options": [
+       {
+        "id": "a",
+        "value": "`97 98 99`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">97 98 99</code>"
+       },
+       {
+        "id": "b",
+        "value": "`a b c`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">a b c</code>"
+       },
+       {
+        "id": "c",
+        "value": "`1 1 1`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">1 1 1</code>"
+       },
+       {
+        "id": "d",
+        "value": "`97 98 99 -1`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">97 98 99 -1</code>"
+       }
+      ],
+      "correctId": "a",
+      "explanation": "`fgetc` מחזירה קודים: 97, 98, 99, ואחריהם `EOF` שעוצר את הלולאה בלי להדפיס. התבנית `%d` מדפיסה מספרים ולא תווים. התוצאה `1 1 1` שייכת לגרסה בלי הסוגריים, והערך `-1` לא מודפס כי הוא סיבת העצירה.",
+      "recap": "(c = fgetc(f)) != EOF, עם סוגריים.",
+      "questionHtml": "הקובץ <code class=\"tok\" dir=\"ltr\">data.txt</code> מכיל את הטקסט <code class=\"tok\" dir=\"ltr\">abc</code> (בלי שורה חדשה בסוף). מה מדפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>FILE *f = fopen(\"data.txt\", \"r\");\nint c;\nwhile ((c = fgetc(f)) != EOF)\n    printf(\"%d \", c);\nfclose(f);</code></pre>",
+      "explanationHtml": "<code class=\"tok\" dir=\"ltr\">fgetc</code> מחזירה קודים: 97, 98, 99, ואחריהם <code class=\"tok\" dir=\"ltr\">EOF</code> שעוצר את הלולאה בלי להדפיס. התבנית <code class=\"tok\" dir=\"ltr\">%d</code> מדפיסה מספרים ולא תווים. התוצאה <code class=\"tok\" dir=\"ltr\">1 1 1</code> שייכת לגרסה בלי הסוגריים, והערך <code class=\"tok\" dir=\"ltr\">-1</code> לא מודפס כי הוא סיבת העצירה.",
+      "recapHtml": "(c = fgetc(f)) != EOF, עם סוגריים."
+     },
+     {
+      "id": "C06-Q2",
+      "question": "הקובץ `data.txt` מכיל את הטקסט `hi` (בלי שורה חדשה בסוף). מה מדפיס הקוד?\n```c\nFILE *f = fopen(\"data.txt\", \"r\");\nchar ch;\nwhile (ch = fgetc(f) != EOF)\n    printf(\"%d\", ch);\nfclose(f);\n```",
+      "options": [
+       {
+        "id": "a",
+        "value": "`11`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">11</code>"
+       },
+       {
+        "id": "b",
+        "value": "`104105`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">104105</code>"
+       },
+       {
+        "id": "c",
+        "value": "`hi`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">hi</code>"
+       },
+       {
+        "id": "d",
+        "value": "`00`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">00</code>"
+       }
+      ],
+      "correctId": "a",
+      "explanation": "בלי סוגריים, `!=` חזק מ-`=`, ולכן `ch` מקבל את תוצאת ההשוואה `fgetc(f) != EOF`, כלומר 1 כל עוד יש תו. שני תווים נותנים `11`. הקודים 104 ו-105 היו מודפסים אילו ההשמה הייתה בסוגריים.",
+      "recap": "!= חזק מ-=, ולכן ch הוא 0 או 1.",
+      "questionHtml": "הקובץ <code class=\"tok\" dir=\"ltr\">data.txt</code> מכיל את הטקסט <code class=\"tok\" dir=\"ltr\">hi</code> (בלי שורה חדשה בסוף). מה מדפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>FILE *f = fopen(\"data.txt\", \"r\");\nchar ch;\nwhile (ch = fgetc(f) != EOF)\n    printf(\"%d\", ch);\nfclose(f);</code></pre>",
+      "explanationHtml": "בלי סוגריים, <code class=\"tok\" dir=\"ltr\">!=</code> חזק מ-<code class=\"tok\" dir=\"ltr\">=</code>, ולכן <code class=\"tok\" dir=\"ltr\">ch</code> מקבל את תוצאת ההשוואה <code class=\"tok\" dir=\"ltr\">fgetc(f) != EOF</code>, כלומר 1 כל עוד יש תו. שני תווים נותנים <code class=\"tok\" dir=\"ltr\">11</code>. הקודים 104 ו-105 היו מודפסים אילו ההשמה הייתה בסוגריים.",
+      "recapHtml": "!= חזק מ-=, ולכן ch הוא 0 או 1."
+     },
+     {
+      "id": "C06-Q3",
+      "question": "הקובץ `data.txt` מכיל `1 2 3` ואחריהם **תו שורה חדשה** (שלושה מספרים בשורה אחת). מה מדפיס הקוד?\n```c\nFILE *f = fopen(\"data.txt\", \"r\");\nint x = 0;\nwhile (!feof(f))\n{\n    fscanf(f, \"%d\", &x);\n    printf(\"%d \", x);\n}\nfclose(f);\n```",
+      "options": [
+       {
+        "id": "a",
+        "value": "`1 2 3 3`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">1 2 3 3</code>"
+       },
+       {
+        "id": "b",
+        "value": "`1 2 3`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">1 2 3</code>"
+       },
+       {
+        "id": "c",
+        "value": "`1 2 3 0`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">1 2 3 0</code>"
+       },
+       {
+        "id": "d",
+        "value": "`1 2 3 -1`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">1 2 3 -1</code>"
+       }
+      ],
+      "correctId": "a",
+      "explanation": "אחרי קריאת 3, התו שנשאר הוא שורה חדשה, ו-`feof` עדיין שקרית. נכנסים לסיבוב רביעי: `fscanf` נכשלת בגלל סוף הקובץ ולא משנה את `x`, אז מודפס שוב 3, ורק עכשיו `feof` נעשית אמת. זה סיבוב אחד יותר ממספר הערכים.",
+      "recap": "feof נעשית אמת רק אחרי קריאה שנכשלה.",
+      "questionHtml": "הקובץ <code class=\"tok\" dir=\"ltr\">data.txt</code> מכיל <code class=\"tok\" dir=\"ltr\">1 2 3</code> ואחריהם <strong>תו שורה חדשה</strong> (שלושה מספרים בשורה אחת). מה מדפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>FILE *f = fopen(\"data.txt\", \"r\");\nint x = 0;\nwhile (!feof(f))\n{\n    fscanf(f, \"%d\", &amp;x);\n    printf(\"%d \", x);\n}\nfclose(f);</code></pre>",
+      "explanationHtml": "אחרי קריאת 3, התו שנשאר הוא שורה חדשה, ו-<code class=\"tok\" dir=\"ltr\">feof</code> עדיין שקרית. נכנסים לסיבוב רביעי: <code class=\"tok\" dir=\"ltr\">fscanf</code> נכשלת בגלל סוף הקובץ ולא משנה את <code class=\"tok\" dir=\"ltr\">x</code>, אז מודפס שוב 3, ורק עכשיו <code class=\"tok\" dir=\"ltr\">feof</code> נעשית אמת. זה סיבוב אחד יותר ממספר הערכים.",
+      "recapHtml": "feof נעשית אמת רק אחרי קריאה שנכשלה."
+     },
+     {
+      "id": "C06-Q4",
+      "step": {
+       "type": "numeric",
+       "prompt": "הקובץ `data.txt` מכיל שתי שורות: `ab` ואחריה `cd`, וכל שורה נגמרת בתו שורה חדשה. מה מדפיס הקוד?\n```c\nFILE *f = fopen(\"data.txt\", \"r\");\nchar st[10];\nfgets(st, 10, f);\nprintf(\"%d\", (int)strlen(st));\nfclose(f);\n```",
+       "answer": 3,
+       "tol": 0,
+       "explain": "`fgets` קוראת עד סוף השורה וכוללת את `'\\n'`: המחרוזת היא `ab\\n`, כלומר 3 תווים. `gets` הייתה זורקת את סוף השורה.",
+       "promptHtml": "הקובץ <code class=\"tok\" dir=\"ltr\">data.txt</code> מכיל שתי שורות: <code class=\"tok\" dir=\"ltr\">ab</code> ואחריה <code class=\"tok\" dir=\"ltr\">cd</code>, וכל שורה נגמרת בתו שורה חדשה. מה מדפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>FILE *f = fopen(\"data.txt\", \"r\");\nchar st[10];\nfgets(st, 10, f);\nprintf(\"%d\", (int)strlen(st));\nfclose(f);</code></pre>",
+       "explainHtml": "<code class=\"tok\" dir=\"ltr\">fgets</code> קוראת עד סוף השורה וכוללת את <code class=\"tok\" dir=\"ltr\">'\\n'</code>: המחרוזת היא <code class=\"tok\" dir=\"ltr\">ab\\n</code>, כלומר 3 תווים. <code class=\"tok\" dir=\"ltr\">gets</code> הייתה זורקת את סוף השורה."
+      },
+      "recap": "fgets שומרת את '\\n'.",
+      "recapHtml": "fgets שומרת את '\\n'."
+     },
+     {
+      "id": "C06-Q5",
+      "step": {
+       "type": "numeric",
+       "prompt": "הקובץ `data.txt` מכיל את הטקסט `5 x`. מה מדפיס הקוד?\n```c\nFILE *f = fopen(\"data.txt\", \"r\");\nint a = 0, b = 0;\nint n = fscanf(f, \"%d %d\", &a, &b);\nprintf(\"%d\", n);\nfclose(f);\n```",
+       "answer": 1,
+       "tol": 0,
+       "explain": "`fscanf` מחזירה את מספר הערכים שנקראו בהצלחה. הראשון (5) נקרא, והשני נכשל כי `x` אינו מספר, ולכן הערך המוחזר הוא 1.",
+       "promptHtml": "הקובץ <code class=\"tok\" dir=\"ltr\">data.txt</code> מכיל את הטקסט <code class=\"tok\" dir=\"ltr\">5 x</code>. מה מדפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>FILE *f = fopen(\"data.txt\", \"r\");\nint a = 0, b = 0;\nint n = fscanf(f, \"%d %d\", &amp;a, &amp;b);\nprintf(\"%d\", n);\nfclose(f);</code></pre>",
+       "explainHtml": "<code class=\"tok\" dir=\"ltr\">fscanf</code> מחזירה את מספר הערכים שנקראו בהצלחה. הראשון (5) נקרא, והשני נכשל כי <code class=\"tok\" dir=\"ltr\">x</code> אינו מספר, ולכן הערך המוחזר הוא 1."
+      },
+      "recap": "fscanf מחזירה כמה ערכים נקראו.",
+      "recapHtml": "fscanf מחזירה כמה ערכים נקראו."
+     },
+     {
+      "id": "C06-Q6",
+      "question": "הקובץ `nope.txt` **לא קיים**. מה מדפיס הקוד?\n```c\nFILE *f = fopen(\"nope.txt\", \"r\");\nprintf(\"%d\", f == NULL);\n```",
+      "options": [
+       {
+        "id": "a",
+        "value": "`1`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">1</code>"
+       },
+       {
+        "id": "b",
+        "value": "`0`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">0</code>"
+       },
+       {
+        "id": "c",
+        "value": "הקוד קורס בשורת ה-`fopen`",
+        "type": "text",
+        "html": "הקוד קורס בשורת ה-<code class=\"tok\" dir=\"ltr\">fopen</code>"
+       },
+       {
+        "id": "d",
+        "value": "`-1`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">-1</code>"
+       }
+      ],
+      "correctId": "a",
+      "explanation": "`fopen` על קובץ שלא קיים לקריאה אינה קורסת: היא מחזירה `NULL`. ההשוואה `f == NULL` נותנת 1. התקלה מתרחשת רק אם משתמשים ב-`f` בלי לבדוק אותו.",
+      "recap": "fopen מחזירה NULL כשנכשלה.",
+      "questionHtml": "הקובץ <code class=\"tok\" dir=\"ltr\">nope.txt</code> <strong>לא קיים</strong>. מה מדפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>FILE *f = fopen(\"nope.txt\", \"r\");\nprintf(\"%d\", f == NULL);</code></pre>",
+      "explanationHtml": "<code class=\"tok\" dir=\"ltr\">fopen</code> על קובץ שלא קיים לקריאה אינה קורסת: היא מחזירה <code class=\"tok\" dir=\"ltr\">NULL</code>. ההשוואה <code class=\"tok\" dir=\"ltr\">f == NULL</code> נותנת 1. התקלה מתרחשת רק אם משתמשים ב-<code class=\"tok\" dir=\"ltr\">f</code> בלי לבדוק אותו.",
+      "recapHtml": "fopen מחזירה NULL כשנכשלה."
+     }
+    ]
+   },
+   {
+    "id": "C07",
+    "order": 7,
+    "icon": "🧠",
+    "title": "אתחול והקצאה",
+    "goal": "אחרי השלב הזה אפשר לדעת מה הערך ההתחלתי של כל סוג משתנה, ולהבדיל בין malloc, calloc ו-realloc.",
+    "source": "ai-verified",
+    "boss": false,
+    "lesson": {
+     "html": "\n    <p>מה הערך ההתחלתי של משתנה שלא אותחל במפורש?</p>\n    <table><thead><tr><th>סוג</th><th>ערך התחלתי</th></tr></thead>\n    <tbody>\n    <tr><td>משתנה גלובלי או <code>static</code></td><td>0</td></tr>\n    <tr><td>משתנה מקומי רגיל</td><td>לא מוגדר (זבל)</td></tr>\n    <tr><td>איברי מערך עם אתחול חלקי (<code>int a[5] = {1, 2}</code>)</td><td>0 לשאר האיברים, גם במערך מקומי</td></tr>\n    <tr><td>זיכרון מ-<code>malloc</code></td><td>לא מוגדר</td></tr>\n    <tr><td>זיכרון מ-<code>calloc</code></td><td>0</td></tr>\n    </tbody></table>\n    <ul>\n      <li><code>malloc(n)</code> מקצה <code>n</code> בתים בלי לאפס. <code>calloc(k, size)</code> מקצה <code>k * size</code> בתים ומאפסת.</li>\n      <li><code>realloc(p, n)</code> משנה את הגודל ושומרת את התוכן הקיים. הכתובת עשויה להשתנות, ולכן משימים את התוצאה ב-<code>p</code>.</li>\n      <li><code>free(p)</code> מותרת רק על כתובת שהוחזרה מ-<code>malloc</code>, <code>calloc</code> או <code>realloc</code> (או על <code>NULL</code>). שחרור מערך רגיל הוא התנהגות לא מוגדרת.</li>\n      <li>משתנה <code>static</code> בתוך פונקציה מאותחל פעם אחת ושומר את ערכו בין קריאות.</li>\n    </ul>\n    <div class=\"lesson-rule\">🔑 קריאה של ערך שלא אותחל (מקומי או מ-<code>malloc</code>) נותנת ערך לא מוגדר. אין להסתמך עליו, ושאלה טובה לא תבנה עליו תשובה.</div>\n    <div class=\"lesson-ex\">דוגמה: פונקציה עם <code>static int n = 0; n++;</code> שנקראת שלוש פעמים מדפיסה 1, אחר כך 2, אחר כך 3. בלי <code>static</code> היא הייתה מדפיסה 1 שלוש פעמים.</div>\n    <div class=\"lesson-trap\">⚠️ <code>malloc</code> לא מאפסת. זיכרון ש\"נראה\" נקי בהרצה אחת הוא מקרה.</div>"
+    },
+    "questions": [
+     {
+      "id": "C07-Q1",
+      "question": "מה מדפיס הקוד?\n```c\nint g;\nstatic int s;\nint main(void)\n{\n    int a[5] = {1, 2};\n    printf(\"%d %d %d %d %d\", g, s, a[0], a[2], a[4]);\n    return 0;\n}\n```",
+      "options": [
+       {
+        "id": "a",
+        "value": "`0 0 1 0 0`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">0 0 1 0 0</code>"
+       },
+       {
+        "id": "b",
+        "value": "`0 0 1 2 2`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">0 0 1 2 2</code>"
+       },
+       {
+        "id": "c",
+        "value": "ערכי זבל לא ידועים",
+        "type": "text",
+        "html": "ערכי זבל לא ידועים"
+       },
+       {
+        "id": "d",
+        "value": "`0 0 1 1 1`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">0 0 1 1 1</code>"
+       }
+      ],
+      "correctId": "a",
+      "explanation": "משתנים גלובליים ו-`static` מאותחלים ל-0. במערך עם אתחול חלקי, כל האיברים שלא נכתבו מקבלים 0 (גם במערך מקומי). לכן `a[2]` ו-`a[4]` הם 0, ו-`a[0]` הוא 1.",
+      "recap": "גלובלי/static ואתחול חלקי: אפסים.",
+      "questionHtml": "מה מדפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>int g;\nstatic int s;\nint main(void)\n{\n    int a[5] = {1, 2};\n    printf(\"%d %d %d %d %d\", g, s, a[0], a[2], a[4]);\n    return 0;\n}</code></pre>",
+      "explanationHtml": "משתנים גלובליים ו-<code class=\"tok\" dir=\"ltr\">static</code> מאותחלים ל-0. במערך עם אתחול חלקי, כל האיברים שלא נכתבו מקבלים 0 (גם במערך מקומי). לכן <code class=\"tok\" dir=\"ltr\">a[2]</code> ו-<code class=\"tok\" dir=\"ltr\">a[4]</code> הם 0, ו-<code class=\"tok\" dir=\"ltr\">a[0]</code> הוא 1.",
+      "recapHtml": "גלובלי/static ואתחול חלקי: אפסים."
+     },
+     {
+      "id": "C07-Q2",
+      "question": "מה מדפיס הקוד?\n```c\nint *p = (int *)calloc(3, sizeof(int));\nprintf(\"%d%d%d\", p[0], p[1], p[2]);\n```",
+      "options": [
+       {
+        "id": "a",
+        "value": "`000`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">000</code>"
+       },
+       {
+        "id": "b",
+        "value": "`123`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">123</code>"
+       },
+       {
+        "id": "c",
+        "value": "ערכי זבל לא ידועים",
+        "type": "text",
+        "html": "ערכי זבל לא ידועים"
+       },
+       {
+        "id": "d",
+        "value": "`0`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">0</code>"
+       }
+      ],
+      "correctId": "a",
+      "explanation": "`calloc` מאפסת את הזיכרון שהקצתה, ולכן שלושת האיברים הם 0. אילו הקצינו עם `malloc`, הערכים היו לא מוגדרים.",
+      "recap": "calloc מאפסת; malloc לא.",
+      "questionHtml": "מה מדפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>int *p = (int *)calloc(3, sizeof(int));\nprintf(\"%d%d%d\", p[0], p[1], p[2]);</code></pre>",
+      "explanationHtml": "<code class=\"tok\" dir=\"ltr\">calloc</code> מאפסת את הזיכרון שהקצתה, ולכן שלושת האיברים הם 0. אילו הקצינו עם <code class=\"tok\" dir=\"ltr\">malloc</code>, הערכים היו לא מוגדרים.",
+      "recapHtml": "calloc מאפסת; malloc לא."
+     },
+     {
+      "id": "C07-Q3",
+      "question": "מה הערך של `p[0]` מיד אחרי ההקצאה?\n```c\nint *p = (int *)malloc(sizeof(int));\n```",
+      "options": [
+       {
+        "id": "a",
+        "value": "לא מוגדר: `malloc` לא מאתחלת",
+        "type": "text",
+        "html": "לא מוגדר: <code class=\"tok\" dir=\"ltr\">malloc</code> לא מאתחלת"
+       },
+       {
+        "id": "b",
+        "value": "תמיד 0",
+        "type": "text",
+        "html": "תמיד 0"
+       },
+       {
+        "id": "c",
+        "value": "תמיד `NULL`",
+        "type": "text",
+        "html": "תמיד <code class=\"tok\" dir=\"ltr\">NULL</code>"
+       },
+       {
+        "id": "d",
+        "value": "תמיד -1",
+        "type": "text",
+        "html": "תמיד -1"
+       }
+      ],
+      "correctId": "a",
+      "explanation": "`malloc` מחזירה זיכרון בלי לאתחל אותו, ולכן הערך לא מוגדר. הערך 0 מובטח רק ב-`calloc`. `NULL` הוא ערך של מצביע ולא של `int`, ו-`malloc` לא מציבה את -1.",
+      "recap": "זיכרון של malloc אינו מאותחל.",
+      "questionHtml": "מה הערך של <code class=\"tok\" dir=\"ltr\">p[0]</code> מיד אחרי ההקצאה?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>int *p = (int *)malloc(sizeof(int));</code></pre>",
+      "explanationHtml": "<code class=\"tok\" dir=\"ltr\">malloc</code> מחזירה זיכרון בלי לאתחל אותו, ולכן הערך לא מוגדר. הערך 0 מובטח רק ב-<code class=\"tok\" dir=\"ltr\">calloc</code>. <code class=\"tok\" dir=\"ltr\">NULL</code> הוא ערך של מצביע ולא של <code class=\"tok\" dir=\"ltr\">int</code>, ו-<code class=\"tok\" dir=\"ltr\">malloc</code> לא מציבה את -1.",
+      "recapHtml": "זיכרון של malloc אינו מאותחל."
+     },
+     {
+      "id": "C07-Q4",
+      "question": "מה מדפיס הקוד?\n```c\nvoid f(void)\n{\n    static int n = 0;\n    n++;\n    printf(\"%d\", n);\n}\nint main(void)\n{\n    f(); f(); f();\n    return 0;\n}\n```",
+      "options": [
+       {
+        "id": "a",
+        "value": "`123`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">123</code>"
+       },
+       {
+        "id": "b",
+        "value": "`111`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">111</code>"
+       },
+       {
+        "id": "c",
+        "value": "`012`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">012</code>"
+       },
+       {
+        "id": "d",
+        "value": "`000`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">000</code>"
+       }
+      ],
+      "correctId": "a",
+      "explanation": "המשתנה `static` מאותחל פעם אחת בלבד ושומר את ערכו בין קריאות, ולכן מודפסים 1, 2, 3. התשובה `111` הייתה נכונה אילו `n` היה משתנה מקומי רגיל.",
+      "recap": "static מקומי זוכר את ערכו.",
+      "questionHtml": "מה מדפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>void f(void)\n{\n    static int n = 0;\n    n++;\n    printf(\"%d\", n);\n}\nint main(void)\n{\n    f(); f(); f();\n    return 0;\n}</code></pre>",
+      "explanationHtml": "המשתנה <code class=\"tok\" dir=\"ltr\">static</code> מאותחל פעם אחת בלבד ושומר את ערכו בין קריאות, ולכן מודפסים 1, 2, 3. התשובה <code class=\"tok\" dir=\"ltr\">111</code> הייתה נכונה אילו <code class=\"tok\" dir=\"ltr\">n</code> היה משתנה מקומי רגיל.",
+      "recapHtml": "static מקומי זוכר את ערכו."
+     },
+     {
+      "id": "C07-Q5",
+      "question": "מה נכון לגבי הקוד הבא?\n```c\nint a[3];\nfree(a);\n```",
+      "options": [
+       {
+        "id": "a",
+        "value": "התנהגות לא מוגדרת: `a` לא הוקצה בהקצאה דינמית",
+        "type": "text",
+        "html": "התנהגות לא מוגדרת: <code class=\"tok\" dir=\"ltr\">a</code> לא הוקצה בהקצאה דינמית"
+       },
+       {
+        "id": "b",
+        "value": "`free` משחררת את המערך ללא בעיה",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">free</code> משחררת את המערך ללא בעיה"
+       },
+       {
+        "id": "c",
+        "value": "שגיאת הידור",
+        "type": "text",
+        "html": "שגיאת הידור"
+       },
+       {
+        "id": "d",
+        "value": "`free` לא עושה כלום כי המערך קטן",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">free</code> לא עושה כלום כי המערך קטן"
+       }
+      ],
+      "correctId": "a",
+      "explanation": "`free` מותרת רק על כתובת שהתקבלה מ-`malloc`, `calloc` או `realloc`. מערך רגיל שייך למחסנית, ולכן שחרורו הוא התנהגות לא מוגדרת. הקוד כן מתקמפל.",
+      "recap": "free על מערך רגיל: התנהגות לא מוגדרת.",
+      "questionHtml": "מה נכון לגבי הקוד הבא?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>int a[3];\nfree(a);</code></pre>",
+      "explanationHtml": "<code class=\"tok\" dir=\"ltr\">free</code> מותרת רק על כתובת שהתקבלה מ-<code class=\"tok\" dir=\"ltr\">malloc</code>, <code class=\"tok\" dir=\"ltr\">calloc</code> או <code class=\"tok\" dir=\"ltr\">realloc</code>. מערך רגיל שייך למחסנית, ולכן שחרורו הוא התנהגות לא מוגדרת. הקוד כן מתקמפל.",
+      "recapHtml": "free על מערך רגיל: התנהגות לא מוגדרת."
+     },
+     {
+      "id": "C07-Q6",
+      "step": {
+       "type": "numeric",
+       "prompt": "מה מדפיס הקוד?\n```c\nint *p = (int *)malloc(3 * sizeof(int));\np[0] = 7;\np = (int *)realloc(p, 6 * sizeof(int));\nprintf(\"%d\", p[0]);\n```",
+       "answer": 7,
+       "tol": 0,
+       "explain": "`realloc` שומרת את התוכן הקיים (גם אם היא מעבירה אותו לכתובת חדשה), ולכן `p[0]` נשאר 7. רק האיברים החדשים אינם מאותחלים.",
+       "promptHtml": "מה מדפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>int *p = (int *)malloc(3 * sizeof(int));\np[0] = 7;\np = (int *)realloc(p, 6 * sizeof(int));\nprintf(\"%d\", p[0]);</code></pre>",
+       "explainHtml": "<code class=\"tok\" dir=\"ltr\">realloc</code> שומרת את התוכן הקיים (גם אם היא מעבירה אותו לכתובת חדשה), ולכן <code class=\"tok\" dir=\"ltr\">p[0]</code> נשאר 7. רק האיברים החדשים אינם מאותחלים."
+      },
+      "recap": "realloc שומרת את התוכן הקיים.",
+      "recapHtml": "realloc שומרת את התוכן הקיים."
+     }
+    ]
+   },
+   {
+    "id": "C08",
+    "order": 8,
+    "icon": "🧩",
+    "title": "מבנים, איחוד וטווח",
+    "goal": "אחרי השלב הזה אפשר לחשב מה קורה בהעתקת מבנה, בכתיבה לאיחוד, ובהסתרת משתנה גלובלי, ולהכיר מהן הנחיות קדם-מעבד.",
+    "source": "ai-verified",
+    "boss": false,
+    "lesson": {
+     "html": "\n    <p><b>העתקת מבנה</b> (<code>s2 = s1</code>) מעתיקה את כל השדות ערך אחר ערך. שדה מערך מועתק במלואו (העתק נפרד), ושדה מצביע מועתק ככתובת בלבד: שני המבנים מצביעים לאותו מקום.</p>\n    <pre><code>struct S { int a; int *p; };</code></pre>\n    <p><b>איחוד</b> (<code>union</code>) מחזיק את כל השדות באותו זיכרון. הכתיבה האחרונה קובעת את הערך שנקרא. באיחוד ששני שדותיו מאותו טיפוס, הכתיבה לשדה אחד משנה את השני.</p>\n    <p><b>טווח (scope)</b>: פרמטר או משתנה מקומי באותו שם כמו משתנה גלובלי <b>מסתיר</b> אותו בתוך הפונקציה או הבלוק. הפרמטר הוא עותק (העברה לפי ערך), ושינויו לא משפיע על הקורא.</p>\n    <p><b>הנחיות קדם-מעבד</b> הן שורות שמתחילות ב-<code>#</code> ומעובדות לפני ההידור: <code>#include</code>, <code>#define</code>, <code>#undef</code>, <code>#ifdef</code>, <code>#ifndef</code>, <code>#if</code>, <code>#endif</code>. המילה <code>typedef</code> אינה הנחיית קדם-מעבד: היא הצהרה רגילה של השפה.</p>\n    <div class=\"lesson-rule\">🔑 העתקת מבנה היא שטוחה: מצביעים מועתקים כתובת, מערכים בתוך המבנה מועתקים תוכן.</div>\n    <div class=\"lesson-ex\">דוגמה: ב-<code>struct T { int v[2]; }</code>, אחרי <code>t2 = t1; t2.v[0] = 9;</code> המערך של <code>t1</code> לא השתנה, כי <code>t2.v</code> הוא עותק.</div>\n    <div class=\"lesson-trap\">⚠️ שינוי של <code>*s2.p</code> משנה את הערך ש-<code>s1.p</code> מצביע אליו, כי שני המצביעים מכילים אותה כתובת.</div>"
+    },
+    "questions": [
+     {
+      "id": "C08-Q1",
+      "question": "מה מדפיס הקוד?\n```c\nstruct S { int a; int *p; };\nint x = 1;\nstruct S s1 = {5, &x};\nstruct S s2 = s1;\ns2.a = 9;\n*s2.p = 7;\nprintf(\"%d %d %d\", s1.a, *s1.p, x);\n```",
+      "options": [
+       {
+        "id": "a",
+        "value": "`5 7 7`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">5 7 7</code>"
+       },
+       {
+        "id": "b",
+        "value": "`9 7 7`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">9 7 7</code>"
+       },
+       {
+        "id": "c",
+        "value": "`5 1 1`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">5 1 1</code>"
+       },
+       {
+        "id": "d",
+        "value": "`9 1 1`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">9 1 1</code>"
+       }
+      ],
+      "correctId": "a",
+      "explanation": "`s2.a` הוא עותק, ולכן `s1.a` נשאר 5. `s2.p` ו-`s1.p` מכילים אותה כתובת (של `x`), ולכן הכתיבה `*s2.p = 7` משנה את `x` ונראית דרך שניהם.",
+      "recap": "העתקת מבנה: שדה רגיל עותק, מצביע משותף.",
+      "questionHtml": "מה מדפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>struct S { int a; int *p; };\nint x = 1;\nstruct S s1 = {5, &amp;x};\nstruct S s2 = s1;\ns2.a = 9;\n*s2.p = 7;\nprintf(\"%d %d %d\", s1.a, *s1.p, x);</code></pre>",
+      "explanationHtml": "<code class=\"tok\" dir=\"ltr\">s2.a</code> הוא עותק, ולכן <code class=\"tok\" dir=\"ltr\">s1.a</code> נשאר 5. <code class=\"tok\" dir=\"ltr\">s2.p</code> ו-<code class=\"tok\" dir=\"ltr\">s1.p</code> מכילים אותה כתובת (של <code class=\"tok\" dir=\"ltr\">x</code>), ולכן הכתיבה <code class=\"tok\" dir=\"ltr\">*s2.p = 7</code> משנה את <code class=\"tok\" dir=\"ltr\">x</code> ונראית דרך שניהם.",
+      "recapHtml": "העתקת מבנה: שדה רגיל עותק, מצביע משותף."
+     },
+     {
+      "id": "C08-Q2",
+      "step": {
+       "type": "numeric",
+       "prompt": "מה מדפיס הקוד?\n```c\nstruct T { int v[2]; };\nstruct T t1 = {{1, 2}};\nstruct T t2 = t1;\nt2.v[0] = 9;\nprintf(\"%d\", t1.v[0]);\n```",
+       "answer": 1,
+       "tol": 0,
+       "explain": "מערך בתוך מבנה מועתק במלואו, ולכן `t2.v` הוא עותק נפרד. שינוי בו לא משפיע על `t1.v[0]`, שנשאר 1.",
+       "promptHtml": "מה מדפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>struct T { int v[2]; };\nstruct T t1 = {{1, 2}};\nstruct T t2 = t1;\nt2.v[0] = 9;\nprintf(\"%d\", t1.v[0]);</code></pre>",
+       "explainHtml": "מערך בתוך מבנה מועתק במלואו, ולכן <code class=\"tok\" dir=\"ltr\">t2.v</code> הוא עותק נפרד. שינוי בו לא משפיע על <code class=\"tok\" dir=\"ltr\">t1.v[0]</code>, שנשאר 1."
+      },
+      "recap": "מערך בתוך מבנה מועתק במלואו.",
+      "recapHtml": "מערך בתוך מבנה מועתק במלואו."
+     },
+     {
+      "id": "C08-Q3",
+      "question": "מה מדפיס הקוד?\n```c\nunion U { int a; int b; } u;\nu.a = 5;\nu.b = 8;\nprintf(\"%d\", u.a);\n```",
+      "options": [
+       {
+        "id": "a",
+        "value": "`8`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">8</code>"
+       },
+       {
+        "id": "b",
+        "value": "`5`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">5</code>"
+       },
+       {
+        "id": "c",
+        "value": "`13`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">13</code>"
+       },
+       {
+        "id": "d",
+        "value": "`0`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">0</code>"
+       }
+      ],
+      "correctId": "a",
+      "explanation": "שדות האיחוד חולקים את אותו זיכרון, והכתיבה האחרונה (`u.b = 8`) דורסת את הקודמת. לכן קוראים 8 גם דרך `u.a`.",
+      "recap": "באיחוד הכתיבה האחרונה קובעת.",
+      "questionHtml": "מה מדפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>union U { int a; int b; } u;\nu.a = 5;\nu.b = 8;\nprintf(\"%d\", u.a);</code></pre>",
+      "explanationHtml": "שדות האיחוד חולקים את אותו זיכרון, והכתיבה האחרונה (<code class=\"tok\" dir=\"ltr\">u.b = 8</code>) דורסת את הקודמת. לכן קוראים 8 גם דרך <code class=\"tok\" dir=\"ltr\">u.a</code>.",
+      "recapHtml": "באיחוד הכתיבה האחרונה קובעת."
+     },
+     {
+      "id": "C08-Q4",
+      "question": "מה מדפיס הקוד?\n```c\nint x = 10;\nvoid f(int x)\n{\n    x = x + 1;\n    printf(\"%d \", x);\n}\nint main(void)\n{\n    f(1);\n    printf(\"%d\", x);\n    return 0;\n}\n```",
+      "options": [
+       {
+        "id": "a",
+        "value": "`2 10`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">2 10</code>"
+       },
+       {
+        "id": "b",
+        "value": "`11 11`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">11 11</code>"
+       },
+       {
+        "id": "c",
+        "value": "`2 2`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">2 2</code>"
+       },
+       {
+        "id": "d",
+        "value": "`11 10`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">11 10</code>"
+       }
+      ],
+      "correctId": "a",
+      "explanation": "הפרמטר `x` מסתיר את הגלובלי בתוך `f`: הוא מקבל 1, גדל ל-2 ומודפס. הגלובלי לא נגע, ולכן ב-`main` מודפס 10.",
+      "recap": "פרמטר באותו שם מסתיר את הגלובלי.",
+      "questionHtml": "מה מדפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>int x = 10;\nvoid f(int x)\n{\n    x = x + 1;\n    printf(\"%d \", x);\n}\nint main(void)\n{\n    f(1);\n    printf(\"%d\", x);\n    return 0;\n}</code></pre>",
+      "explanationHtml": "הפרמטר <code class=\"tok\" dir=\"ltr\">x</code> מסתיר את הגלובלי בתוך <code class=\"tok\" dir=\"ltr\">f</code>: הוא מקבל 1, גדל ל-2 ומודפס. הגלובלי לא נגע, ולכן ב-<code class=\"tok\" dir=\"ltr\">main</code> מודפס 10.",
+      "recapHtml": "פרמטר באותו שם מסתיר את הגלובלי."
+     },
+     {
+      "id": "C08-Q5",
+      "question": "מה מדפיס הקוד?\n```c\nint x = 1;\n{\n    int x = 2;\n    x++;\n}\nprintf(\"%d\", x);\n```",
+      "options": [
+       {
+        "id": "a",
+        "value": "`1`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">1</code>"
+       },
+       {
+        "id": "b",
+        "value": "`2`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">2</code>"
+       },
+       {
+        "id": "c",
+        "value": "`3`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">3</code>"
+       },
+       {
+        "id": "d",
+        "value": "שגיאת הידור",
+        "type": "text",
+        "html": "שגיאת הידור"
+       }
+      ],
+      "correctId": "a",
+      "explanation": "בתוך הבלוק `x` הוא משתנה חדש שמסתיר את החיצוני, וה-`x++` משנה אותו בלבד. אחרי הבלוק הוא נעלם, והחיצוני נשאר 1. הצהרה באותו שם בבלוק פנימי מותרת.",
+      "recap": "משתנה בבלוק פנימי מסתיר ולא משנה את החיצוני.",
+      "questionHtml": "מה מדפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>int x = 1;\n{\n    int x = 2;\n    x++;\n}\nprintf(\"%d\", x);</code></pre>",
+      "explanationHtml": "בתוך הבלוק <code class=\"tok\" dir=\"ltr\">x</code> הוא משתנה חדש שמסתיר את החיצוני, וה-<code class=\"tok\" dir=\"ltr\">x++</code> משנה אותו בלבד. אחרי הבלוק הוא נעלם, והחיצוני נשאר 1. הצהרה באותו שם בבלוק פנימי מותרת.",
+      "recapHtml": "משתנה בבלוק פנימי מסתיר ולא משנה את החיצוני."
+     },
+     {
+      "id": "C08-Q6",
+      "question": "מה מהבאים **אינו** חלק מהנחיית קדם-מעבד?",
+      "options": [
+       {
+        "id": "a",
+        "value": "`typedef`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">typedef</code>"
+       },
+       {
+        "id": "b",
+        "value": "`define`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">define</code>"
+       },
+       {
+        "id": "c",
+        "value": "`ifndef`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">ifndef</code>"
+       },
+       {
+        "id": "d",
+        "value": "`include`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">include</code>"
+       }
+      ],
+      "correctId": "a",
+      "explanation": "`define`, `ifndef` ו-`include` הן הנחיות קדם-מעבד שנכתבות אחרי `#`. `typedef` היא הצהרה רגילה של שפת C שמעובדת בהידור עצמו.",
+      "recap": "typedef אינה הנחיית קדם-מעבד.",
+      "questionHtml": "מה מהבאים <strong>אינו</strong> חלק מהנחיית קדם-מעבד?",
+      "explanationHtml": "<code class=\"tok\" dir=\"ltr\">define</code>, <code class=\"tok\" dir=\"ltr\">ifndef</code> ו-<code class=\"tok\" dir=\"ltr\">include</code> הן הנחיות קדם-מעבד שנכתבות אחרי <code class=\"tok\" dir=\"ltr\">#</code>. <code class=\"tok\" dir=\"ltr\">typedef</code> היא הצהרה רגילה של שפת C שמעובדת בהידור עצמו.",
+      "recapHtml": "typedef אינה הנחיית קדם-מעבד."
+     }
+    ]
+   },
+   {
+    "id": "C09",
+    "order": 9,
+    "icon": "🏆",
+    "title": "אתגר המלכודות",
+    "goal": "אחרי השלב הזה אפשר לפתור שאלות מלכודת אמיתיות מהמבחנים: סיווג הנחיות, הכללה בין פונקציות קלט, sizeof של מחרוזת, לולאת fgetc וחילוק תווים.",
+    "source": "ai-verified",
+    "boss": true,
+    "lesson": {
+     "html": "\n    <p>אתגר סיום: חמש שאלות אמיתיות מבחנים קודמים. לפני שפותרים, הפעילו את הכללים מהשלבים הקודמים.</p>\n    <ul>\n      <li>תו הוא מספר, והחילוק בין תווים הוא חילוק שלם; לולאה על מערך נעצרת באיבר 0.</li>\n      <li><code>sizeof</code> של מחרוזת קבועה כולל את <code>'\\0'</code>, והאינדקס חזק מ-<code>sizeof</code>.</li>\n      <li><code>!=</code> חזק מ-<code>=</code>, ולכן בלי סוגריים ההשמה מקבלת 0 או 1.</li>\n      <li><code>fgets</code> שונה מ-<code>gets</code>; הצורות שמתחילות ב-<code>f</code> הן הכללות של הצורות הרגילות רק כשהן מתנהגות אותו דבר על <code>stdin</code>.</li>\n      <li><code>typedef</code> אינה הנחיית קדם-מעבד.</li>\n    </ul>\n    <div class=\"lesson-rule\">🔑 בכל שאלה כתבו את הכלל שעליו הסתמכתם לפני שאתם בוחרים תשובה.</div>"
+    },
+    "questions": [
+     {
+      "bankId": "19S-A-Q4d",
+      "recap": "typedef אינה הנחיית קדם-מעבד.",
+      "recapHtml": "typedef אינה הנחיית קדם-מעבד."
+     },
+     {
+      "bankId": "20B-A-Q4a",
+      "recap": "fgets אינה הכללה של gets.",
+      "recapHtml": "fgets אינה הכללה של gets."
+     },
+     {
+      "bankId": "19B-A-Q5",
+      "recap": "[ ] חזק מ-sizeof, והגודל הוא של תו.",
+      "recapHtml": "[ ] חזק מ-sizeof, והגודל הוא של תו."
+     },
+     {
+      "bankId": "25B-A-Q6",
+      "recap": "!= חזק מ-=, ולכן c הוא 1.",
+      "recapHtml": "!= חזק מ-=, ולכן c הוא 1."
+     },
+     {
+      "bankId": "25B-B-Q6",
+      "recap": "חילוק תווים שלם והלולאה נעצרת באפס.",
+      "recapHtml": "חילוק תווים שלם והלולאה נעצרת באפס."
      }
     ]
    }
@@ -1654,6 +2831,1148 @@ window.COURSES = {
       "bankId": "23B-A-Q2",
       "recap": "שני מערכי פלט דרך פרמטרים, אורך מקסימלי ואז `realloc`.",
       "recapHtml": "שני מערכי פלט דרך פרמטרים, אורך מקסימלי ואז <code class=\"tok\" dir=\"ltr\">realloc</code>."
+     }
+    ]
+   }
+  ]
+ },
+ "files_strings": {
+  "levels": [
+   {
+    "id": "C01",
+    "order": 1,
+    "icon": "📂",
+    "title": "פתיחה, מצבים וכתיבה",
+    "goal": "אחרי השלב הזה אפשר לפתוח קובץ במצב הנכון, לבדוק שהפתיחה הצליחה, לכתוב אליו ולסגור אותו.",
+    "source": "ai-verified",
+    "boss": false,
+    "lesson": {
+     "html": "<p>קובץ בתוכנית מיוצג על ידי מצביע מטיפוס <code>FILE *</code>. מקבלים אותו מהפונקציה <code>fopen(name, mode)</code> ובסוף משחררים אותו עם <code>fclose(f)</code>.</p><pre><code>FILE *f = fopen(\"data.txt\", \"w\");\nif (!f)\n    return 1;          /* the open failed */\nfprintf(f, \"%d\", 5);\nfclose(f);</code></pre><div class=\"lesson-rule\">🔑 <code>fopen</code> מחזירה <code>NULL</code> כשהפתיחה נכשלה (למשל קובץ שלא קיים בקריאה). תמיד בודקים <code>NULL</code> לפני שמשתמשים במצביע, אחרת התוכנית קורסת.</div><h3>מצבי פתיחה</h3><table><tr><th>מצב</th><th>משמעות</th></tr><tr><td><code>\"r\"</code></td><td>קריאה. הקובץ חייב להיות קיים, אחרת מתקבל NULL</td></tr><tr><td><code>\"w\"</code></td><td>כתיבה. אם הקובץ קיים, <b>התוכן שלו נמחק</b>. אם לא, הוא נוצר</td></tr><tr><td><code>\"a\"</code></td><td>הוספה בסוף הקובץ. התוכן הקיים נשמר</td></tr><tr><td><code>\"r+\"</code>, <code>\"w+\"</code></td><td>גם קריאה וגם כתיבה (ב-<code>\"w+\"</code> הקובץ מתאפס בפתיחה)</td></tr><tr><td><code>\"rb\"</code>, <code>\"wb\"</code></td><td>אותם מצבים לקבצים בינאריים (האות b)</td></tr></table><h3>פונקציות כתיבה</h3><ul><li><code>fprintf(f, \"%d,%d\", 7, 8)</code> כמו <code>printf</code> אבל לקובץ.</li><li><code>fputs(str, f)</code> כותבת מחרוזת <b>בלי</b> לשרשר תו שורה חדשה.</li><li><code>fputc(ch, f)</code> כותבת תו אחד.</li><li><code>puts(str)</code> כותבת למסך <b>ומוסיפה</b> <code>'\\n'</code> בסוף. <code>fputs(str, stdout)</code> לא מוסיפה.</li></ul><div class=\"lesson-ex\">דוגמה: אם הקובץ מכיל <code>AB</code> ופותחים אותו ב-<code>\"a\"</code> וכותבים <code>fputs(\"C\", f)</code>, התוכן הופך ל-<code>ABC</code>. אם פותחים אותו ב-<code>\"w\"</code> וכותבים אותו דבר, התוכן הוא <code>C</code> בלבד.</div><div class=\"lesson-trap\">⚠️ <code>\"w\"</code> מוחק קובץ קיים כבר ברגע הפתיחה, עוד לפני שכתבתם משהו. כשרוצים להוסיף משתמשים ב-<code>\"a\"</code>.</div>"
+    },
+    "questions": [
+     {
+      "id": "C01-Q1",
+      "question": "מה מחזירה `fopen(\"nope.txt\", \"r\")` כשהקובץ `nope.txt` לא קיים בתיקייה?",
+      "options": [
+       {
+        "id": "a",
+        "value": "`NULL`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">NULL</code>"
+       },
+       {
+        "id": "b",
+        "value": "מצביע תקין לקובץ ריק",
+        "type": "text",
+        "html": "מצביע תקין לקובץ ריק"
+       },
+       {
+        "id": "c",
+        "value": "התוכנית קורסת כבר בתוך `fopen`",
+        "type": "text",
+        "html": "התוכנית קורסת כבר בתוך <code class=\"tok\" dir=\"ltr\">fopen</code>"
+       },
+       {
+        "id": "d",
+        "value": "מצביע ל-`stdin`",
+        "type": "text",
+        "html": "מצביע ל-<code class=\"tok\" dir=\"ltr\">stdin</code>"
+       }
+      ],
+      "correctId": "a",
+      "explanation": "במצב קריאה קובץ שלא קיים לא נוצר, ו-`fopen` מחזירה `NULL` (נבדק עם clang). לכן בודקים `if (!f)` מיד אחרי הפתיחה. מצביע תקין לקובץ ריק היה קורה במצב כתיבה. הקריסה מתרחשת רק אם משתמשים במצביע ה-`NULL`, לא בפתיחה עצמה. `stdin` הוא קובץ סטנדרטי אחר שאינו קשור.",
+      "recap": "`fopen` נכשלת עם `NULL`, ותמיד בודקים אותה.",
+      "questionHtml": "מה מחזירה <code class=\"tok\" dir=\"ltr\">fopen(\"nope.txt\", \"r\")</code> כשהקובץ <code class=\"tok\" dir=\"ltr\">nope.txt</code> לא קיים בתיקייה?",
+      "explanationHtml": "במצב קריאה קובץ שלא קיים לא נוצר, ו-<code class=\"tok\" dir=\"ltr\">fopen</code> מחזירה <code class=\"tok\" dir=\"ltr\">NULL</code> (נבדק עם clang). לכן בודקים <code class=\"tok\" dir=\"ltr\">if (!f)</code> מיד אחרי הפתיחה. מצביע תקין לקובץ ריק היה קורה במצב כתיבה. הקריסה מתרחשת רק אם משתמשים במצביע ה-<code class=\"tok\" dir=\"ltr\">NULL</code>, לא בפתיחה עצמה. <code class=\"tok\" dir=\"ltr\">stdin</code> הוא קובץ סטנדרטי אחר שאינו קשור.",
+      "recapHtml": "<code class=\"tok\" dir=\"ltr\">fopen</code> נכשלת עם <code class=\"tok\" dir=\"ltr\">NULL</code>, ותמיד בודקים אותה."
+     },
+     {
+      "id": "C01-Q2",
+      "question": "הקובץ `t.txt` מכיל `AB`. התוכנית מריצה:\n```c\nFILE *f = fopen(\"t.txt\", \"w\");\nfputs(\"C\", f);\nfclose(f);\n```\nמה תוכן הקובץ אחרי הריצה?",
+      "options": [
+       {
+        "id": "a",
+        "value": "`C`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">C</code>"
+       },
+       {
+        "id": "b",
+        "value": "`ABC`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">ABC</code>"
+       },
+       {
+        "id": "c",
+        "value": "`AB`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">AB</code>"
+       },
+       {
+        "id": "d",
+        "value": "`CB`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">CB</code>"
+       }
+      ],
+      "correctId": "a",
+      "explanation": "מצב `\"w\"` מוחק את התוכן הקיים בפתיחה, ולכן נשאר רק `C` (נבדק עם clang). `ABC` היה מתקבל במצב `\"a\"`. `AB` היה נשאר לו הכתיבה לא התבצעה. `CB` היה מתקבל רק אם `C` היה דורס את התו הראשון, וזה לא מה ש-`\"w\"` עושה.",
+      "recap": "`\"w\"` מוחק את התוכן הקיים, `\"a\"` מוסיף בסוף.",
+      "questionHtml": "הקובץ <code class=\"tok\" dir=\"ltr\">t.txt</code> מכיל <code class=\"tok\" dir=\"ltr\">AB</code>. התוכנית מריצה:<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>FILE *f = fopen(\"t.txt\", \"w\");\nfputs(\"C\", f);\nfclose(f);</code></pre>מה תוכן הקובץ אחרי הריצה?",
+      "explanationHtml": "מצב <code class=\"tok\" dir=\"ltr\">\"w\"</code> מוחק את התוכן הקיים בפתיחה, ולכן נשאר רק <code class=\"tok\" dir=\"ltr\">C</code> (נבדק עם clang). <code class=\"tok\" dir=\"ltr\">ABC</code> היה מתקבל במצב <code class=\"tok\" dir=\"ltr\">\"a\"</code>. <code class=\"tok\" dir=\"ltr\">AB</code> היה נשאר לו הכתיבה לא התבצעה. <code class=\"tok\" dir=\"ltr\">CB</code> היה מתקבל רק אם <code class=\"tok\" dir=\"ltr\">C</code> היה דורס את התו הראשון, וזה לא מה ש-<code class=\"tok\" dir=\"ltr\">\"w\"</code> עושה.",
+      "recapHtml": "<code class=\"tok\" dir=\"ltr\">\"w\"</code> מוחק את התוכן הקיים, <code class=\"tok\" dir=\"ltr\">\"a\"</code> מוסיף בסוף."
+     },
+     {
+      "id": "C01-Q3",
+      "step": {
+       "type": "text",
+       "accept": [
+        "x125"
+       ],
+       "normalize": "none",
+       "prompt": "הקובץ `t.txt` מכיל `x1`. מה יהיה תוכנו (בלי רווחים) אחרי הקוד?\n```c\nFILE *f = fopen(\"t.txt\", \"a\");\nfprintf(f, \"%d\", 25);\nfclose(f);\n```",
+       "explain": "מצב `\"a\"` שומר את `x1` וכותב אחריו את `25`, ולכן התוכן `x125`.",
+       "promptHtml": "הקובץ <code class=\"tok\" dir=\"ltr\">t.txt</code> מכיל <code class=\"tok\" dir=\"ltr\">x1</code>. מה יהיה תוכנו (בלי רווחים) אחרי הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>FILE *f = fopen(\"t.txt\", \"a\");\nfprintf(f, \"%d\", 25);\nfclose(f);</code></pre>",
+       "explainHtml": "מצב <code class=\"tok\" dir=\"ltr\">\"a\"</code> שומר את <code class=\"tok\" dir=\"ltr\">x1</code> וכותב אחריו את <code class=\"tok\" dir=\"ltr\">25</code>, ולכן התוכן <code class=\"tok\" dir=\"ltr\">x125</code>."
+      },
+      "recap": "במצב `\"a\"` הכתיבה נעשית אחרי התוכן הקיים.",
+      "recapHtml": "במצב <code class=\"tok\" dir=\"ltr\">\"a\"</code> הכתיבה נעשית אחרי התוכן הקיים."
+     },
+     {
+      "id": "C01-Q4",
+      "step": {
+       "type": "numeric",
+       "answer": 7,
+       "tol": 0,
+       "prompt": "הקובץ נפתח חדש בכתיבה, ואז מתבצע הקוד הבא. כמה תווים יש בקובץ בסוף?\n```c\nfputs(\"ab\", f);\nfputc('c', f);\nfprintf(f, \"%d-%d\", 12, 3);\n```",
+       "explain": "נכתבים `ab` (2 תווים), `c` (תו אחד) ו-`12-3` (4 תווים): $2+1+4=7$, כלומר `abc12-3`.",
+       "promptHtml": "הקובץ נפתח חדש בכתיבה, ואז מתבצע הקוד הבא. כמה תווים יש בקובץ בסוף?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>fputs(\"ab\", f);\nfputc('c', f);\nfprintf(f, \"%d-%d\", 12, 3);</code></pre>",
+       "explainHtml": "נכתבים <code class=\"tok\" dir=\"ltr\">ab</code> (2 תווים), <code class=\"tok\" dir=\"ltr\">c</code> (תו אחד) ו-<code class=\"tok\" dir=\"ltr\">12-3</code> (4 תווים): <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mn>2</mn><mo>+</mo><mn>1</mn><mo>+</mo><mn>4</mn><mo>=</mo><mn>7</mn></mrow><annotation encoding=\"application/x-tex\">2+1+4=7</annotation></semantics></math></span>, כלומר <code class=\"tok\" dir=\"ltr\">abc12-3</code>."
+      },
+      "recap": "כל פונקציית כתיבה מוסיפה את התווים שלה בלבד, בלי תו שורה חדשה אוטומטי.",
+      "recapHtml": "כל פונקציית כתיבה מוסיפה את התווים שלה בלבד, בלי תו שורה חדשה אוטומטי."
+     },
+     {
+      "id": "C01-Q5",
+      "step": {
+       "type": "numeric",
+       "answer": 2,
+       "tol": 0,
+       "prompt": "כמה שורות יוצגו על המסך?\n```c\nputs(\"a\");\nfputs(\"b\", stdout);\nputs(\"c\");\n```",
+       "explain": "`puts(\"a\")` מדפיסה `a` ותו שורה חדשה. `fputs(\"b\", stdout)` מדפיסה `b` בלי שורה חדשה, ולכן `puts(\"c\")` ממשיכה באותה שורה: `bc`. בסך הכול שתי שורות: `a` ו-`bc`.",
+       "promptHtml": "כמה שורות יוצגו על המסך?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>puts(\"a\");\nfputs(\"b\", stdout);\nputs(\"c\");</code></pre>",
+       "explainHtml": "<code class=\"tok\" dir=\"ltr\">puts(\"a\")</code> מדפיסה <code class=\"tok\" dir=\"ltr\">a</code> ותו שורה חדשה. <code class=\"tok\" dir=\"ltr\">fputs(\"b\", stdout)</code> מדפיסה <code class=\"tok\" dir=\"ltr\">b</code> בלי שורה חדשה, ולכן <code class=\"tok\" dir=\"ltr\">puts(\"c\")</code> ממשיכה באותה שורה: <code class=\"tok\" dir=\"ltr\">bc</code>. בסך הכול שתי שורות: <code class=\"tok\" dir=\"ltr\">a</code> ו-<code class=\"tok\" dir=\"ltr\">bc</code>."
+      },
+      "recap": "`puts` מוסיפה `'\\n'`, `fputs` לא.",
+      "recapHtml": "<code class=\"tok\" dir=\"ltr\">puts</code> מוסיפה <code class=\"tok\" dir=\"ltr\">'\\n'</code>, <code class=\"tok\" dir=\"ltr\">fputs</code> לא."
+     },
+     {
+      "id": "C01-Q6",
+      "step": {
+       "type": "order",
+       "code": true,
+       "prompt": "סדרו את השלבים של כתיבת המספר 5 לקובץ בצורה נכונה ובטוחה.",
+       "lines": [
+        "FILE *f = fopen(\"out.txt\", \"w\");",
+        "if (!f) return 1;",
+        "fprintf(f, \"%d\", 5);",
+        "fclose(f);"
+       ],
+       "explain": "קודם פותחים, אחר כך בודקים שהפתיחה הצליחה, רק אז כותבים, ובסוף סוגרים.",
+       "promptHtml": "סדרו את השלבים של כתיבת המספר 5 לקובץ בצורה נכונה ובטוחה.",
+       "explainHtml": "קודם פותחים, אחר כך בודקים שהפתיחה הצליחה, רק אז כותבים, ובסוף סוגרים.",
+       "linesHtml": [
+        "FILE *f = fopen(\"out.txt\", \"w\");",
+        "if (!f) return 1;",
+        "fprintf(f, \"%d\", 5);",
+        "fclose(f);"
+       ]
+      },
+      "recap": "פותחים, בודקים `NULL`, משתמשים, סוגרים.",
+      "recapHtml": "פותחים, בודקים <code class=\"tok\" dir=\"ltr\">NULL</code>, משתמשים, סוגרים."
+     }
+    ]
+   },
+   {
+    "id": "C02",
+    "order": 2,
+    "icon": "🔢",
+    "title": "קריאת מספרים ומילים עם fscanf",
+    "goal": "אחרי השלב הזה אפשר לקרוא מקובץ טקסט מספרים ומילים בלולאה שנעצרת בדיוק בסוף הקלט.",
+    "source": "ai-verified",
+    "boss": false,
+    "lesson": {
+     "html": "<p><code>fscanf(f, format, ...)</code> עובדת כמו <code>scanf</code> אבל קוראת מהקובץ <code>f</code>. היא <b>מחזירה כמה ערכים נקראו בהצלחה</b>.</p><ul><li>קריאה מוצלחת של ערך אחד מחזירה <code>1</code>.</li><li>אם הטקסט לא מתאים לפורמט (למשל <code>abc</code> כשמבקשים <code>%d</code>) היא מחזירה <code>0</code>.</li><li>אם הקלט נגמר לפני שנקרא משהו היא מחזירה <code>EOF</code> (ערך שלילי, בפועל <code>-1</code>).</li></ul><p>הלולאה הרגילה לקריאת מספרים עד הסוף:</p><pre><code>int x, sum = 0;\nwhile (fscanf(f, \"%d\", &amp;x) == 1)   /* stop on EOF or on a mismatch */\n    sum += x;</code></pre><div class=\"lesson-rule\">🔑 תנאי הלולאה הוא <code>fscanf(...) == 1</code> (כמספר הערכים שביקשתם). כך הלולאה נעצרת גם בסוף הקובץ וגם כשהטקסט לא מתאים.</div><h3>רווחים ומילים</h3><ul><li><code>%d</code> ו-<code>%s</code> מדלגים אוטומטית על רווחים, טאבים ושורות חדשות שלפני הערך.</li><li><code>%s</code> קוראת <b>מילה</b>: רצף תווים עד הרווח או השורה החדשה הבאה. היא מוסיפה <code>'\\0'</code> בסוף.</li><li><code>%3s</code> מגביל את הקריאה ל-3 תווים לכל היותר (בלי ה-<code>'\\0'</code>). את הרצף שנשאר קוראת הקריאה הבאה.</li></ul><div class=\"lesson-ex\">דוגמה: בקובץ <code>4 10 -3</code> הלולאה קוראת 4, 10, -3 ואז הקריאה הרביעית מחזירה <code>EOF</code>, והסכום הוא 11. בקובץ <code>12 abc 5</code> הלולאה קוראת 12, ואז נכשלת על <code>abc</code> (מחזירה 0) ונעצרת: ה-5 לא נקרא לעולם.</div><div class=\"lesson-trap\">⚠️ לא שוכחים את ה-<code>&amp;</code> לפני משתנה מספרי. ל-<code>%s</code> לא צריך <code>&amp;</code> כי שם מערך הוא כבר כתובת.</div>"
+    },
+    "questions": [
+     {
+      "id": "C02-Q1",
+      "step": {
+       "type": "numeric",
+       "answer": 19,
+       "tol": 0,
+       "prompt": "הקובץ מכיל את השורה `4 10 -3` ואחריה השורה `8`. מה יודפס?\n```c\nint x, sum = 0;\nwhile (fscanf(f, \"%d\", &x) == 1)\n    sum += x;\nprintf(\"%d\", sum);\n```",
+       "explain": "`fscanf` מדלגת על ירידת השורה וקוראת את כל ארבעת המספרים: $4+10-3+8=19$.",
+       "promptHtml": "הקובץ מכיל את השורה <code class=\"tok\" dir=\"ltr\">4 10 -3</code> ואחריה השורה <code class=\"tok\" dir=\"ltr\">8</code>. מה יודפס?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>int x, sum = 0;\nwhile (fscanf(f, \"%d\", &amp;x) == 1)\n    sum += x;\nprintf(\"%d\", sum);</code></pre>",
+       "explainHtml": "<code class=\"tok\" dir=\"ltr\">fscanf</code> מדלגת על ירידת השורה וקוראת את כל ארבעת המספרים: <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mn>4</mn><mo>+</mo><mn>10</mn><mo>−</mo><mn>3</mn><mo>+</mo><mn>8</mn><mo>=</mo><mn>19</mn></mrow><annotation encoding=\"application/x-tex\">4+10-3+8=19</annotation></semantics></math></span>."
+      },
+      "recap": "`fscanf` עם `%d` מדלגת על רווחים ושורות חדשות.",
+      "recapHtml": "<code class=\"tok\" dir=\"ltr\">fscanf</code> עם <code class=\"tok\" dir=\"ltr\">%d</code> מדלגת על רווחים ושורות חדשות."
+     },
+     {
+      "id": "C02-Q2",
+      "question": "מה מחזירה `fscanf(f, \"%d\", &x)` כשכל הקלט כבר נקרא וכבר אין בקובץ מה לקרוא?",
+      "options": [
+       {
+        "id": "a",
+        "value": "`EOF`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">EOF</code>"
+       },
+       {
+        "id": "b",
+        "value": "`0`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">0</code>"
+       },
+       {
+        "id": "c",
+        "value": "`NULL`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">NULL</code>"
+       },
+       {
+        "id": "d",
+        "value": "הערך האחרון שנקרא",
+        "type": "text",
+        "html": "הערך האחרון שנקרא"
+       }
+      ],
+      "correctId": "a",
+      "explanation": "כשהקלט נגמר לפני שנקרא משהו, `fscanf` מחזירה `EOF` (נבדק עם clang). הערך `0` מוחזר כשיש טקסט שלא מתאים לפורמט (למשל אותיות במקום מספר). `NULL` הוא ערך של מצביע ש-`fscanf` לא מחזירה, והמשתנה `x` נשאר עם ערכו הקודם ואינו ערך ההחזרה.",
+      "recap": "בסוף הקלט `fscanf` מחזירה `EOF`, ועל אי-התאמה היא מחזירה `0`.",
+      "questionHtml": "מה מחזירה <code class=\"tok\" dir=\"ltr\">fscanf(f, \"%d\", &amp;x)</code> כשכל הקלט כבר נקרא וכבר אין בקובץ מה לקרוא?",
+      "explanationHtml": "כשהקלט נגמר לפני שנקרא משהו, <code class=\"tok\" dir=\"ltr\">fscanf</code> מחזירה <code class=\"tok\" dir=\"ltr\">EOF</code> (נבדק עם clang). הערך <code class=\"tok\" dir=\"ltr\">0</code> מוחזר כשיש טקסט שלא מתאים לפורמט (למשל אותיות במקום מספר). <code class=\"tok\" dir=\"ltr\">NULL</code> הוא ערך של מצביע ש-<code class=\"tok\" dir=\"ltr\">fscanf</code> לא מחזירה, והמשתנה <code class=\"tok\" dir=\"ltr\">x</code> נשאר עם ערכו הקודם ואינו ערך ההחזרה.",
+      "recapHtml": "בסוף הקלט <code class=\"tok\" dir=\"ltr\">fscanf</code> מחזירה <code class=\"tok\" dir=\"ltr\">EOF</code>, ועל אי-התאמה היא מחזירה <code class=\"tok\" dir=\"ltr\">0</code>."
+     },
+     {
+      "id": "C02-Q3",
+      "step": {
+       "type": "numeric",
+       "answer": 1,
+       "tol": 0,
+       "prompt": "הקובץ מכיל `12 abc 5`. כמה פעמים יתבצע גוף הלולאה?\n```c\nint x, n = 0;\nwhile (fscanf(f, \"%d\", &x) == 1)\n    n++;\n```",
+       "explain": "הקריאה הראשונה קוראת 12 ומחזירה 1. הקריאה השנייה נתקלת ב-`abc`, שאינו מספר, ומחזירה 0, ולכן הלולאה נעצרת. הגוף רץ פעם אחת.",
+       "promptHtml": "הקובץ מכיל <code class=\"tok\" dir=\"ltr\">12 abc 5</code>. כמה פעמים יתבצע גוף הלולאה?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>int x, n = 0;\nwhile (fscanf(f, \"%d\", &amp;x) == 1)\n    n++;</code></pre>",
+       "explainHtml": "הקריאה הראשונה קוראת 12 ומחזירה 1. הקריאה השנייה נתקלת ב-<code class=\"tok\" dir=\"ltr\">abc</code>, שאינו מספר, ומחזירה 0, ולכן הלולאה נעצרת. הגוף רץ פעם אחת."
+      },
+      "recap": "אי-התאמה בפורמט עוצרת את הלולאה, כי `fscanf` מחזירה `0`.",
+      "recapHtml": "אי-התאמה בפורמט עוצרת את הלולאה, כי <code class=\"tok\" dir=\"ltr\">fscanf</code> מחזירה <code class=\"tok\" dir=\"ltr\">0</code>."
+     },
+     {
+      "id": "C02-Q4",
+      "step": {
+       "type": "numeric",
+       "answer": 3,
+       "tol": 0,
+       "prompt": "הקובץ מכיל בשורה הראשונה `red  green` (שני רווחים בין המילים) ובשורה השנייה `blue`. כמה מילים נקראות?\n```c\nchar w[20];\nint n = 0;\nwhile (fscanf(f, \"%19s\", w) == 1)\n    n++;\n```",
+       "explain": "`%s` מדלגת על כל הרווחים ועל השורה החדשה וקוראת `red`, `green` ו-`blue`: שלוש מילים.",
+       "promptHtml": "הקובץ מכיל בשורה הראשונה <code class=\"tok\" dir=\"ltr\">red  green</code> (שני רווחים בין המילים) ובשורה השנייה <code class=\"tok\" dir=\"ltr\">blue</code>. כמה מילים נקראות?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>char w[20];\nint n = 0;\nwhile (fscanf(f, \"%19s\", w) == 1)\n    n++;</code></pre>",
+       "explainHtml": "<code class=\"tok\" dir=\"ltr\">%s</code> מדלגת על כל הרווחים ועל השורה החדשה וקוראת <code class=\"tok\" dir=\"ltr\">red</code>, <code class=\"tok\" dir=\"ltr\">green</code> ו-<code class=\"tok\" dir=\"ltr\">blue</code>: שלוש מילים."
+      },
+      "recap": "`%s` קוראת מילה אחת בכל פעם ומדלגת על רווחים ושורות חדשות.",
+      "recapHtml": "<code class=\"tok\" dir=\"ltr\">%s</code> קוראת מילה אחת בכל פעם ומדלגת על רווחים ושורות חדשות."
+     },
+     {
+      "id": "C02-Q5",
+      "step": {
+       "type": "fillblank",
+       "code": true,
+       "prompt": "השלימו את תנאי הלולאה שמסכמת את כל המספרים בקובץ (התוצאה הנכונה לקובץ `4 10 -3 8` היא 19).",
+       "lines": [
+        "int sum = 0, x;",
+        "while (fscanf(f, \"%d\", &x) ___ 1)",
+        "    sum += x;"
+       ],
+       "blankIndex": 1,
+       "options": [
+        {
+         "id": "a",
+         "value": "==",
+         "type": "text",
+         "html": "=="
+        },
+        {
+         "id": "b",
+         "value": "!=",
+         "type": "text",
+         "html": "!="
+        },
+        {
+         "id": "c",
+         "value": "<",
+         "type": "text",
+         "html": "&lt;"
+        },
+        {
+         "id": "d",
+         "value": ">",
+         "type": "text",
+         "html": "&gt;"
+        }
+       ],
+       "correctId": "a",
+       "explain": "הלולאה צריכה לרוץ כל עוד נקרא ערך אחד בהצלחה, כלומר `== 1`. עם `!=`, `<` או `>` התנאי שקר כבר בקריאה הראשונה והסכום נשאר 0 (נבדק עם clang).",
+       "promptHtml": "השלימו את תנאי הלולאה שמסכמת את כל המספרים בקובץ (התוצאה הנכונה לקובץ <code class=\"tok\" dir=\"ltr\">4 10 -3 8</code> היא 19).",
+       "explainHtml": "הלולאה צריכה לרוץ כל עוד נקרא ערך אחד בהצלחה, כלומר <code class=\"tok\" dir=\"ltr\">== 1</code>. עם <code class=\"tok\" dir=\"ltr\">!=</code>, <code class=\"tok\" dir=\"ltr\">&lt;</code> או <code class=\"tok\" dir=\"ltr\">&gt;</code> התנאי שקר כבר בקריאה הראשונה והסכום נשאר 0 (נבדק עם clang).",
+       "linesHtml": [
+        "int sum = 0, x;",
+        "while (fscanf(f, \"%d\", &amp;x) ___ 1)",
+        "    sum += x;"
+       ]
+      },
+      "recap": "לולאת קריאה: `while (fscanf(...) == מספר הערכים)`.",
+      "recapHtml": "לולאת קריאה: <code class=\"tok\" dir=\"ltr\">while (fscanf(...) == מספר הערכים)</code>."
+     },
+     {
+      "id": "C02-Q6",
+      "step": {
+       "type": "text",
+       "accept": [
+        "abc|def|g|hi|"
+       ],
+       "normalize": "none",
+       "prompt": "הקובץ מכיל `abcdefg hi`. מה יודפס (בלי רווחים)?\n```c\nchar w[4];\nwhile (fscanf(f, \"%3s\", w) == 1)\n    printf(\"%s|\", w);\n```",
+       "explain": "כל קריאה לוקחת עד 3 תווים: `abc`, אחר כך `def`, אחר כך `g` (המילה נגמרת ברווח), ולבסוף `hi`. הפלט `abc|def|g|hi|`.",
+       "promptHtml": "הקובץ מכיל <code class=\"tok\" dir=\"ltr\">abcdefg hi</code>. מה יודפס (בלי רווחים)?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>char w[4];\nwhile (fscanf(f, \"%3s\", w) == 1)\n    printf(\"%s|\", w);</code></pre>",
+       "explainHtml": "כל קריאה לוקחת עד 3 תווים: <code class=\"tok\" dir=\"ltr\">abc</code>, אחר כך <code class=\"tok\" dir=\"ltr\">def</code>, אחר כך <code class=\"tok\" dir=\"ltr\">g</code> (המילה נגמרת ברווח), ולבסוף <code class=\"tok\" dir=\"ltr\">hi</code>. הפלט <code class=\"tok\" dir=\"ltr\">abc|def|g|hi|</code>."
+      },
+      "recap": "`%3s` קוראת עד 3 תווים, והשאר נשאר לקריאה הבאה.",
+      "recapHtml": "<code class=\"tok\" dir=\"ltr\">%3s</code> קוראת עד 3 תווים, והשאר נשאר לקריאה הבאה."
+     }
+    ]
+   },
+   {
+    "id": "C03",
+    "order": 3,
+    "icon": "🔤",
+    "title": "תו אחר תו ושורה אחר שורה",
+    "goal": "אחרי השלב הזה אפשר לקרוא קובץ בתווים עם fgetc ובשורות עם fgets ולהסיר את תו השורה החדשה.",
+    "source": "ai-verified",
+    "boss": false,
+    "lesson": {
+     "html": "<h3>fgetc: תו אחד</h3><p><code>fgetc(f)</code> מחזירה את התו הבא, או <code>EOF</code> כשהקובץ נגמר. הערך <code>EOF</code> אינו תו חוקי, ולכן התוצאה נשמרת ב-<code>int</code> ולא ב-<code>char</code>.</p><pre><code>int ch;\nwhile ((ch = fgetc(f)) != EOF)\n    putchar(ch);</code></pre><div class=\"lesson-rule\">🔑 מצהירים <code>int ch</code>. ב-<code>char</code> הלולאה עלולה לא להיעצר לעולם (כש-<code>char</code> ללא סימן) או להיעצר מוקדם מדי, וההתנהגות תלויה במערכת.</div><p>הסוגריים סביב ההשמה חשובים: <code>ch = fgetc(f) != EOF</code> משווה קודם ושומרת ב-<code>ch</code> את 0 או 1.</p><h3>fgets: שורה</h3><p><code>fgets(buf, n, f)</code> קוראת עד <b>n-1 תווים</b> או עד סוף השורה, מה שבא קודם. היא:</p><ul><li><b>משאירה</b> את <code>'\\n'</code> בסוף המחרוזת אם הוא נקרא;</li><li>מוסיפה <code>'\\0'</code> בסוף;</li><li>מחזירה <code>NULL</code> כשאין מה לקרוא, ולכן <code>while (fgets(buf, n, f))</code> היא לולאת קריאה בטוחה.</li></ul><pre><code>char line[101];\nwhile (fgets(line, 101, f))\n{\n    size_t len = strlen(line);\n    if (len &gt; 0 &amp;&amp; line[len - 1] == '\\n')\n        line[len - 1] = '\\0';      /* remove the newline */\n    puts(line);\n}</code></pre><div class=\"lesson-ex\">דוגמה: שורה <code>ab</code> בקובץ נקראת כ-<code>\"ab\\n\"</code> (אורך 3). אחרי ההסרה נשאר <code>ab</code> (אורך 2). שורה ריקה בקובץ נקראת כ-<code>\"\\n\"</code>, ובכל זאת <code>fgets</code> מחזירה בשבילה מחרוזת תקינה.</div><div class=\"lesson-trap\">⚠️ <code>fgets(buf, 4, f)</code> על שורה ארוכה קוראת רק 3 תווים. את שאר השורה תקרא הקריאה הבאה.</div>"
+    },
+    "questions": [
+     {
+      "id": "C03-Q1",
+      "step": {
+       "type": "numeric",
+       "answer": 8,
+       "tol": 0,
+       "prompt": "הקובץ מכיל ארבע שורות: `a`, אחר כך `bb`, אחר כך שורה ריקה, אחר כך `c`, וכל שורה מסתיימת ב-`'\\n'`. מה ערך `n` בסוף?\n```c\nint ch, n = 0;\nwhile ((ch = fgetc(f)) != EOF)\n    n++;\n```",
+       "explain": "הלולאה סופרת כל תו, כולל תווי השורה החדשה: $1+1+2+1+1+1+1=8$ (`a`, שורה, `bb`, שורה, שורה, `c`, שורה).",
+       "promptHtml": "הקובץ מכיל ארבע שורות: <code class=\"tok\" dir=\"ltr\">a</code>, אחר כך <code class=\"tok\" dir=\"ltr\">bb</code>, אחר כך שורה ריקה, אחר כך <code class=\"tok\" dir=\"ltr\">c</code>, וכל שורה מסתיימת ב-<code class=\"tok\" dir=\"ltr\">'\\n'</code>. מה ערך <code class=\"tok\" dir=\"ltr\">n</code> בסוף?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>int ch, n = 0;\nwhile ((ch = fgetc(f)) != EOF)\n    n++;</code></pre>",
+       "explainHtml": "הלולאה סופרת כל תו, כולל תווי השורה החדשה: <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mn>1</mn><mo>+</mo><mn>1</mn><mo>+</mo><mn>2</mn><mo>+</mo><mn>1</mn><mo>+</mo><mn>1</mn><mo>+</mo><mn>1</mn><mo>+</mo><mn>1</mn><mo>=</mo><mn>8</mn></mrow><annotation encoding=\"application/x-tex\">1+1+2+1+1+1+1=8</annotation></semantics></math></span> (<code class=\"tok\" dir=\"ltr\">a</code>, שורה, <code class=\"tok\" dir=\"ltr\">bb</code>, שורה, שורה, <code class=\"tok\" dir=\"ltr\">c</code>, שורה)."
+      },
+      "recap": "`fgetc` מחזירה גם את `'\\n'` כתו רגיל.",
+      "recapHtml": "<code class=\"tok\" dir=\"ltr\">fgetc</code> מחזירה גם את <code class=\"tok\" dir=\"ltr\">'\\n'</code> כתו רגיל."
+     },
+     {
+      "id": "C03-Q2",
+      "step": {
+       "type": "numeric",
+       "answer": 4,
+       "tol": 0,
+       "prompt": "אותו קובץ כמו בשאלה הקודמת (`a`, `bb`, שורה ריקה, `c`, כל שורה מסתיימת ב-`'\\n'`). מה ערך `n` בסוף?\n```c\nchar line[20];\nint n = 0;\nwhile (fgets(line, 20, f))\n    n++;\n```",
+       "explain": "`fgets` מחזירה מחרוזת לכל אחת מארבע השורות, גם לשורה הריקה (היא מחזירה `\"\\n\"`). `NULL` מוחזר רק בסוף הקובץ, לכן $n=4$.",
+       "promptHtml": "אותו קובץ כמו בשאלה הקודמת (<code class=\"tok\" dir=\"ltr\">a</code>, <code class=\"tok\" dir=\"ltr\">bb</code>, שורה ריקה, <code class=\"tok\" dir=\"ltr\">c</code>, כל שורה מסתיימת ב-<code class=\"tok\" dir=\"ltr\">'\\n'</code>). מה ערך <code class=\"tok\" dir=\"ltr\">n</code> בסוף?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>char line[20];\nint n = 0;\nwhile (fgets(line, 20, f))\n    n++;</code></pre>",
+       "explainHtml": "<code class=\"tok\" dir=\"ltr\">fgets</code> מחזירה מחרוזת לכל אחת מארבע השורות, גם לשורה הריקה (היא מחזירה <code class=\"tok\" dir=\"ltr\">\"\\n\"</code>). <code class=\"tok\" dir=\"ltr\">NULL</code> מוחזר רק בסוף הקובץ, לכן <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>n</mi><mo>=</mo><mn>4</mn></mrow><annotation encoding=\"application/x-tex\">n=4</annotation></semantics></math></span>."
+      },
+      "recap": "`fgets` מחזירה `NULL` רק בסוף הקובץ, גם שורה ריקה נקראת.",
+      "recapHtml": "<code class=\"tok\" dir=\"ltr\">fgets</code> מחזירה <code class=\"tok\" dir=\"ltr\">NULL</code> רק בסוף הקובץ, גם שורה ריקה נקראת."
+     },
+     {
+      "id": "C03-Q3",
+      "question": "איזו הצהרה נכונה למשתנה `ch` בלולאה `while ((ch = fgetc(f)) != EOF)` ?",
+      "options": [
+       {
+        "id": "a",
+        "value": "`int ch;`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">int ch;</code>"
+       },
+       {
+        "id": "b",
+        "value": "`char ch;`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">char ch;</code>"
+       },
+       {
+        "id": "c",
+        "value": "`unsigned char ch;`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">unsigned char ch;</code>"
+       },
+       {
+        "id": "d",
+        "value": "כל אחד מהטיפוסים האלה נכון באותה מידה",
+        "type": "text",
+        "html": "כל אחד מהטיפוסים האלה נכון באותה מידה"
+       }
+      ],
+      "correctId": "a",
+      "explanation": "`fgetc` מחזירה `int`: ערך של תו, או `EOF` שאינו תו. רק ב-`int` אפשר להבדיל ביניהם תמיד. ב-`unsigned char` ההשוואה ל-`EOF` (שלילי) אף פעם לא נכונה והלולאה לא נגמרת. ב-`char` תלוי אם הוא עם סימן: או שהלולאה נעצרת באמצע הקובץ בתו עם הערך 255, או שהיא אינסופית. לכן הטיפוסים לא שווים.",
+      "recap": "תוצאת `fgetc` נשמרת ב-`int`.",
+      "questionHtml": "איזו הצהרה נכונה למשתנה <code class=\"tok\" dir=\"ltr\">ch</code> בלולאה <code class=\"tok\" dir=\"ltr\">while ((ch = fgetc(f)) != EOF)</code> ?",
+      "explanationHtml": "<code class=\"tok\" dir=\"ltr\">fgetc</code> מחזירה <code class=\"tok\" dir=\"ltr\">int</code>: ערך של תו, או <code class=\"tok\" dir=\"ltr\">EOF</code> שאינו תו. רק ב-<code class=\"tok\" dir=\"ltr\">int</code> אפשר להבדיל ביניהם תמיד. ב-<code class=\"tok\" dir=\"ltr\">unsigned char</code> ההשוואה ל-<code class=\"tok\" dir=\"ltr\">EOF</code> (שלילי) אף פעם לא נכונה והלולאה לא נגמרת. ב-<code class=\"tok\" dir=\"ltr\">char</code> תלוי אם הוא עם סימן: או שהלולאה נעצרת באמצע הקובץ בתו עם הערך 255, או שהיא אינסופית. לכן הטיפוסים לא שווים.",
+      "recapHtml": "תוצאת <code class=\"tok\" dir=\"ltr\">fgetc</code> נשמרת ב-<code class=\"tok\" dir=\"ltr\">int</code>."
+     },
+     {
+      "id": "C03-Q4",
+      "step": {
+       "type": "numeric",
+       "answer": 3,
+       "tol": 0,
+       "prompt": "הקובץ מתחיל בשורה `ab` (ואחריה `'\\n'`) ובשורה נוספת. מה ידפיס הקוד?\n```c\nchar buf[10];\nfgets(buf, 10, f);\nprintf(\"%d\", (int)strlen(buf));\n```",
+       "explain": "`fgets` קוראת את `a`, `b` ואת `'\\n'` ומשאירה אותו במחרוזת: האורך הוא 3.",
+       "promptHtml": "הקובץ מתחיל בשורה <code class=\"tok\" dir=\"ltr\">ab</code> (ואחריה <code class=\"tok\" dir=\"ltr\">'\\n'</code>) ובשורה נוספת. מה ידפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>char buf[10];\nfgets(buf, 10, f);\nprintf(\"%d\", (int)strlen(buf));</code></pre>",
+       "explainHtml": "<code class=\"tok\" dir=\"ltr\">fgets</code> קוראת את <code class=\"tok\" dir=\"ltr\">a</code>, <code class=\"tok\" dir=\"ltr\">b</code> ואת <code class=\"tok\" dir=\"ltr\">'\\n'</code> ומשאירה אותו במחרוזת: האורך הוא 3."
+      },
+      "recap": "`fgets` משאירה את `'\\n'` במחרוזת.",
+      "recapHtml": "<code class=\"tok\" dir=\"ltr\">fgets</code> משאירה את <code class=\"tok\" dir=\"ltr\">'\\n'</code> במחרוזת."
+     },
+     {
+      "id": "C03-Q5",
+      "step": {
+       "type": "numeric",
+       "answer": 3,
+       "tol": 0,
+       "prompt": "הקובץ מכיל שורה אחת `abcdefgh`. מה ידפיס הקוד?\n```c\nchar buf[10];\nfgets(buf, 4, f);\nprintf(\"%d\", (int)strlen(buf));\n```",
+       "explain": "עם `n = 4` נקראים לכל היותר $4-1=3$ תווים (`abc`), והמקום הרביעי שמור ל-`'\\0'`. האורך הוא 3.",
+       "promptHtml": "הקובץ מכיל שורה אחת <code class=\"tok\" dir=\"ltr\">abcdefgh</code>. מה ידפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>char buf[10];\nfgets(buf, 4, f);\nprintf(\"%d\", (int)strlen(buf));</code></pre>",
+       "explainHtml": "עם <code class=\"tok\" dir=\"ltr\">n = 4</code> נקראים לכל היותר <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mn>4</mn><mo>−</mo><mn>1</mn><mo>=</mo><mn>3</mn></mrow><annotation encoding=\"application/x-tex\">4-1=3</annotation></semantics></math></span> תווים (<code class=\"tok\" dir=\"ltr\">abc</code>), והמקום הרביעי שמור ל-<code class=\"tok\" dir=\"ltr\">'\\0'</code>. האורך הוא 3."
+      },
+      "recap": "`fgets(buf, n, f)` קוראת לכל היותר `n-1` תווים.",
+      "recapHtml": "<code class=\"tok\" dir=\"ltr\">fgets(buf, n, f)</code> קוראת לכל היותר <code class=\"tok\" dir=\"ltr\">n-1</code> תווים."
+     },
+     {
+      "id": "C03-Q6",
+      "step": {
+       "type": "fillblank",
+       "code": true,
+       "prompt": "השלימו את הסרת `'\\n'` מסוף השורה (השורה היא `hi` ואחריה `'\\n'`, והאורך אחרי ההסרה צריך להיות 2).",
+       "lines": [
+        "size_t len = strlen(line);",
+        "if (len > 0 && line[len - 1] == '\\n')",
+        "    line[___] = '\\0';"
+       ],
+       "blankIndex": 2,
+       "options": [
+        {
+         "id": "a",
+         "value": "len - 1",
+         "type": "text",
+         "html": "len - 1"
+        },
+        {
+         "id": "b",
+         "value": "len",
+         "type": "text",
+         "html": "len"
+        },
+        {
+         "id": "c",
+         "value": "0",
+         "type": "text",
+         "html": "0"
+        },
+        {
+         "id": "d",
+         "value": "1",
+         "type": "text",
+         "html": "1"
+        }
+       ],
+       "correctId": "a",
+       "explain": "התו `'\\n'` נמצא במקום $len-1$, ולכן שם שמים `'\\0'`. עם `len` מחליפים את ה-`'\\0'` הקיים ב-`'\\0'` ושום דבר לא משתנה. עם `0` המחרוזת הופכת לריקה, ועם `1` היא מתקצרת לתו אחד (נבדק עם clang).",
+       "promptHtml": "השלימו את הסרת <code class=\"tok\" dir=\"ltr\">'\\n'</code> מסוף השורה (השורה היא <code class=\"tok\" dir=\"ltr\">hi</code> ואחריה <code class=\"tok\" dir=\"ltr\">'\\n'</code>, והאורך אחרי ההסרה צריך להיות 2).",
+       "explainHtml": "התו <code class=\"tok\" dir=\"ltr\">'\\n'</code> נמצא במקום <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>l</mi><mi>e</mi><mi>n</mi><mo>−</mo><mn>1</mn></mrow><annotation encoding=\"application/x-tex\">len-1</annotation></semantics></math></span>, ולכן שם שמים <code class=\"tok\" dir=\"ltr\">'\\0'</code>. עם <code class=\"tok\" dir=\"ltr\">len</code> מחליפים את ה-<code class=\"tok\" dir=\"ltr\">'\\0'</code> הקיים ב-<code class=\"tok\" dir=\"ltr\">'\\0'</code> ושום דבר לא משתנה. עם <code class=\"tok\" dir=\"ltr\">0</code> המחרוזת הופכת לריקה, ועם <code class=\"tok\" dir=\"ltr\">1</code> היא מתקצרת לתו אחד (נבדק עם clang).",
+       "linesHtml": [
+        "size_t len = strlen(line);",
+        "if (len &gt; 0 &amp;&amp; line[len - 1] == '\\n')",
+        "    line[___] = '\\0';"
+       ]
+      },
+      "recap": "מוחקים את `'\\n'` ב-`line[len - 1] = '\\0'`.",
+      "recapHtml": "מוחקים את <code class=\"tok\" dir=\"ltr\">'\\n'</code> ב-<code class=\"tok\" dir=\"ltr\">line[len - 1] = '\\0'</code>."
+     }
+    ]
+   },
+   {
+    "id": "C04",
+    "order": 4,
+    "icon": "🪤",
+    "title": "feof ולולאות קריאה נכונות",
+    "goal": "אחרי השלב הזה אפשר להסביר מתי feof נהיית אמת ולכתוב לולאת קריאה שלא רצה פעם אחת יותר מדי.",
+    "source": "ai-verified",
+    "boss": false,
+    "lesson": {
+     "html": "<p><code>feof(f)</code> מחזירה ערך שונה מאפס <b>רק אחרי שניסו לקרוא מעבר לסוף הקובץ</b> וזה נכשל. היא לא מזהה מראש שהקובץ עומד להיגמר.</p><div class=\"lesson-rule\">🔑 קוראים קודם, ורק אז בודקים אם הקריאה הצליחה. הבדיקה הנכונה היא ערך ההחזרה של הקריאה עצמה: <code>fscanf(...) == 1</code>, <code>fgets(...) != NULL</code>, <code>fgetc(f) != EOF</code>.</div><h3>הלולאה השגויה</h3><pre><code>while (!feof(f))\n{\n    fscanf(f, \"%d\", &amp;x);\n    printf(\"%d \", x);\n}</code></pre><p>בקובץ <code>1 2 3</code> ואחריו <b>רווח</b>: אחרי שנקרא 3, הקובץ עוד לא נגמר (נשאר הרווח), ולכן <code>feof</code> עדיין שקר והלולאה נכנסת פעם נוספת. הקריאה הזו נכשלת, <code>x</code> נשאר 3, והמספר 3 מודפס פעמיים.</p><p>בקובץ <code>1 2 3</code> <b>בלי</b> רווח בסוף, הקריאה של 3 כבר מגיעה לסוף הקובץ בזמן שהיא בודקת אם המספר ממשיך, ולכן <code>feof</code> נהיית אמת מיד והלולאה רצה 3 פעמים בלבד. התוצאה תלויה בתו האחרון בקובץ, ולכן אי אפשר לסמוך על השיטה.</p><p>אותה בעיה ב-<code>fgets</code>: בקובץ עם שתי שורות <code>a</code> ו-<code>b</code> אחרי השורה השנייה <code>feof</code> עוד שקר. הקריאה השלישית מחזירה <code>NULL</code> ולא נוגעת במחרוזת, ולכן השורה <code>b</code> מודפסת שוב.</p><h3>הצורה שמופיעה בפתרונות הרשמיים</h3><p>קוראים פעם אחת <b>לפני</b> הלולאה, ופעם נוספת <b>בסוף כל איטרציה</b>:</p><pre><code>int ch = fgetc(f);\nwhile (ch != EOF)\n{\n    putchar(ch);\n    ch = fgetc(f);       /* refresh at the end of the body */\n}</code></pre><div class=\"lesson-trap\">⚠️ <code>while (!feof(f))</code> עם קריאה בתוך הגוף ועיבוד מיד אחריה, בלי לבדוק את ערך ההחזרה, היא הטעות הנפוצה במבחנים.</div>"
+    },
+    "questions": [
+     {
+      "id": "C04-Q1",
+      "step": {
+       "type": "numeric",
+       "answer": 4,
+       "tol": 0,
+       "prompt": "הקובץ מכיל `1 2 3` ואחרי ה-3 רווח אחד. כמה פעמים יתבצע גוף הלולאה?\n```c\nint x = 0;\nwhile (!feof(f))\n{\n    fscanf(f, \"%d\", &x);\n    printf(\"%d \", x);\n}\n```",
+       "explain": "אחרי שנקרא 3, נשאר רווח בקובץ ו-`feof` עוד שקר, לכן הלולאה נכנסת פעם רביעית. הקריאה נכשלת בסוף הקובץ, והמשתנה `x` נשאר 3. הגוף רץ 4 פעמים והפלט `1 2 3 3`.",
+       "promptHtml": "הקובץ מכיל <code class=\"tok\" dir=\"ltr\">1 2 3</code> ואחרי ה-3 רווח אחד. כמה פעמים יתבצע גוף הלולאה?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>int x = 0;\nwhile (!feof(f))\n{\n    fscanf(f, \"%d\", &amp;x);\n    printf(\"%d \", x);\n}</code></pre>",
+       "explainHtml": "אחרי שנקרא 3, נשאר רווח בקובץ ו-<code class=\"tok\" dir=\"ltr\">feof</code> עוד שקר, לכן הלולאה נכנסת פעם רביעית. הקריאה נכשלת בסוף הקובץ, והמשתנה <code class=\"tok\" dir=\"ltr\">x</code> נשאר 3. הגוף רץ 4 פעמים והפלט <code class=\"tok\" dir=\"ltr\">1 2 3 3</code>."
+      },
+      "recap": "`feof` נהיית אמת רק אחרי שהקריאה נכשלה.",
+      "recapHtml": "<code class=\"tok\" dir=\"ltr\">feof</code> נהיית אמת רק אחרי שהקריאה נכשלה."
+     },
+     {
+      "id": "C04-Q2",
+      "step": {
+       "type": "numeric",
+       "answer": 3,
+       "tol": 0,
+       "prompt": "אותה לולאה כמו בשאלה הקודמת, אבל הקובץ מכיל `1 2 3` **בלי** תו נוסף אחרי ה-3. כמה פעמים יתבצע הגוף?\n```c\nint x = 0;\nwhile (!feof(f))\n{\n    fscanf(f, \"%d\", &x);\n    printf(\"%d \", x);\n}\n```",
+       "explain": "הקריאה של 3 מגיעה לסוף הקובץ בזמן שהיא בודקת אם המספר ממשיך, ולכן `feof` נהיית אמת מיד אחריה. הגוף רץ 3 פעמים. אותה לולאה, והתוצאה תלויה בתו האחרון בקובץ.",
+       "promptHtml": "אותה לולאה כמו בשאלה הקודמת, אבל הקובץ מכיל <code class=\"tok\" dir=\"ltr\">1 2 3</code> <strong>בלי</strong> תו נוסף אחרי ה-3. כמה פעמים יתבצע הגוף?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>int x = 0;\nwhile (!feof(f))\n{\n    fscanf(f, \"%d\", &amp;x);\n    printf(\"%d \", x);\n}</code></pre>",
+       "explainHtml": "הקריאה של 3 מגיעה לסוף הקובץ בזמן שהיא בודקת אם המספר ממשיך, ולכן <code class=\"tok\" dir=\"ltr\">feof</code> נהיית אמת מיד אחריה. הגוף רץ 3 פעמים. אותה לולאה, והתוצאה תלויה בתו האחרון בקובץ."
+      },
+      "recap": "התנהגות `while (!feof(f))` תלויה בתו האחרון, ולכן לא משתמשים בה.",
+      "recapHtml": "התנהגות <code class=\"tok\" dir=\"ltr\">while (!feof(f))</code> תלויה בתו האחרון, ולכן לא משתמשים בה."
+     },
+     {
+      "id": "C04-Q3",
+      "step": {
+       "type": "numeric",
+       "answer": 3,
+       "tol": 0,
+       "prompt": "הקובץ מכיל שתי שורות: `a` ו-`b`, וכל אחת מסתיימת ב-`'\\n'`. כמה שורות יודפסו?\n```c\nchar line[10];\nwhile (!feof(f))\n{\n    fgets(line, 10, f);\n    fputs(line, stdout);\n}\n```",
+       "explain": "אחרי הקריאה השנייה הקובץ עוד לא סומן כנגמר. הקריאה השלישית מחזירה `NULL` ואינה משנה את `line`, שעדיין מכיל `b\\n`, ולכן השורה `b` מודפסת פעם נוספת. הפלט הוא `a`, `b`, `b`: שלוש שורות.",
+       "promptHtml": "הקובץ מכיל שתי שורות: <code class=\"tok\" dir=\"ltr\">a</code> ו-<code class=\"tok\" dir=\"ltr\">b</code>, וכל אחת מסתיימת ב-<code class=\"tok\" dir=\"ltr\">'\\n'</code>. כמה שורות יודפסו?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>char line[10];\nwhile (!feof(f))\n{\n    fgets(line, 10, f);\n    fputs(line, stdout);\n}</code></pre>",
+       "explainHtml": "אחרי הקריאה השנייה הקובץ עוד לא סומן כנגמר. הקריאה השלישית מחזירה <code class=\"tok\" dir=\"ltr\">NULL</code> ואינה משנה את <code class=\"tok\" dir=\"ltr\">line</code>, שעדיין מכיל <code class=\"tok\" dir=\"ltr\">b\\n</code>, ולכן השורה <code class=\"tok\" dir=\"ltr\">b</code> מודפסת פעם נוספת. הפלט הוא <code class=\"tok\" dir=\"ltr\">a</code>, <code class=\"tok\" dir=\"ltr\">b</code>, <code class=\"tok\" dir=\"ltr\">b</code>: שלוש שורות."
+      },
+      "recap": "קריאה שנכשלה משאירה את המחרוזת כפי שהייתה.",
+      "recapHtml": "קריאה שנכשלה משאירה את המחרוזת כפי שהייתה."
+     },
+     {
+      "id": "C04-Q4",
+      "question": "הקובץ מכיל `ab`. מתבצעות שתי קריאות `fgetc(f)` (נקראים `a` ו-`b`). מה מחזירה `feof(f)` מיד אחריהן?",
+      "options": [
+       {
+        "id": "a",
+        "value": "ערך שקר (0), כי עוד לא ניסו לקרוא מעבר לסוף",
+        "type": "text",
+        "html": "ערך שקר (0), כי עוד לא ניסו לקרוא מעבר לסוף"
+       },
+       {
+        "id": "b",
+        "value": "ערך אמת, כי כל התווים כבר נקראו",
+        "type": "text",
+        "html": "ערך אמת, כי כל התווים כבר נקראו"
+       },
+       {
+        "id": "c",
+        "value": "ערך אמת, כי המצביע בסוף הקובץ",
+        "type": "text",
+        "html": "ערך אמת, כי המצביע בסוף הקובץ"
+       },
+       {
+        "id": "d",
+        "value": "ערך לא מוגדר",
+        "type": "text",
+        "html": "ערך לא מוגדר"
+       }
+      ],
+      "correctId": "a",
+      "explanation": "`feof` נהיית אמת רק אחרי קריאה שהגיעה מעבר לסוף. שתי הקריאות הצליחו, ולכן `feof` עדיין 0 (נבדק עם clang). רק הקריאה השלישית תחזיר `EOF` ותדליק את הדגל. בגלל זה הטענות על כך שהיא כבר אמת, בגלל שהכול נקרא או בגלל המיקום, שגויות. הערך מוגדר היטב.",
+      "recap": "`feof` נהיית אמת אחרי קריאה שנכשלה, לא לפניה.",
+      "questionHtml": "הקובץ מכיל <code class=\"tok\" dir=\"ltr\">ab</code>. מתבצעות שתי קריאות <code class=\"tok\" dir=\"ltr\">fgetc(f)</code> (נקראים <code class=\"tok\" dir=\"ltr\">a</code> ו-<code class=\"tok\" dir=\"ltr\">b</code>). מה מחזירה <code class=\"tok\" dir=\"ltr\">feof(f)</code> מיד אחריהן?",
+      "explanationHtml": "<code class=\"tok\" dir=\"ltr\">feof</code> נהיית אמת רק אחרי קריאה שהגיעה מעבר לסוף. שתי הקריאות הצליחו, ולכן <code class=\"tok\" dir=\"ltr\">feof</code> עדיין 0 (נבדק עם clang). רק הקריאה השלישית תחזיר <code class=\"tok\" dir=\"ltr\">EOF</code> ותדליק את הדגל. בגלל זה הטענות על כך שהיא כבר אמת, בגלל שהכול נקרא או בגלל המיקום, שגויות. הערך מוגדר היטב.",
+      "recapHtml": "<code class=\"tok\" dir=\"ltr\">feof</code> נהיית אמת אחרי קריאה שנכשלה, לא לפניה."
+     },
+     {
+      "id": "C04-Q5",
+      "question": "הקובץ מכיל `1 2 3` ואחרי ה-3 רווח. איזו לולאה מדפיסה כל מספר פעם אחת בדיוק (`1 2 3`) ?",
+      "options": [
+       {
+        "id": "a",
+        "value": "`while (fscanf(f, \"%d\", &x) == 1) printf(\"%d \", x);`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">while (fscanf(f, \"%d\", &amp;x) == 1) printf(\"%d \", x);</code>"
+       },
+       {
+        "id": "b",
+        "value": "`while (!feof(f)) { fscanf(f, \"%d\", &x); printf(\"%d \", x); }`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">while (!feof(f)) { fscanf(f, \"%d\", &amp;x); printf(\"%d \", x); }</code>"
+       },
+       {
+        "id": "c",
+        "value": "`do { fscanf(f, \"%d\", &x); printf(\"%d \", x); } while (!feof(f));`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">do { fscanf(f, \"%d\", &amp;x); printf(\"%d \", x); } while (!feof(f));</code>"
+       },
+       {
+        "id": "d",
+        "value": "`while (feof(f) == 0) { fscanf(f, \"%d\", &x); printf(\"%d \", x); }`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">while (feof(f) == 0) { fscanf(f, \"%d\", &amp;x); printf(\"%d \", x); }</code>"
+       }
+      ],
+      "correctId": "a",
+      "explanation": "רק הראשונה בודקת את ערך ההחזרה של `fscanf`, ולכן נעצרת מיד כשהקריאה נכשלת. שלוש האחרות מדפיסות `1 2 3 3` (נבדק עם clang): השנייה והרביעית שקולות, והשלישית מדפיסה לפני שהיא בודקת כלום.",
+      "recap": "בודקים את ערך ההחזרה של הקריאה, לא את `feof`.",
+      "questionHtml": "הקובץ מכיל <code class=\"tok\" dir=\"ltr\">1 2 3</code> ואחרי ה-3 רווח. איזו לולאה מדפיסה כל מספר פעם אחת בדיוק (<code class=\"tok\" dir=\"ltr\">1 2 3</code>) ?",
+      "explanationHtml": "רק הראשונה בודקת את ערך ההחזרה של <code class=\"tok\" dir=\"ltr\">fscanf</code>, ולכן נעצרת מיד כשהקריאה נכשלת. שלוש האחרות מדפיסות <code class=\"tok\" dir=\"ltr\">1 2 3 3</code> (נבדק עם clang): השנייה והרביעית שקולות, והשלישית מדפיסה לפני שהיא בודקת כלום.",
+      "recapHtml": "בודקים את ערך ההחזרה של הקריאה, לא את <code class=\"tok\" dir=\"ltr\">feof</code>."
+     },
+     {
+      "id": "C04-Q6",
+      "step": {
+       "type": "order",
+       "code": true,
+       "prompt": "סדרו את לולאת ההעתקה של הקובץ למסך בצורה של קריאה לפני הלולאה (הגוף כולל את שתי השורות האחרונות).",
+       "lines": [
+        "int ch = fgetc(f);",
+        "while (ch != EOF)",
+        "putchar(ch);",
+        "ch = fgetc(f);"
+       ],
+       "explain": "קוראים את התו הראשון, בודקים אותו בתנאי הלולאה, מדפיסים אותו, ורק אז קוראים את הבא. אם הקריאה הבאה הייתה לפני `putchar`, התו הנוכחי היה אובד.",
+       "promptHtml": "סדרו את לולאת ההעתקה של הקובץ למסך בצורה של קריאה לפני הלולאה (הגוף כולל את שתי השורות האחרונות).",
+       "explainHtml": "קוראים את התו הראשון, בודקים אותו בתנאי הלולאה, מדפיסים אותו, ורק אז קוראים את הבא. אם הקריאה הבאה הייתה לפני <code class=\"tok\" dir=\"ltr\">putchar</code>, התו הנוכחי היה אובד.",
+       "linesHtml": [
+        "int ch = fgetc(f);",
+        "while (ch != EOF)",
+        "putchar(ch);",
+        "ch = fgetc(f);"
+       ]
+      },
+      "recap": "קוראים לפני הלולאה, מעבדים, וקוראים שוב בסוף הגוף.",
+      "recapHtml": "קוראים לפני הלולאה, מעבדים, וקוראים שוב בסוף הגוף."
+     }
+    ]
+   },
+   {
+    "id": "C05",
+    "order": 5,
+    "icon": "💾",
+    "title": "קבצים בינאריים: רשומות עם fwrite ו-fread",
+    "goal": "אחרי השלב הזה אפשר לכתוב רשומות לקובץ בינארי, לקרוא אותן בלולאה ולסנן לפי תנאי.",
+    "source": "ai-verified",
+    "boss": false,
+    "lesson": {
+     "html": "<p>בקובץ טקסט שומרים תווים. בקובץ <b>בינארי</b> שומרים את הבתים של המבנה כמו שהם בזיכרון, רשומה אחרי רשומה, ולכל רשומה אותו גודל קבוע. אין שורות ואין רווחים, ופותחים עם <code>\"rb\"</code> או <code>\"wb\"</code>.</p><pre><code>typedef struct\n{\n    int id;\n    int score;\n} rec;</code></pre><ul><li>כתיבה: <code>fwrite(&amp;r, sizeof(r), 1, f)</code>. הפרמטרים: כתובת הרשומה, גודל רשומה אחת, כמה רשומות, הקובץ.</li><li>קריאה: <code>fread(&amp;r, sizeof(r), 1, f)</code>. <b>הערך המוחזר הוא מספר הרשומות שנקראו</b>, כאן 1 בהצלחה ו-0 בסוף הקובץ.</li></ul><pre><code>rec a;\nint count = 0;\nFILE *f = fopen(name, \"rb\");\nif (!f)\n    return -1;\nwhile (fread(&amp;a, sizeof(a), 1, f) == 1)    /* one record per iteration */\n    if (a.score &gt;= 70)\n        count++;\nfclose(f);</code></pre><div class=\"lesson-rule\">🔑 לולאת קריאה בינארית: <code>while (fread(&amp;a, sizeof(a), 1, f) == 1)</code>. כותבים <code>sizeof(a)</code> (או <code>sizeof(rec)</code>) כדי לכתוב ולקרוא את הרשומה כולה.</div><h3>מה שונה מטקסט</h3><ul><li>המספר 7 נכתב ב-<code>fprintf(f, \"%d\", 7)</code> כתו אחד. ב-<code>fwrite</code> הוא תופס תמיד <code>sizeof(int)</code> בתים, ולכן גם <code>1234567</code> תופס אותו גודל.</li><li>הגודל המדויק של מבנה תלוי במערכת ולכן תמיד כותבים <code>sizeof</code> ולא מספר קבוע.</li><li>בקובץ בינארי אין טעם לקרוא עם <code>fgets</code> או <code>fscanf</code>.</li></ul><div class=\"lesson-ex\">דוגמה: בקובץ עם חמש רשומות עם הציונים 50, 90, 70, 95, 60 הלולאה לעיל סופרת את 90, 70 ו-95, ולכן <code>count</code> הוא 3.</div><div class=\"lesson-trap\">⚠️ <code>fwrite(&amp;r, sizeof(r.id), 1, f)</code> כותבת רק את השדה הראשון, והרשומות בקובץ קטנות מדי. תמיד גודל של הרשומה כולה.</div>"
+    },
+    "questions": [
+     {
+      "id": "C05-Q1",
+      "question": "המשתנה `r` הוא רשומה מטיפוס `rec` (עם `id` ו-`score`). איזו שורה כותבת את הרשומה כולה כגוש בינארי אחד לקובץ שנפתח ב-`\"wb\"` ?",
+      "options": [
+       {
+        "id": "a",
+        "value": "`fwrite(&r, sizeof(r), 1, f);`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">fwrite(&amp;r, sizeof(r), 1, f);</code>"
+       },
+       {
+        "id": "b",
+        "value": "`fwrite(r, sizeof(r), 1, f);`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">fwrite(r, sizeof(r), 1, f);</code>"
+       },
+       {
+        "id": "c",
+        "value": "`fwrite(&r, sizeof(r.id), 1, f);`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">fwrite(&amp;r, sizeof(r.id), 1, f);</code>"
+       },
+       {
+        "id": "d",
+        "value": "`fprintf(f, \"%d %d\", r.id, r.score);`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">fprintf(f, \"%d %d\", r.id, r.score);</code>"
+       }
+      ],
+      "correctId": "a",
+      "explanation": "`fwrite` מקבלת כתובת, ולכן `&r` נכון. התשובה בלי `&` לא עוברת הידור (מבנה במקום כתובת). התשובה עם `sizeof(r.id)` כותבת רק את השדה הראשון. `fprintf` כותבת טקסט באורך משתנה ולא רשומה בגודל קבוע.",
+      "recap": "`fwrite(&r, sizeof(r), 1, f)` כותבת רשומה שלמה.",
+      "questionHtml": "המשתנה <code class=\"tok\" dir=\"ltr\">r</code> הוא רשומה מטיפוס <code class=\"tok\" dir=\"ltr\">rec</code> (עם <code class=\"tok\" dir=\"ltr\">id</code> ו-<code class=\"tok\" dir=\"ltr\">score</code>). איזו שורה כותבת את הרשומה כולה כגוש בינארי אחד לקובץ שנפתח ב-<code class=\"tok\" dir=\"ltr\">\"wb\"</code> ?",
+      "explanationHtml": "<code class=\"tok\" dir=\"ltr\">fwrite</code> מקבלת כתובת, ולכן <code class=\"tok\" dir=\"ltr\">&amp;r</code> נכון. התשובה בלי <code class=\"tok\" dir=\"ltr\">&amp;</code> לא עוברת הידור (מבנה במקום כתובת). התשובה עם <code class=\"tok\" dir=\"ltr\">sizeof(r.id)</code> כותבת רק את השדה הראשון. <code class=\"tok\" dir=\"ltr\">fprintf</code> כותבת טקסט באורך משתנה ולא רשומה בגודל קבוע.",
+      "recapHtml": "<code class=\"tok\" dir=\"ltr\">fwrite(&amp;r, sizeof(r), 1, f)</code> כותבת רשומה שלמה."
+     },
+     {
+      "id": "C05-Q2",
+      "step": {
+       "type": "numeric",
+       "answer": 3,
+       "tol": 0,
+       "prompt": "בקובץ בינארי חמש רשומות עם הציונים 50, 90, 70, 95, 60 (לפי הסדר). מה ערך `count` בסוף?\n```c\nrec a;\nint count = 0;\nwhile (fread(&a, sizeof(a), 1, f) == 1)\n    if (a.score >= 70)\n        count++;\n```",
+       "explain": "הציונים שלפחות 70 הם 90, 70 ו-95: שלוש רשומות.",
+       "promptHtml": "בקובץ בינארי חמש רשומות עם הציונים 50, 90, 70, 95, 60 (לפי הסדר). מה ערך <code class=\"tok\" dir=\"ltr\">count</code> בסוף?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>rec a;\nint count = 0;\nwhile (fread(&amp;a, sizeof(a), 1, f) == 1)\n    if (a.score &gt;= 70)\n        count++;</code></pre>",
+       "explainHtml": "הציונים שלפחות 70 הם 90, 70 ו-95: שלוש רשומות."
+      },
+      "recap": "לולאת `fread` עוברת על כל הרשומות, והתנאי מסנן.",
+      "recapHtml": "לולאת <code class=\"tok\" dir=\"ltr\">fread</code> עוברת על כל הרשומות, והתנאי מסנן."
+     },
+     {
+      "id": "C05-Q3",
+      "step": {
+       "type": "numeric",
+       "answer": 0,
+       "tol": 0,
+       "prompt": "בקובץ בינארי שתי רשומות בלבד. הקוד קורא שלוש פעמים ברצף `n = fread(&a, sizeof(a), 1, f);`. מה ערך `n` בקריאה השלישית?",
+       "explain": "שתי הקריאות הראשונות מחזירות 1. אחרי הרשומה השנייה אין מה לקרוא, ולכן השלישית קוראת 0 רשומות ומחזירה 0.",
+       "promptHtml": "בקובץ בינארי שתי רשומות בלבד. הקוד קורא שלוש פעמים ברצף <code class=\"tok\" dir=\"ltr\">n = fread(&amp;a, sizeof(a), 1, f);</code>. מה ערך <code class=\"tok\" dir=\"ltr\">n</code> בקריאה השלישית?",
+       "explainHtml": "שתי הקריאות הראשונות מחזירות 1. אחרי הרשומה השנייה אין מה לקרוא, ולכן השלישית קוראת 0 רשומות ומחזירה 0."
+      },
+      "recap": "`fread` מחזירה 0 בסוף הקובץ.",
+      "recapHtml": "<code class=\"tok\" dir=\"ltr\">fread</code> מחזירה 0 בסוף הקובץ."
+     },
+     {
+      "id": "C05-Q4",
+      "question": "כותבים קודם את הערך 7 ואחר כך את הערך 1234567 (כל אחד לקובץ חדש). מה נכון?",
+      "options": [
+       {
+        "id": "a",
+        "value": "ב-`fwrite(&x, sizeof(int), 1, f)` שני הקבצים באותו גודל, וב-`fprintf(f, \"%d\", x)` הקובץ של 1234567 גדול יותר",
+        "type": "text",
+        "html": "ב-<code class=\"tok\" dir=\"ltr\">fwrite(&amp;x, sizeof(int), 1, f)</code> שני הקבצים באותו גודל, וב-<code class=\"tok\" dir=\"ltr\">fprintf(f, \"%d\", x)</code> הקובץ של 1234567 גדול יותר"
+       },
+       {
+        "id": "b",
+        "value": "ב-`fprintf(f, \"%d\", x)` שני הקבצים באותו גודל, וב-`fwrite` הקובץ של 1234567 גדול יותר",
+        "type": "text",
+        "html": "ב-<code class=\"tok\" dir=\"ltr\">fprintf(f, \"%d\", x)</code> שני הקבצים באותו גודל, וב-<code class=\"tok\" dir=\"ltr\">fwrite</code> הקובץ של 1234567 גדול יותר"
+       },
+       {
+        "id": "c",
+        "value": "בשתי השיטות שני הקבצים באותו גודל",
+        "type": "text",
+        "html": "בשתי השיטות שני הקבצים באותו גודל"
+       },
+       {
+        "id": "d",
+        "value": "בשתי השיטות הקובץ של 1234567 גדול יותר",
+        "type": "text",
+        "html": "בשתי השיטות הקובץ של 1234567 גדול יותר"
+       }
+      ],
+      "correctId": "a",
+      "explanation": "`fwrite` כותבת תמיד `sizeof(int)` בתים, בלי קשר לערך. `fprintf` כותבת את הספרות כתווים, ולכן 7 הוא תו אחד ו-1234567 הוא שבעה תווים (נבדק עם clang). שתי התשובות האחרונות אינן מתאימות לאף אחת מהשיטות, והשנייה הפוכה.",
+      "recap": "ב-`fwrite` הגודל קבוע, בטקסט הוא תלוי במספר הספרות.",
+      "questionHtml": "כותבים קודם את הערך 7 ואחר כך את הערך 1234567 (כל אחד לקובץ חדש). מה נכון?",
+      "explanationHtml": "<code class=\"tok\" dir=\"ltr\">fwrite</code> כותבת תמיד <code class=\"tok\" dir=\"ltr\">sizeof(int)</code> בתים, בלי קשר לערך. <code class=\"tok\" dir=\"ltr\">fprintf</code> כותבת את הספרות כתווים, ולכן 7 הוא תו אחד ו-1234567 הוא שבעה תווים (נבדק עם clang). שתי התשובות האחרונות אינן מתאימות לאף אחת מהשיטות, והשנייה הפוכה.",
+      "recapHtml": "ב-<code class=\"tok\" dir=\"ltr\">fwrite</code> הגודל קבוע, בטקסט הוא תלוי במספר הספרות."
+     },
+     {
+      "id": "C05-Q5",
+      "step": {
+       "type": "findbug",
+       "code": true,
+       "prompt": "הפונקציה אמורה לספור דירות עם `rooms` חדרים ומחיר של לכל היותר `max_price`. בקובץ ארבע דירות: (3 חדרים, 500), (2, 400), (3, 900), (4, 300). הקריאה `count_matching(name, 3, 600)` צריכה להחזיר 1 אבל מחזירה 4. איזו שורה שגויה?",
+       "lines": [
+        "FILE *f = fopen(name, \"rb\");",
+        "apartment a;",
+        "int count = 0;",
+        "if (!f) return -1;",
+        "while (fread(&a, sizeof(apartment), 1, f) == 1)",
+        "    if (a.rooms == rooms || a.price <= max_price)",
+        "        count++;",
+        "fclose(f);",
+        "return count;"
+       ],
+       "bugIndex": 5,
+       "explain": "התנאי צריך להיות `&&`: שני התנאים חייבים להתקיים. עם `||` מספיק שאחד מהם מתקיים וכל ארבע הדירות נספרות.",
+       "promptHtml": "הפונקציה אמורה לספור דירות עם <code class=\"tok\" dir=\"ltr\">rooms</code> חדרים ומחיר של לכל היותר <code class=\"tok\" dir=\"ltr\">max_price</code>. בקובץ ארבע דירות: (3 חדרים, 500), (2, 400), (3, 900), (4, 300). הקריאה <code class=\"tok\" dir=\"ltr\">count_matching(name, 3, 600)</code> צריכה להחזיר 1 אבל מחזירה 4. איזו שורה שגויה?",
+       "explainHtml": "התנאי צריך להיות <code class=\"tok\" dir=\"ltr\">&amp;&amp;</code>: שני התנאים חייבים להתקיים. עם <code class=\"tok\" dir=\"ltr\">||</code> מספיק שאחד מהם מתקיים וכל ארבע הדירות נספרות.",
+       "linesHtml": [
+        "FILE *f = fopen(name, \"rb\");",
+        "apartment a;",
+        "int count = 0;",
+        "if (!f) return -1;",
+        "while (fread(&amp;a, sizeof(apartment), 1, f) == 1)",
+        "    if (a.rooms == rooms || a.price &lt;= max_price)",
+        "        count++;",
+        "fclose(f);",
+        "return count;"
+       ]
+      },
+      "recap": "סינון לפי שני תנאים משתמש ב-`&&`.",
+      "recapHtml": "סינון לפי שני תנאים משתמש ב-<code class=\"tok\" dir=\"ltr\">&amp;&amp;</code>."
+     },
+     {
+      "id": "C05-Q6",
+      "step": {
+       "type": "order",
+       "code": true,
+       "prompt": "סדרו את הפונקציה שמדפיסה את ה-`id` של כל הרשומות בקובץ הבינארי.",
+       "lines": [
+        "rec a;",
+        "FILE *f = fopen(\"recs.bin\", \"rb\");",
+        "if (!f) return;",
+        "while (fread(&a, sizeof(a), 1, f) == 1)",
+        "    printf(\"%d\\n\", a.id);",
+        "fclose(f);"
+       ],
+       "explain": "מצהירים על המשתנה, פותחים, בודקים, קוראים בלולאה ואז סוגרים. הגוף של הלולאה בא מיד אחרי תנאי הלולאה.",
+       "promptHtml": "סדרו את הפונקציה שמדפיסה את ה-<code class=\"tok\" dir=\"ltr\">id</code> של כל הרשומות בקובץ הבינארי.",
+       "explainHtml": "מצהירים על המשתנה, פותחים, בודקים, קוראים בלולאה ואז סוגרים. הגוף של הלולאה בא מיד אחרי תנאי הלולאה.",
+       "linesHtml": [
+        "rec a;",
+        "FILE *f = fopen(\"recs.bin\", \"rb\");",
+        "if (!f) return;",
+        "while (fread(&amp;a, sizeof(a), 1, f) == 1)",
+        "    printf(\"%d\\n\", a.id);",
+        "fclose(f);"
+       ]
+      },
+      "recap": "קריאה בינארית: פותחים עם `\"rb\"`, בודקים, לולאת `fread`, סוגרים.",
+      "recapHtml": "קריאה בינארית: פותחים עם <code class=\"tok\" dir=\"ltr\">\"rb\"</code>, בודקים, לולאת <code class=\"tok\" dir=\"ltr\">fread</code>, סוגרים."
+     }
+    ]
+   },
+   {
+    "id": "C06",
+    "order": 6,
+    "icon": "🧭",
+    "title": "מיקום בקובץ: ftell, fseek ו-rewind",
+    "goal": "אחרי השלב הזה אפשר לדעת איפה הסמן בקובץ, לקפוץ למקום מסוים, לחזור להתחלה ולחשב גודל קובץ.",
+    "source": "ai-verified",
+    "boss": false,
+    "lesson": {
+     "html": "<p>לכל קובץ פתוח יש <b>סמן</b>: המיקום בבתים מתחילת הקובץ. כל קריאה וכל כתיבה מקדמות אותו.</p><ul><li><code>ftell(f)</code> מחזירה את מיקום הסמן (בבתים מההתחלה, כשהראשון הוא 0).</li><li><code>fseek(f, offset, origin)</code> מזיזה את הסמן, כאשר ה-origin הוא <code>SEEK_SET</code> (מתחילת הקובץ), <code>SEEK_CUR</code> (מהמיקום הנוכחי) או <code>SEEK_END</code> (מסוף הקובץ).</li><li><code>rewind(f)</code> מחזירה את הסמן להתחלה, כמו <code>fseek(f, 0, SEEK_SET)</code>.</li></ul><div class=\"lesson-ex\">נניח שהקובץ (בינארי, <code>\"rb\"</code>) מכיל <code>ABCDEFGH</code>. אחרי קריאת שני תווים <code>ftell</code> היא 2. אחרי <code>fseek(f, 5, SEEK_SET)</code> הקריאה הבאה מחזירה <code>F</code>. אחרי <code>fseek(f, -1, SEEK_END)</code> הקריאה הבאה מחזירה <code>H</code>, התו האחרון.</div><h3>שלושה שימושים</h3><ul><li><b>גודל הקובץ:</b> <code>fseek(f, 0, SEEK_END); size = ftell(f);</code>. הערך הוא מספר הבתים, ואם הקובץ מורכב מרשומות, מספר הרשומות הוא <code>size / sizeof(rec)</code>.</li><li><b>רשומה במקום ידוע:</b> רשומה מספר <code>i</code> (הראשונה היא 0) נמצאת ב-<code>i * sizeof(rec)</code>, כלומר <code>fseek(f, i * sizeof(rec), SEEK_SET)</code> ואחר כך <code>fread</code>.</li><li><b>שני מעברים:</b> עוברים ומונים, <code>rewind(f)</code>, מקצים בגודל שנמנה, ועוברים שוב כדי למלא.</li></ul><pre><code>int n = 0, i = 0;\nrec a, *arr;\nwhile (fread(&amp;a, sizeof(a), 1, f) == 1)   /* pass 1: count */\n    n++;\nrewind(f);                                /* back to the start */\narr = (rec *)calloc(n, sizeof(rec));\nwhile (fread(&amp;a, sizeof(a), 1, f) == 1)   /* pass 2: fill */\n    arr[i++] = a;</code></pre><div class=\"lesson-trap\">⚠️ חישובי מיקום כמו גודל וקפיצה לפי בתים מדויקים בקובץ שנפתח כבינארי (<code>\"rb\"</code>). בקובץ טקסט משתמשים רק בערך ש-<code>ftell</code> החזירה ובקפיצה אליו עם <code>SEEK_SET</code>, ולא בחישובי בתים.</div>"
+    },
+    "questions": [
+     {
+      "id": "C06-Q1",
+      "step": {
+       "type": "numeric",
+       "answer": 3,
+       "tol": 0,
+       "prompt": "הקובץ (נפתח כבינארי) מכיל `ABCDEFGH`. מה ידפיס הקוד?\n```c\nfgetc(f);\nfgetc(f);\nfgetc(f);\nprintf(\"%ld\", ftell(f));\n```",
+       "explain": "כל `fgetc` מקדמת את הסמן בבית אחד. אחרי שלוש קריאות הסמן במקום 3.",
+       "promptHtml": "הקובץ (נפתח כבינארי) מכיל <code class=\"tok\" dir=\"ltr\">ABCDEFGH</code>. מה ידפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>fgetc(f);\nfgetc(f);\nfgetc(f);\nprintf(\"%ld\", ftell(f));</code></pre>",
+       "explainHtml": "כל <code class=\"tok\" dir=\"ltr\">fgetc</code> מקדמת את הסמן בבית אחד. אחרי שלוש קריאות הסמן במקום 3."
+      },
+      "recap": "`ftell` שווה למספר הבתים שכבר עברנו.",
+      "recapHtml": "<code class=\"tok\" dir=\"ltr\">ftell</code> שווה למספר הבתים שכבר עברנו."
+     },
+     {
+      "id": "C06-Q2",
+      "step": {
+       "type": "text",
+       "accept": [
+        "C"
+       ],
+       "normalize": "none",
+       "prompt": "הקובץ (בינארי) מכיל `ABCDEFGH`. איזה תו יודפס?\n```c\nfseek(f, 2, SEEK_SET);\nputchar(fgetc(f));\n```",
+       "explain": "המיקומים מתחילים ב-0: `A` ב-0, `B` ב-1, `C` ב-2. אחרי `fseek(f, 2, SEEK_SET)` הקריאה מחזירה `C`.",
+       "promptHtml": "הקובץ (בינארי) מכיל <code class=\"tok\" dir=\"ltr\">ABCDEFGH</code>. איזה תו יודפס?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>fseek(f, 2, SEEK_SET);\nputchar(fgetc(f));</code></pre>",
+       "explainHtml": "המיקומים מתחילים ב-0: <code class=\"tok\" dir=\"ltr\">A</code> ב-0, <code class=\"tok\" dir=\"ltr\">B</code> ב-1, <code class=\"tok\" dir=\"ltr\">C</code> ב-2. אחרי <code class=\"tok\" dir=\"ltr\">fseek(f, 2, SEEK_SET)</code> הקריאה מחזירה <code class=\"tok\" dir=\"ltr\">C</code>."
+      },
+      "recap": "`SEEK_SET` סופר מההתחלה, והתו הראשון במקום 0.",
+      "recapHtml": "<code class=\"tok\" dir=\"ltr\">SEEK_SET</code> סופר מההתחלה, והתו הראשון במקום 0."
+     },
+     {
+      "id": "C06-Q3",
+      "step": {
+       "type": "numeric",
+       "answer": 8,
+       "tol": 0,
+       "prompt": "הקובץ (בינארי) מכיל `ABCDEFGH`. מה ידפיס הקוד?\n```c\nfseek(f, 0, SEEK_END);\nprintf(\"%ld\", ftell(f));\n```",
+       "explain": "הקפיצה לסוף מציבה את הסמן במקום שאחרי התו האחרון, והוא שווה לגודל הקובץ בבתים: 8.",
+       "promptHtml": "הקובץ (בינארי) מכיל <code class=\"tok\" dir=\"ltr\">ABCDEFGH</code>. מה ידפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>fseek(f, 0, SEEK_END);\nprintf(\"%ld\", ftell(f));</code></pre>",
+       "explainHtml": "הקפיצה לסוף מציבה את הסמן במקום שאחרי התו האחרון, והוא שווה לגודל הקובץ בבתים: 8."
+      },
+      "recap": "גודל קובץ: `fseek(f, 0, SEEK_END)` ואז `ftell`.",
+      "recapHtml": "גודל קובץ: <code class=\"tok\" dir=\"ltr\">fseek(f, 0, SEEK_END)</code> ואז <code class=\"tok\" dir=\"ltr\">ftell</code>."
+     },
+     {
+      "id": "C06-Q4",
+      "question": "הקובץ בינארי והוא מכיל רשומות מטיפוס `rec` ברצף. איזו שורה מציבה את הסמן בתחילת הרשומה שמספרה `i` (הראשונה היא 0) ?",
+      "options": [
+       {
+        "id": "a",
+        "value": "`fseek(f, i * sizeof(rec), SEEK_SET);`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">fseek(f, i * sizeof(rec), SEEK_SET);</code>"
+       },
+       {
+        "id": "b",
+        "value": "`fseek(f, (i + 1) * sizeof(rec), SEEK_SET);`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">fseek(f, (i + 1) * sizeof(rec), SEEK_SET);</code>"
+       },
+       {
+        "id": "c",
+        "value": "`fseek(f, i + sizeof(rec), SEEK_SET);`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">fseek(f, i + sizeof(rec), SEEK_SET);</code>"
+       },
+       {
+        "id": "d",
+        "value": "`fseek(f, i, SEEK_SET);`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">fseek(f, i, SEEK_SET);</code>"
+       }
+      ],
+      "correctId": "a",
+      "explanation": "לפני רשומה `i` יש `i` רשומות, שכל אחת מהן `sizeof(rec)` בתים, ולכן ההיסט הוא `i * sizeof(rec)` (נבדק עם clang, רשומה 2 מתוך ארבע נקראה נכון). עם `i + 1` מגיעים לרשומה הבאה. עם חיבור או עם `i` בלבד מגיעים לאמצע רשומה.",
+      "recap": "רשומה `i` נמצאת בהיסט `i * sizeof(rec)`.",
+      "questionHtml": "הקובץ בינארי והוא מכיל רשומות מטיפוס <code class=\"tok\" dir=\"ltr\">rec</code> ברצף. איזו שורה מציבה את הסמן בתחילת הרשומה שמספרה <code class=\"tok\" dir=\"ltr\">i</code> (הראשונה היא 0) ?",
+      "explanationHtml": "לפני רשומה <code class=\"tok\" dir=\"ltr\">i</code> יש <code class=\"tok\" dir=\"ltr\">i</code> רשומות, שכל אחת מהן <code class=\"tok\" dir=\"ltr\">sizeof(rec)</code> בתים, ולכן ההיסט הוא <code class=\"tok\" dir=\"ltr\">i * sizeof(rec)</code> (נבדק עם clang, רשומה 2 מתוך ארבע נקראה נכון). עם <code class=\"tok\" dir=\"ltr\">i + 1</code> מגיעים לרשומה הבאה. עם חיבור או עם <code class=\"tok\" dir=\"ltr\">i</code> בלבד מגיעים לאמצע רשומה.",
+      "recapHtml": "רשומה <code class=\"tok\" dir=\"ltr\">i</code> נמצאת בהיסט <code class=\"tok\" dir=\"ltr\">i * sizeof(rec)</code>."
+     },
+     {
+      "id": "C06-Q5",
+      "step": {
+       "type": "text",
+       "accept": [
+        "D"
+       ],
+       "normalize": "none",
+       "prompt": "הקובץ (בינארי) מכיל `ABCDEFGH`. איזה תו יודפס?\n```c\nfgetc(f);\nfgetc(f);\nfseek(f, 1, SEEK_CUR);\nputchar(fgetc(f));\n```",
+       "explain": "אחרי שתי קריאות הסמן במקום 2. `SEEK_CUR` עם 1 מזיז אותו למקום 3, והתו שם הוא `D`.",
+       "promptHtml": "הקובץ (בינארי) מכיל <code class=\"tok\" dir=\"ltr\">ABCDEFGH</code>. איזה תו יודפס?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>fgetc(f);\nfgetc(f);\nfseek(f, 1, SEEK_CUR);\nputchar(fgetc(f));</code></pre>",
+       "explainHtml": "אחרי שתי קריאות הסמן במקום 2. <code class=\"tok\" dir=\"ltr\">SEEK_CUR</code> עם 1 מזיז אותו למקום 3, והתו שם הוא <code class=\"tok\" dir=\"ltr\">D</code>."
+      },
+      "recap": "`SEEK_CUR` זז יחסית למקום הנוכחי.",
+      "recapHtml": "<code class=\"tok\" dir=\"ltr\">SEEK_CUR</code> זז יחסית למקום הנוכחי."
+     },
+     {
+      "id": "C06-Q6",
+      "step": {
+       "type": "findbug",
+       "code": true,
+       "prompt": "הקוד אמור לטעון את כל הרשומות של קובץ בינארי למערך, אבל כל איברי המערך נשארים אפסים. איזו שורה שגויה?",
+       "lines": [
+        "FILE *f = fopen(name, \"rb\");",
+        "rec a, *arr;",
+        "int n = 0, i = 0;",
+        "while (fread(&a, sizeof(a), 1, f) == 1)",
+        "    n++;",
+        "fseek(f, 0, SEEK_END);",
+        "arr = (rec *)calloc(n, sizeof(rec));",
+        "while (fread(&a, sizeof(a), 1, f) == 1)",
+        "    arr[i++] = a;"
+       ],
+       "bugIndex": 5,
+       "explain": "אחרי המעבר הראשון הסמן בסוף הקובץ. כדי שהמעבר השני יקרא את הרשומות צריך להחזיר אותו להתחלה עם `rewind(f)`. הקפיצה לסוף משאירה אותו שם והמעבר השני לא קורא כלום.",
+       "promptHtml": "הקוד אמור לטעון את כל הרשומות של קובץ בינארי למערך, אבל כל איברי המערך נשארים אפסים. איזו שורה שגויה?",
+       "explainHtml": "אחרי המעבר הראשון הסמן בסוף הקובץ. כדי שהמעבר השני יקרא את הרשומות צריך להחזיר אותו להתחלה עם <code class=\"tok\" dir=\"ltr\">rewind(f)</code>. הקפיצה לסוף משאירה אותו שם והמעבר השני לא קורא כלום.",
+       "linesHtml": [
+        "FILE *f = fopen(name, \"rb\");",
+        "rec a, *arr;",
+        "int n = 0, i = 0;",
+        "while (fread(&amp;a, sizeof(a), 1, f) == 1)",
+        "    n++;",
+        "fseek(f, 0, SEEK_END);",
+        "arr = (rec *)calloc(n, sizeof(rec));",
+        "while (fread(&amp;a, sizeof(a), 1, f) == 1)",
+        "    arr[i++] = a;"
+       ]
+      },
+      "recap": "בין שני מעברים על הקובץ מחזירים את הסמן להתחלה עם `rewind`.",
+      "recapHtml": "בין שני מעברים על הקובץ מחזירים את הסמן להתחלה עם <code class=\"tok\" dir=\"ltr\">rewind</code>."
+     }
+    ]
+   },
+   {
+    "id": "C07",
+    "order": 7,
+    "icon": "🧩",
+    "title": "תבניות מהמבחן: מילה שלמה, סינון שורות, טקסט לבינארי",
+    "goal": "אחרי השלב הזה אפשר לכתוב את שלושת סוגי הפונקציות שחוזרות במבחנים: ספירת מילה שלמה, סינון שורות לקובץ חדש והמרת טקסט לרשומות.",
+    "source": "ai-verified",
+    "boss": false,
+    "lesson": {
+     "html": "<h3>1. ספירת מילה שלמה</h3><p>קוראים מילה אחר מילה עם <code>fscanf(f, \"%100s\", buf)</code> (הרוחב מונע גלישה) ומשווים ב-<code>strcmp</code> שבודקת שוויון מלא.</p><pre><code>int count = 0;\nchar buf[101];\nwhile (fscanf(f, \"%100s\", buf) == 1)\n    if (strcmp(buf, word) == 0)\n        count++;</code></pre><div class=\"lesson-rule\">🔑 <code>strstr(buf, word)</code> בודקת אם <code>word</code> <b>מוכלת</b> בתוך המילה, ולכן סופרת גם <code>lives</code> ו-<code>alive</code> עבור <code>live</code>. לשוויון מלא משתמשים ב-<code>strcmp(...) == 0</code>.</div><h3>2. סינון שורות לקובץ חדש</h3><pre><code>FILE *in = fopen(src, \"r\"), *out = fopen(dst, \"w\");\nchar line[101];\nif (!in || !out)\n    return;\nwhile (fgets(line, 101, in))\n{\n    size_t len = strlen(line);\n    if (len &gt; 0 &amp;&amp; line[len - 1] == '\\n')\n        line[len - 1] = '\\0';\n    if (strlen(line) &gt; 3)              /* the condition */\n        fprintf(out, \"%s\\n\", line);    /* write the line back */\n}\nfclose(in);\nfclose(out);</code></pre><p>מסירים את <code>'\\n'</code> לפני הבדיקות, וכותבים אותו מחדש עם <code>\"%s\\n\"</code>. גודל המערך הוא אורך השורה המקסימלי + 1 לתו <code>'\\0'</code> + 1 לתו <code>'\\n'</code>.</p><h3>עיבוד של שורה: אותיות שונות</h3><p>כדי לבדוק שכל התווים אותיות שונות זו מזו (בלי הבדל בין גדולה לקטנה) מחזיקים מערך מונים של 26 אותיות ומשתמשים ב-<code>isalpha</code> וב-<code>tolower</code> מ-<code>ctype.h</code>:</p><pre><code>int has_unique_letters(const char *s)\n{\n    int seen[26] = {0}, i, k;\n    for (i = 0; s[i]; i++)\n    {\n        if (!isalpha((unsigned char)s[i]))\n            return 0;                       /* not a letter */\n        k = tolower((unsigned char)s[i]) - 'a';\n        if (seen[k])\n            return 0;                       /* repeated letter */\n        seen[k] = 1;\n    }\n    return 1;\n}</code></pre><p>הפיכת מחרוזת במקום: שני אינדקסים, <code>i</code> מההתחלה ו-<code>j</code> מהסוף, מחליפים ומתקדמים עד שהם נפגשים.</p><h3>3. מטקסט לרשומות בינאריות</h3><pre><code>typedef struct\n{\n    char id[10];\n    char name[31];\n    double total;\n} clientData;\n\nwhile (fscanf(in, \"%9s%30s%lf\", c.id, c.name, &amp;c.total) == 3)\n    fwrite(&amp;c, sizeof(clientData), 1, out);</code></pre><p>הרוחב קטן ב-1 מגודל המערך: <code>%9s</code> ל-<code>char id[10]</code>, כדי שיישאר מקום ל-<code>'\\0'</code>. וכותבים את הרשומה כולה: <code>sizeof(clientData)</code>.</p><div class=\"lesson-trap\">⚠️ בלי הגבלת רוחב, <code>%s</code> שקורא מילה ארוכה כותב מעבר לגבולות המערך.</div>"
+    },
+    "questions": [
+     {
+      "id": "C07-Q1",
+      "step": {
+       "type": "numeric",
+       "answer": 4,
+       "tol": 0,
+       "prompt": "הקובץ מכיל בשורה אחת `live lives alive live`. מה ידפיס הקוד?\n```c\nchar buf[101];\nint count = 0;\nwhile (fscanf(f, \"%100s\", buf) == 1)\n    if (strstr(buf, \"live\"))\n        count++;\nprintf(\"%d\", count);\n```",
+       "explain": "`strstr` מצליחה בכל מילה שמכילה את `live`: `live`, `lives`, `alive`, `live`. התוצאה היא 4, בעוד ש-`strcmp(buf, \"live\") == 0` הייתה סופרת רק 2 מילים שלמות.",
+       "promptHtml": "הקובץ מכיל בשורה אחת <code class=\"tok\" dir=\"ltr\">live lives alive live</code>. מה ידפיס הקוד?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>char buf[101];\nint count = 0;\nwhile (fscanf(f, \"%100s\", buf) == 1)\n    if (strstr(buf, \"live\"))\n        count++;\nprintf(\"%d\", count);</code></pre>",
+       "explainHtml": "<code class=\"tok\" dir=\"ltr\">strstr</code> מצליחה בכל מילה שמכילה את <code class=\"tok\" dir=\"ltr\">live</code>: <code class=\"tok\" dir=\"ltr\">live</code>, <code class=\"tok\" dir=\"ltr\">lives</code>, <code class=\"tok\" dir=\"ltr\">alive</code>, <code class=\"tok\" dir=\"ltr\">live</code>. התוצאה היא 4, בעוד ש-<code class=\"tok\" dir=\"ltr\">strcmp(buf, \"live\") == 0</code> הייתה סופרת רק 2 מילים שלמות."
+      },
+      "recap": "מילה שלמה: `strcmp == 0`, לא `strstr`.",
+      "recapHtml": "מילה שלמה: <code class=\"tok\" dir=\"ltr\">strcmp == 0</code>, לא <code class=\"tok\" dir=\"ltr\">strstr</code>."
+     },
+     {
+      "id": "C07-Q2",
+      "step": {
+       "type": "text",
+       "accept": [
+        "123456789"
+       ],
+       "normalize": "none",
+       "prompt": "הקובץ מכיל `1234567890123`. מה יודפס?\n```c\nchar id[10];\nfscanf(f, \"%9s\", id);\nprintf(\"%s\", id);\n```",
+       "explain": "`%9s` קוראת לכל היותר 9 תווים: `123456789`, ושומרת את המקום העשירי ל-`'\\0'`. שאר הספרות נשארות בקובץ לקריאה הבאה.",
+       "promptHtml": "הקובץ מכיל <code class=\"tok\" dir=\"ltr\">1234567890123</code>. מה יודפס?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>char id[10];\nfscanf(f, \"%9s\", id);\nprintf(\"%s\", id);</code></pre>",
+       "explainHtml": "<code class=\"tok\" dir=\"ltr\">%9s</code> קוראת לכל היותר 9 תווים: <code class=\"tok\" dir=\"ltr\">123456789</code>, ושומרת את המקום העשירי ל-<code class=\"tok\" dir=\"ltr\">'\\0'</code>. שאר הספרות נשארות בקובץ לקריאה הבאה."
+      },
+      "recap": "רוחב הקריאה קטן ב-1 מגודל המערך.",
+      "recapHtml": "רוחב הקריאה קטן ב-1 מגודל המערך."
+     },
+     {
+      "id": "C07-Q3",
+      "question": "איזו מהמחרוזות הבאות מקבלת 1 מהפונקציה `has_unique_letters` שבשיעור (רק אותיות, כולן שונות, גדולה וקטנה נחשבות אותה אות) ?",
+      "options": [
+       {
+        "id": "a",
+        "value": "`Table`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">Table</code>"
+       },
+       {
+        "id": "b",
+        "value": "`Alisa`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">Alisa</code>"
+       },
+       {
+        "id": "c",
+        "value": "`ab#c`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">ab#c</code>"
+       },
+       {
+        "id": "d",
+        "value": "`Noon`",
+        "type": "text",
+        "html": "<code class=\"tok\" dir=\"ltr\">Noon</code>"
+       }
+      ],
+      "correctId": "a",
+      "explanation": "ב-`Table` כל חמש האותיות שונות (נבדק עם clang). ב-`Alisa` יש `A` ו-`a`, שנחשבות לאותה אות. ב-`ab#c` יש תו שאינו אות. ב-`Noon` האות `n` חוזרת פעמיים (`N` ו-`n`).",
+      "recap": "מערך מונים של 26 אותיות עם `tolower` בודק שכל אות מופיעה פעם אחת.",
+      "questionHtml": "איזו מהמחרוזות הבאות מקבלת 1 מהפונקציה <code class=\"tok\" dir=\"ltr\">has_unique_letters</code> שבשיעור (רק אותיות, כולן שונות, גדולה וקטנה נחשבות אותה אות) ?",
+      "explanationHtml": "ב-<code class=\"tok\" dir=\"ltr\">Table</code> כל חמש האותיות שונות (נבדק עם clang). ב-<code class=\"tok\" dir=\"ltr\">Alisa</code> יש <code class=\"tok\" dir=\"ltr\">A</code> ו-<code class=\"tok\" dir=\"ltr\">a</code>, שנחשבות לאותה אות. ב-<code class=\"tok\" dir=\"ltr\">ab#c</code> יש תו שאינו אות. ב-<code class=\"tok\" dir=\"ltr\">Noon</code> האות <code class=\"tok\" dir=\"ltr\">n</code> חוזרת פעמיים (<code class=\"tok\" dir=\"ltr\">N</code> ו-<code class=\"tok\" dir=\"ltr\">n</code>).",
+      "recapHtml": "מערך מונים של 26 אותיות עם <code class=\"tok\" dir=\"ltr\">tolower</code> בודק שכל אות מופיעה פעם אחת."
+     },
+     {
+      "id": "C07-Q4",
+      "step": {
+       "type": "numeric",
+       "answer": 2,
+       "tol": 0,
+       "prompt": "קובץ הקלט מכיל ארבע שורות: `abcd`, `ab`, `abcde` ו-`x` (כל אחת מסתיימת ב-`'\\n'`). הפונקציה מהשיעור מעתיקה לקובץ הפלט רק שורות שאורכן (בלי `'\\n'`) גדול מ-3. כמה שורות יהיו בקובץ הפלט?",
+       "explain": "האורכים הם 4, 2, 5 ו-1. רק `abcd` ו-`abcde` עומדות בתנאי, ולכן בקובץ הפלט שתי שורות.",
+       "promptHtml": "קובץ הקלט מכיל ארבע שורות: <code class=\"tok\" dir=\"ltr\">abcd</code>, <code class=\"tok\" dir=\"ltr\">ab</code>, <code class=\"tok\" dir=\"ltr\">abcde</code> ו-<code class=\"tok\" dir=\"ltr\">x</code> (כל אחת מסתיימת ב-<code class=\"tok\" dir=\"ltr\">'\\n'</code>). הפונקציה מהשיעור מעתיקה לקובץ הפלט רק שורות שאורכן (בלי <code class=\"tok\" dir=\"ltr\">'\\n'</code>) גדול מ-3. כמה שורות יהיו בקובץ הפלט?",
+       "explainHtml": "האורכים הם 4, 2, 5 ו-1. רק <code class=\"tok\" dir=\"ltr\">abcd</code> ו-<code class=\"tok\" dir=\"ltr\">abcde</code> עומדות בתנאי, ולכן בקובץ הפלט שתי שורות."
+      },
+      "recap": "מסירים את `'\\n'` לפני שבודקים אורך.",
+      "recapHtml": "מסירים את <code class=\"tok\" dir=\"ltr\">'\\n'</code> לפני שבודקים אורך."
+     },
+     {
+      "id": "C07-Q5",
+      "step": {
+       "type": "findbug",
+       "code": true,
+       "prompt": "הפונקציה אמורה להמיר כל שורה בקובץ הטקסט לרשומה בינארית שלמה, אבל הקובץ הבינארי יוצא קטן מדי ורשומות נקראות ממנו בצורה שבורה. איזו שורה שגויה?",
+       "lines": [
+        "clientData c;",
+        "FILE *in = fopen(text_name, \"r\");",
+        "FILE *out = fopen(binary_name, \"wb\");",
+        "if (!in || !out) exit(1);",
+        "while (fscanf(in, \"%9s%30s%lf\", c.id, c.name, &c.total) == 3)",
+        "    fwrite(&c, sizeof(c.id), 1, out);",
+        "fclose(in);",
+        "fclose(out);"
+       ],
+       "bugIndex": 5,
+       "explain": "`sizeof(c.id)` הוא גודל השדה הראשון בלבד. כל רשומה חייבת להיכתב בשלמותה עם `sizeof(clientData)`.",
+       "promptHtml": "הפונקציה אמורה להמיר כל שורה בקובץ הטקסט לרשומה בינארית שלמה, אבל הקובץ הבינארי יוצא קטן מדי ורשומות נקראות ממנו בצורה שבורה. איזו שורה שגויה?",
+       "explainHtml": "<code class=\"tok\" dir=\"ltr\">sizeof(c.id)</code> הוא גודל השדה הראשון בלבד. כל רשומה חייבת להיכתב בשלמותה עם <code class=\"tok\" dir=\"ltr\">sizeof(clientData)</code>.",
+       "linesHtml": [
+        "clientData c;",
+        "FILE *in = fopen(text_name, \"r\");",
+        "FILE *out = fopen(binary_name, \"wb\");",
+        "if (!in || !out) exit(1);",
+        "while (fscanf(in, \"%9s%30s%lf\", c.id, c.name, &amp;c.total) == 3)",
+        "    fwrite(&amp;c, sizeof(c.id), 1, out);",
+        "fclose(in);",
+        "fclose(out);"
+       ]
+      },
+      "recap": "כותבים רשומה שלמה: `sizeof` של המבנה, לא של שדה.",
+      "recapHtml": "כותבים רשומה שלמה: <code class=\"tok\" dir=\"ltr\">sizeof</code> של המבנה, לא של שדה."
+     },
+     {
+      "id": "C07-Q6",
+      "step": {
+       "type": "order",
+       "code": true,
+       "prompt": "סדרו את הפונקציה שמעתיקה את כל השורות מקובץ טקסט אחד לאחר (כל פקודה היא בלוק לוגי אחד).",
+       "lines": [
+        "FILE *in = fopen(src, \"r\"), *out = fopen(dst, \"w\");",
+        "if (!in || !out) return;",
+        "while (fgets(line, 101, in))",
+        "    fputs(line, out);",
+        "fclose(in); fclose(out);"
+       ],
+       "explain": "פותחים את שני הקבצים, בודקים אותם, מעתיקים שורה אחר שורה (`fgets` משאירה את `'\\n'` ולכן `fputs` מספיקה) וסוגרים.",
+       "promptHtml": "סדרו את הפונקציה שמעתיקה את כל השורות מקובץ טקסט אחד לאחר (כל פקודה היא בלוק לוגי אחד).",
+       "explainHtml": "פותחים את שני הקבצים, בודקים אותם, מעתיקים שורה אחר שורה (<code class=\"tok\" dir=\"ltr\">fgets</code> משאירה את <code class=\"tok\" dir=\"ltr\">'\\n'</code> ולכן <code class=\"tok\" dir=\"ltr\">fputs</code> מספיקה) וסוגרים.",
+       "linesHtml": [
+        "FILE *in = fopen(src, \"r\"), *out = fopen(dst, \"w\");",
+        "if (!in || !out) return;",
+        "while (fgets(line, 101, in))",
+        "    fputs(line, out);",
+        "fclose(in); fclose(out);"
+       ]
+      },
+      "recap": "העתקת שורות: `while (fgets(...)) fputs(...)`.",
+      "recapHtml": "העתקת שורות: <code class=\"tok\" dir=\"ltr\">while (fgets(...)) fputs(...)</code>."
+     }
+    ]
+   },
+   {
+    "id": "C08",
+    "order": 8,
+    "icon": "🏆",
+    "title": "מבחן גמר: שאלות מהמבחן",
+    "goal": "אחרי השלב הזה אפשר לפתור שאלות קבצים בגודל של שאלת מבחן אמיתית.",
+    "source": "ai-verified",
+    "boss": true,
+    "lesson": {
+     "html": "<p>ארבע שאלות אמיתיות מהמבחנים, חלקן עם צעדים מודרכים. לפני שכותבים קוד, עוברים על הרשימה:</p><ul><li>איזה סוג קובץ זה (טקסט או בינארי) ואיזו קריאה מתאימה: <code>fscanf</code> למילים ומספרים, <code>fgets</code> לשורות, <code>fgetc</code> לתווים, <code>fread</code> לרשומות?</li><li>מה מחזירים אם הקובץ לא נפתח?</li><li>האם צריך את <code>'\\n'</code>: מורידים אחרי <code>fgets</code>, וכותבים אותו חזרה עם <code>\"%s\\n\"</code>?</li><li>בשאלות פלט: רושמים אחרי כל קריאה מה נקרא ואיפה הסמן, ולא סומכים על <code>feof</code>.</li><li>סוגרים את כל הקבצים בכל מסלול יציאה.</li></ul><div class=\"lesson-rule\">🔑 בודקים את ערך ההחזרה של הקריאה עצמה, ולא את <code>feof</code>: <code>fscanf == 1</code>, <code>fgets != NULL</code>, <code>fread == 1</code>.</div>"
+    },
+    "questions": [
+     {
+      "bankId": "24B-A-Q6",
+      "recap": "`fgets(st, 2, f)` קוראת תו אחד בכל קריאה, והקריאה הפנימית בלולאה צורכת את התו הבא.",
+      "recapHtml": "<code class=\"tok\" dir=\"ltr\">fgets(st, 2, f)</code> קוראת תו אחד בכל קריאה, והקריאה הפנימית בלולאה צורכת את התו הבא."
+     },
+     {
+      "bankId": "25B-A-Q3",
+      "recap": "מילה שלמה: `fscanf` עם `%100s` ו-`strcmp`, כשמחזירים `-1` אם הקובץ לא נפתח.",
+      "recapHtml": "מילה שלמה: <code class=\"tok\" dir=\"ltr\">fscanf</code> עם <code class=\"tok\" dir=\"ltr\">%100s</code> ו-<code class=\"tok\" dir=\"ltr\">strcmp</code>, כשמחזירים <code class=\"tok\" dir=\"ltr\">-1</code> אם הקובץ לא נפתח."
+     },
+     {
+      "bankId": "25B-B-Q3",
+      "recap": "טקסט לבינארי: `fscanf` עם `%9s%30s%lf` והכתיבה של הרשומה כולה עם `fwrite`.",
+      "recapHtml": "טקסט לבינארי: <code class=\"tok\" dir=\"ltr\">fscanf</code> עם <code class=\"tok\" dir=\"ltr\">%9s%30s%lf</code> והכתיבה של הרשומה כולה עם <code class=\"tok\" dir=\"ltr\">fwrite</code>."
+     },
+     {
+      "bankId": "24B-B-Q3",
+      "recap": "סינון שורות: הסרת `'\\n'`, פונקציית עזר לאותיות שונות, ושורות הפוכות לקובץ הפלט.",
+      "recapHtml": "סינון שורות: הסרת <code class=\"tok\" dir=\"ltr\">'\\n'</code>, פונקציית עזר לאותיות שונות, ושורות הפוכות לקובץ הפלט."
      }
     ]
    }

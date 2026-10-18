@@ -1,0 +1,690 @@
+{
+ "courseId": "files_strings",
+ "levels": [
+  {
+   "id": "C01",
+   "order": 1,
+   "boss": false,
+   "questions": [
+    {
+     "id": "C01-Q1",
+     "question": "מה מחזירה `fopen(\"nope.txt\", \"r\")` כשהקובץ `nope.txt` לא קיים בתיקייה?",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`NULL`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "מצביע תקין לקובץ ריק"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "התוכנית קורסת כבר בתוך `fopen`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "מצביע ל-`stdin`"
+      }
+     ]
+    },
+    {
+     "id": "C01-Q2",
+     "question": "הקובץ `t.txt` מכיל `AB`. התוכנית מריצה:\n```c\nFILE *f = fopen(\"t.txt\", \"w\");\nfputs(\"C\", f);\nfclose(f);\n```\nמה תוכן הקובץ אחרי הריצה?",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`C`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`ABC`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`AB`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`CB`"
+      }
+     ]
+    },
+    {
+     "id": "C01-Q3",
+     "step": {
+      "type": "text",
+      "prompt": "הקובץ `t.txt` מכיל `x1`. מה יהיה תוכנו (בלי רווחים) אחרי הקוד?\n```c\nFILE *f = fopen(\"t.txt\", \"a\");\nfprintf(f, \"%d\", 25);\nfclose(f);\n```",
+      "normalize": "none"
+     }
+    },
+    {
+     "id": "C01-Q4",
+     "step": {
+      "type": "numeric",
+      "prompt": "הקובץ נפתח חדש בכתיבה, ואז מתבצע הקוד הבא. כמה תווים יש בקובץ בסוף?\n```c\nfputs(\"ab\", f);\nfputc('c', f);\nfprintf(f, \"%d-%d\", 12, 3);\n```"
+     }
+    },
+    {
+     "id": "C01-Q5",
+     "step": {
+      "type": "numeric",
+      "prompt": "כמה שורות יוצגו על המסך?\n```c\nputs(\"a\");\nfputs(\"b\", stdout);\nputs(\"c\");\n```"
+     }
+    },
+    {
+     "id": "C01-Q6",
+     "step": {
+      "type": "order",
+      "prompt": "סדרו את השלבים של כתיבת המספר 5 לקובץ בצורה נכונה ובטוחה.",
+      "code": true,
+      "lines": [
+       "if (!f) return 1;",
+       "fprintf(f, \"%d\", 5);",
+       "fclose(f);",
+       "FILE *f = fopen(\"out.txt\", \"w\");"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "C02",
+   "order": 2,
+   "boss": false,
+   "questions": [
+    {
+     "id": "C02-Q1",
+     "step": {
+      "type": "numeric",
+      "prompt": "הקובץ מכיל את השורה `4 10 -3` ואחריה השורה `8`. מה יודפס?\n```c\nint x, sum = 0;\nwhile (fscanf(f, \"%d\", &x) == 1)\n    sum += x;\nprintf(\"%d\", sum);\n```"
+     }
+    },
+    {
+     "id": "C02-Q2",
+     "question": "מה מחזירה `fscanf(f, \"%d\", &x)` כשכל הקלט כבר נקרא וכבר אין בקובץ מה לקרוא?",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`EOF`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`0`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`NULL`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "הערך האחרון שנקרא"
+      }
+     ]
+    },
+    {
+     "id": "C02-Q3",
+     "step": {
+      "type": "numeric",
+      "prompt": "הקובץ מכיל `12 abc 5`. כמה פעמים יתבצע גוף הלולאה?\n```c\nint x, n = 0;\nwhile (fscanf(f, \"%d\", &x) == 1)\n    n++;\n```"
+     }
+    },
+    {
+     "id": "C02-Q4",
+     "step": {
+      "type": "numeric",
+      "prompt": "הקובץ מכיל בשורה הראשונה `red  green` (שני רווחים בין המילים) ובשורה השנייה `blue`. כמה מילים נקראות?\n```c\nchar w[20];\nint n = 0;\nwhile (fscanf(f, \"%19s\", w) == 1)\n    n++;\n```"
+     }
+    },
+    {
+     "id": "C02-Q5",
+     "step": {
+      "type": "fillblank",
+      "prompt": "השלימו את תנאי הלולאה שמסכמת את כל המספרים בקובץ (התוצאה הנכונה לקובץ `4 10 -3 8` היא 19).",
+      "code": true,
+      "options": [
+       {
+        "id": "a",
+        "type": "text",
+        "value": "=="
+       },
+       {
+        "id": "b",
+        "type": "text",
+        "value": "!="
+       },
+       {
+        "id": "c",
+        "type": "text",
+        "value": "<"
+       },
+       {
+        "id": "d",
+        "type": "text",
+        "value": ">"
+       }
+      ],
+      "lines": [
+       "int sum = 0, x;",
+       "while (fscanf(f, \"%d\", &x) ___ 1)",
+       "    sum += x;"
+      ],
+      "blankIndex": 1
+     }
+    },
+    {
+     "id": "C02-Q6",
+     "step": {
+      "type": "text",
+      "prompt": "הקובץ מכיל `abcdefg hi`. מה יודפס (בלי רווחים)?\n```c\nchar w[4];\nwhile (fscanf(f, \"%3s\", w) == 1)\n    printf(\"%s|\", w);\n```",
+      "normalize": "none"
+     }
+    }
+   ]
+  },
+  {
+   "id": "C03",
+   "order": 3,
+   "boss": false,
+   "questions": [
+    {
+     "id": "C03-Q1",
+     "step": {
+      "type": "numeric",
+      "prompt": "הקובץ מכיל ארבע שורות: `a`, אחר כך `bb`, אחר כך שורה ריקה, אחר כך `c`, וכל שורה מסתיימת ב-`'\\n'`. מה ערך `n` בסוף?\n```c\nint ch, n = 0;\nwhile ((ch = fgetc(f)) != EOF)\n    n++;\n```"
+     }
+    },
+    {
+     "id": "C03-Q2",
+     "step": {
+      "type": "numeric",
+      "prompt": "אותו קובץ כמו בשאלה הקודמת (`a`, `bb`, שורה ריקה, `c`, כל שורה מסתיימת ב-`'\\n'`). מה ערך `n` בסוף?\n```c\nchar line[20];\nint n = 0;\nwhile (fgets(line, 20, f))\n    n++;\n```"
+     }
+    },
+    {
+     "id": "C03-Q3",
+     "question": "איזו הצהרה נכונה למשתנה `ch` בלולאה `while ((ch = fgetc(f)) != EOF)` ?",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`int ch;`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`char ch;`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`unsigned char ch;`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "כל אחד מהטיפוסים האלה נכון באותה מידה"
+      }
+     ]
+    },
+    {
+     "id": "C03-Q4",
+     "step": {
+      "type": "numeric",
+      "prompt": "הקובץ מתחיל בשורה `ab` (ואחריה `'\\n'`) ובשורה נוספת. מה ידפיס הקוד?\n```c\nchar buf[10];\nfgets(buf, 10, f);\nprintf(\"%d\", (int)strlen(buf));\n```"
+     }
+    },
+    {
+     "id": "C03-Q5",
+     "step": {
+      "type": "numeric",
+      "prompt": "הקובץ מכיל שורה אחת `abcdefgh`. מה ידפיס הקוד?\n```c\nchar buf[10];\nfgets(buf, 4, f);\nprintf(\"%d\", (int)strlen(buf));\n```"
+     }
+    },
+    {
+     "id": "C03-Q6",
+     "step": {
+      "type": "fillblank",
+      "prompt": "השלימו את הסרת `'\\n'` מסוף השורה (השורה היא `hi` ואחריה `'\\n'`, והאורך אחרי ההסרה צריך להיות 2).",
+      "code": true,
+      "options": [
+       {
+        "id": "a",
+        "type": "text",
+        "value": "len - 1"
+       },
+       {
+        "id": "b",
+        "type": "text",
+        "value": "len"
+       },
+       {
+        "id": "c",
+        "type": "text",
+        "value": "0"
+       },
+       {
+        "id": "d",
+        "type": "text",
+        "value": "1"
+       }
+      ],
+      "lines": [
+       "size_t len = strlen(line);",
+       "if (len > 0 && line[len - 1] == '\\n')",
+       "    line[___] = '\\0';"
+      ],
+      "blankIndex": 2
+     }
+    }
+   ]
+  },
+  {
+   "id": "C04",
+   "order": 4,
+   "boss": false,
+   "questions": [
+    {
+     "id": "C04-Q1",
+     "step": {
+      "type": "numeric",
+      "prompt": "הקובץ מכיל `1 2 3` ואחרי ה-3 רווח אחד. כמה פעמים יתבצע גוף הלולאה?\n```c\nint x = 0;\nwhile (!feof(f))\n{\n    fscanf(f, \"%d\", &x);\n    printf(\"%d \", x);\n}\n```"
+     }
+    },
+    {
+     "id": "C04-Q2",
+     "step": {
+      "type": "numeric",
+      "prompt": "אותה לולאה כמו בשאלה הקודמת, אבל הקובץ מכיל `1 2 3` **בלי** תו נוסף אחרי ה-3. כמה פעמים יתבצע הגוף?\n```c\nint x = 0;\nwhile (!feof(f))\n{\n    fscanf(f, \"%d\", &x);\n    printf(\"%d \", x);\n}\n```"
+     }
+    },
+    {
+     "id": "C04-Q3",
+     "step": {
+      "type": "numeric",
+      "prompt": "הקובץ מכיל שתי שורות: `a` ו-`b`, וכל אחת מסתיימת ב-`'\\n'`. כמה שורות יודפסו?\n```c\nchar line[10];\nwhile (!feof(f))\n{\n    fgets(line, 10, f);\n    fputs(line, stdout);\n}\n```"
+     }
+    },
+    {
+     "id": "C04-Q4",
+     "question": "הקובץ מכיל `ab`. מתבצעות שתי קריאות `fgetc(f)` (נקראים `a` ו-`b`). מה מחזירה `feof(f)` מיד אחריהן?",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "ערך שקר (0), כי עוד לא ניסו לקרוא מעבר לסוף"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "ערך אמת, כי כל התווים כבר נקראו"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "ערך אמת, כי המצביע בסוף הקובץ"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "ערך לא מוגדר"
+      }
+     ]
+    },
+    {
+     "id": "C04-Q5",
+     "question": "הקובץ מכיל `1 2 3` ואחרי ה-3 רווח. איזו לולאה מדפיסה כל מספר פעם אחת בדיוק (`1 2 3`) ?",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`while (fscanf(f, \"%d\", &x) == 1) printf(\"%d \", x);`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`while (!feof(f)) { fscanf(f, \"%d\", &x); printf(\"%d \", x); }`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`do { fscanf(f, \"%d\", &x); printf(\"%d \", x); } while (!feof(f));`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`while (feof(f) == 0) { fscanf(f, \"%d\", &x); printf(\"%d \", x); }`"
+      }
+     ]
+    },
+    {
+     "id": "C04-Q6",
+     "step": {
+      "type": "order",
+      "prompt": "סדרו את לולאת ההעתקה של הקובץ למסך בצורה של קריאה לפני הלולאה (הגוף כולל את שתי השורות האחרונות).",
+      "code": true,
+      "lines": [
+       "while (ch != EOF)",
+       "putchar(ch);",
+       "ch = fgetc(f);",
+       "int ch = fgetc(f);"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "C05",
+   "order": 5,
+   "boss": false,
+   "questions": [
+    {
+     "id": "C05-Q1",
+     "question": "המשתנה `r` הוא רשומה מטיפוס `rec` (עם `id` ו-`score`). איזו שורה כותבת את הרשומה כולה כגוש בינארי אחד לקובץ שנפתח ב-`\"wb\"` ?",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`fwrite(&r, sizeof(r), 1, f);`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`fwrite(r, sizeof(r), 1, f);`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`fwrite(&r, sizeof(r.id), 1, f);`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`fprintf(f, \"%d %d\", r.id, r.score);`"
+      }
+     ]
+    },
+    {
+     "id": "C05-Q2",
+     "step": {
+      "type": "numeric",
+      "prompt": "בקובץ בינארי חמש רשומות עם הציונים 50, 90, 70, 95, 60 (לפי הסדר). מה ערך `count` בסוף?\n```c\nrec a;\nint count = 0;\nwhile (fread(&a, sizeof(a), 1, f) == 1)\n    if (a.score >= 70)\n        count++;\n```"
+     }
+    },
+    {
+     "id": "C05-Q3",
+     "step": {
+      "type": "numeric",
+      "prompt": "בקובץ בינארי שתי רשומות בלבד. הקוד קורא שלוש פעמים ברצף `n = fread(&a, sizeof(a), 1, f);`. מה ערך `n` בקריאה השלישית?"
+     }
+    },
+    {
+     "id": "C05-Q4",
+     "question": "כותבים קודם את הערך 7 ואחר כך את הערך 1234567 (כל אחד לקובץ חדש). מה נכון?",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "ב-`fwrite(&x, sizeof(int), 1, f)` שני הקבצים באותו גודל, וב-`fprintf(f, \"%d\", x)` הקובץ של 1234567 גדול יותר"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "ב-`fprintf(f, \"%d\", x)` שני הקבצים באותו גודל, וב-`fwrite` הקובץ של 1234567 גדול יותר"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "בשתי השיטות שני הקבצים באותו גודל"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "בשתי השיטות הקובץ של 1234567 גדול יותר"
+      }
+     ]
+    },
+    {
+     "id": "C05-Q5",
+     "step": {
+      "type": "findbug",
+      "prompt": "הפונקציה אמורה לספור דירות עם `rooms` חדרים ומחיר של לכל היותר `max_price`. בקובץ ארבע דירות: (3 חדרים, 500), (2, 400), (3, 900), (4, 300). הקריאה `count_matching(name, 3, 600)` צריכה להחזיר 1 אבל מחזירה 4. איזו שורה שגויה?",
+      "code": true,
+      "lines": [
+       "FILE *f = fopen(name, \"rb\");",
+       "apartment a;",
+       "int count = 0;",
+       "if (!f) return -1;",
+       "while (fread(&a, sizeof(apartment), 1, f) == 1)",
+       "    if (a.rooms == rooms || a.price <= max_price)",
+       "        count++;",
+       "fclose(f);",
+       "return count;"
+      ]
+     }
+    },
+    {
+     "id": "C05-Q6",
+     "step": {
+      "type": "order",
+      "prompt": "סדרו את הפונקציה שמדפיסה את ה-`id` של כל הרשומות בקובץ הבינארי.",
+      "code": true,
+      "lines": [
+       "FILE *f = fopen(\"recs.bin\", \"rb\");",
+       "if (!f) return;",
+       "while (fread(&a, sizeof(a), 1, f) == 1)",
+       "    printf(\"%d\\n\", a.id);",
+       "fclose(f);",
+       "rec a;"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "C06",
+   "order": 6,
+   "boss": false,
+   "questions": [
+    {
+     "id": "C06-Q1",
+     "step": {
+      "type": "numeric",
+      "prompt": "הקובץ (נפתח כבינארי) מכיל `ABCDEFGH`. מה ידפיס הקוד?\n```c\nfgetc(f);\nfgetc(f);\nfgetc(f);\nprintf(\"%ld\", ftell(f));\n```"
+     }
+    },
+    {
+     "id": "C06-Q2",
+     "step": {
+      "type": "text",
+      "prompt": "הקובץ (בינארי) מכיל `ABCDEFGH`. איזה תו יודפס?\n```c\nfseek(f, 2, SEEK_SET);\nputchar(fgetc(f));\n```",
+      "normalize": "none"
+     }
+    },
+    {
+     "id": "C06-Q3",
+     "step": {
+      "type": "numeric",
+      "prompt": "הקובץ (בינארי) מכיל `ABCDEFGH`. מה ידפיס הקוד?\n```c\nfseek(f, 0, SEEK_END);\nprintf(\"%ld\", ftell(f));\n```"
+     }
+    },
+    {
+     "id": "C06-Q4",
+     "question": "הקובץ בינארי והוא מכיל רשומות מטיפוס `rec` ברצף. איזו שורה מציבה את הסמן בתחילת הרשומה שמספרה `i` (הראשונה היא 0) ?",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`fseek(f, i * sizeof(rec), SEEK_SET);`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`fseek(f, (i + 1) * sizeof(rec), SEEK_SET);`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`fseek(f, i + sizeof(rec), SEEK_SET);`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`fseek(f, i, SEEK_SET);`"
+      }
+     ]
+    },
+    {
+     "id": "C06-Q5",
+     "step": {
+      "type": "text",
+      "prompt": "הקובץ (בינארי) מכיל `ABCDEFGH`. איזה תו יודפס?\n```c\nfgetc(f);\nfgetc(f);\nfseek(f, 1, SEEK_CUR);\nputchar(fgetc(f));\n```",
+      "normalize": "none"
+     }
+    },
+    {
+     "id": "C06-Q6",
+     "step": {
+      "type": "findbug",
+      "prompt": "הקוד אמור לטעון את כל הרשומות של קובץ בינארי למערך, אבל כל איברי המערך נשארים אפסים. איזו שורה שגויה?",
+      "code": true,
+      "lines": [
+       "FILE *f = fopen(name, \"rb\");",
+       "rec a, *arr;",
+       "int n = 0, i = 0;",
+       "while (fread(&a, sizeof(a), 1, f) == 1)",
+       "    n++;",
+       "fseek(f, 0, SEEK_END);",
+       "arr = (rec *)calloc(n, sizeof(rec));",
+       "while (fread(&a, sizeof(a), 1, f) == 1)",
+       "    arr[i++] = a;"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "C07",
+   "order": 7,
+   "boss": false,
+   "questions": [
+    {
+     "id": "C07-Q1",
+     "step": {
+      "type": "numeric",
+      "prompt": "הקובץ מכיל בשורה אחת `live lives alive live`. מה ידפיס הקוד?\n```c\nchar buf[101];\nint count = 0;\nwhile (fscanf(f, \"%100s\", buf) == 1)\n    if (strstr(buf, \"live\"))\n        count++;\nprintf(\"%d\", count);\n```"
+     }
+    },
+    {
+     "id": "C07-Q2",
+     "step": {
+      "type": "text",
+      "prompt": "הקובץ מכיל `1234567890123`. מה יודפס?\n```c\nchar id[10];\nfscanf(f, \"%9s\", id);\nprintf(\"%s\", id);\n```",
+      "normalize": "none"
+     }
+    },
+    {
+     "id": "C07-Q3",
+     "question": "איזו מהמחרוזות הבאות מקבלת 1 מהפונקציה `has_unique_letters` שבשיעור (רק אותיות, כולן שונות, גדולה וקטנה נחשבות אותה אות) ?",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`Table`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`Alisa`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`ab#c`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`Noon`"
+      }
+     ]
+    },
+    {
+     "id": "C07-Q4",
+     "step": {
+      "type": "numeric",
+      "prompt": "קובץ הקלט מכיל ארבע שורות: `abcd`, `ab`, `abcde` ו-`x` (כל אחת מסתיימת ב-`'\\n'`). הפונקציה מהשיעור מעתיקה לקובץ הפלט רק שורות שאורכן (בלי `'\\n'`) גדול מ-3. כמה שורות יהיו בקובץ הפלט?"
+     }
+    },
+    {
+     "id": "C07-Q5",
+     "step": {
+      "type": "findbug",
+      "prompt": "הפונקציה אמורה להמיר כל שורה בקובץ הטקסט לרשומה בינארית שלמה, אבל הקובץ הבינארי יוצא קטן מדי ורשומות נקראות ממנו בצורה שבורה. איזו שורה שגויה?",
+      "code": true,
+      "lines": [
+       "clientData c;",
+       "FILE *in = fopen(text_name, \"r\");",
+       "FILE *out = fopen(binary_name, \"wb\");",
+       "if (!in || !out) exit(1);",
+       "while (fscanf(in, \"%9s%30s%lf\", c.id, c.name, &c.total) == 3)",
+       "    fwrite(&c, sizeof(c.id), 1, out);",
+       "fclose(in);",
+       "fclose(out);"
+      ]
+     }
+    },
+    {
+     "id": "C07-Q6",
+     "step": {
+      "type": "order",
+      "prompt": "סדרו את הפונקציה שמעתיקה את כל השורות מקובץ טקסט אחד לאחר (כל פקודה היא בלוק לוגי אחד).",
+      "code": true,
+      "lines": [
+       "if (!in || !out) return;",
+       "while (fgets(line, 101, in))",
+       "    fputs(line, out);",
+       "fclose(in); fclose(out);",
+       "FILE *in = fopen(src, \"r\"), *out = fopen(dst, \"w\");"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "C08",
+   "order": 8,
+   "boss": true,
+   "questions": [
+    {
+     "id": "bank:24B-A-Q6",
+     "bankId": "24B-A-Q6"
+    },
+    {
+     "id": "bank:25B-A-Q3",
+     "bankId": "25B-A-Q3"
+    },
+    {
+     "id": "bank:25B-B-Q3",
+     "bankId": "25B-B-Q3"
+    },
+    {
+     "id": "bank:24B-B-Q3",
+     "bankId": "24B-B-Q3"
+    }
+   ]
+  }
+ ]
+}
