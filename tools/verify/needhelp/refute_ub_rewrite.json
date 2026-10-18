@@ -1,0 +1,6 @@
+{"verdicts":{
+"linked_lists/C03-Q2":{"mine":"a","key":"a","verdict":"agree","notes":"head==NULL, p->next derefs NULL: UB per C11 6.5.3.2. clang -O0 segfaults; -O2 does not crash (UB exploited), so b is not guaranteed; c,d false. Wording hedges 'usually crash'. OK."},
+"linked_lists/C03-Q5":{"mine":"a","key":"a","verdict":"agree","notes":"p->data read before p check; not-found case derefs NULL (UB). -O0 segfault, -O2 no crash. Found case is fine, so d false; b false (&& is sequenced, left to right); c false (compiles)."},
+"linked_lists/C06-Q1":{"mine":"a","key":"a","verdict":"agree","notes":"Circular, p->next never NULL, bound n<100 stops: prints 100 at -O0 and -O2. No UB. 3/4/0 all observably wrong."},
+"dyn_2d/C02-Q2":{"mine":"a","key":"a","verdict":"agree","notes":"3*sizeof(int*)=24 on 64-bit; options give 24/12/16/72 (verified -O0/-O2). Exactly one correct; no UB."}
+},"fixes":[]}
