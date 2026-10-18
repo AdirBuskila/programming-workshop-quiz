@@ -1,0 +1,5 @@
+Q1 single pass w/o arrays: sum chars until ' ', read number, compare; copy line to true/false file; count via pointers; needs fseek/rewind trick or two reads since no buffers.
+Q2 AL[i] lists -> LA list, ptr = malloc(len*sizeof int) or NULL if empty; SIZE array dyn by ref; return head LA.
+Q3 rotate words right by one; spaces total not increase.
+4a c. 4b b (platform: equal on common systems, not guaranteed by standard). 4c b (-1). 4d a (pointer to const pointer to int).
+Q5 400 + 8 + 8 = 416 on 64-bit (408 on 32-bit); %d with size_t UB.

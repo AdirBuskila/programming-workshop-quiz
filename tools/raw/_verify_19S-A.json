@@ -1,0 +1,72 @@
+{
+ "examCode": "19S-A",
+ "verifier": "refuter",
+ "answers": {
+  "1": {
+   "agrees": true,
+   "confident": true,
+   "notes": "Both versions agree with me on tested cases (example, wrong number, wrong char, digit check char, empty line). Unflagged edge: valid encrypted line whose check char is '\n' (sum%128==10, e.g. original 'AI', sum 138) breaks the line format; both versions return 0 (clang run). Also char vs EOF.",
+   "steps": {
+    "0": "agree",
+    "1": "agree",
+    "2": "agree",
+    "3": "agree",
+    "4": "agree"
+   },
+   "rubricSum": "agree"
+  },
+  "2": {
+   "agrees": true,
+   "confident": true,
+   "steps": {
+    "0": "agree",
+    "1": "agree",
+    "2": "agree",
+    "3": "agree",
+    "4": "agree"
+   },
+   "rubricSum": "agree"
+  },
+  "3": {
+   "agrees": true,
+   "confident": true,
+   "steps": {
+    "0": "agree",
+    "1": "agree",
+    "2": "agree",
+    "3": "agree",
+    "4": "agree"
+   },
+   "rubricSum": "agree"
+  },
+  "4a": {
+   "answer": "d",
+   "confident": true
+  },
+  "4b": {
+   "answer": "a",
+   "confident": true,
+   "notes": "Left shift of a negative signed value is UB in C; key still fine."
+  },
+  "4c": {
+   "answer": "c",
+   "confident": true,
+   "notes": "Assigning const int* to int* is a constraint violation, but gcc/clang only warn by default (not mentioned)."
+  },
+  "4d": {
+   "answer": "e",
+   "confident": true
+  },
+  "5": {
+   "agrees": true,
+   "confident": true,
+   "notes": "23 on 32-bit. On 64-bit clang I confirmed s*s overflows (addr 1.4e14) so the result is garbage (575 vs s+1). Platform dependence is documented in claim.",
+   "steps": {
+    "0": "agree",
+    "1": "agree",
+    "2": "agree"
+   },
+   "rubricSum": "agree"
+  }
+ }
+}

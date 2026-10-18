@@ -1,0 +1,5 @@
+Q1 verify each line: split at last space, number==sum of chars before space, char==sum%128; return 1/0/-1. Edge: check char could be newline (sum%128==10) or NUL (0), breaking line format.
+Q2 list of strdup'd first words; empty S[i] -> empty string (""), not NULL; order preserved; return head.
+Q3 C[i] size=min(SA,SB) per row; SC dyn array via pointer; sum.
+4a d (== not defined on structs). 4b a. 4c c (assigning const int* to int*: constraint violation/warning in C; gcc only warns). 4d e (typedef).
+Q5 s*s+2s+1=(s+1)^2, /(s+1)=s+1 -> puts(s+1) = "23" only if s^2 doesn't overflow long long (addresses < ~3e9, i.e. 32-bit); else UB/garbage.

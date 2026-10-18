@@ -1,0 +1,76 @@
+{
+ "examCode": "19B-B",
+ "verifier": "refuter",
+ "answers": {
+  "1": {
+   "agrees": true,
+   "confident": true,
+   "notes": "Solution correct for the example and my clang run (CRLF on Windows). Unflagged: 'char c' compared with EOF (infinite loop where char is unsigned, premature stop on byte 0xFF); sum%128==0 writes a NUL byte and ==10 writes a newline into the checksum position.",
+   "steps": {
+    "0": "agree",
+    "1": "agree",
+    "2": "agree",
+    "3": "agree",
+    "4": "agree"
+   },
+   "rubricSum": "agree"
+  },
+  "2": {
+   "agrees": true,
+   "confident": true,
+   "notes": "Correct where strcmp returns exactly +-1 (ucrt, my clang run). glibc/x86-64 returns byte differences so '==1' fails there; the claim's transcriber note already says this.",
+   "steps": {
+    "0": "agree",
+    "1": "agree",
+    "2": "agree",
+    "3": "agree",
+    "4": "agree"
+   },
+   "rubricSum": "agree"
+  },
+  "3": {
+   "agrees": false,
+   "confident": true,
+   "verdict": "disagree-solution",
+   "divergence": "A[i]%2 == A[i-1]%2 treats negative odd values as different parity from positive odd (-3%2==-1, 1%2==1). Task says integers with no sign limit. A={-3,1,-5,2} should give 2 rows (3 odd, 1 even) but solution gives 4 rows, S=1 1 1 1 (verified clang, tmp q3neg.c). Fix: compare (A[i]%2!=0). Also n==0: (*S)[0]=1 writes past calloc(0). Steps/rubric/pitfalls follow same code; the example and step data are non-negative so all steps agree.",
+   "steps": {
+    "0": "agree",
+    "1": "agree",
+    "2": "agree",
+    "3": "agree",
+    "4": "agree"
+   },
+   "rubricSum": "agree"
+  },
+  "4a": {
+   "answer": "d",
+   "confident": true
+  },
+  "4b": {
+   "answer": "b",
+   "confident": true
+  },
+  "4c": {
+   "answer": "d",
+   "confident": true,
+   "verdict": "disagree-key-ambiguous",
+   "notes": "Key e ('valid but not recommended') is a style judgement. Option d ('the program is valid') is also a true statement, so two options are correct; I chose d blind. void main is also non-standard and not mentioned."
+  },
+  "4d": {
+   "answer": "a",
+   "confident": true,
+   "notes": "Key a (4) is the 32-bit answer; 64-bit gives 8 (clang run). The explanation field does not mention this (only the transcriber note does). printf %d with size_t is also UB, unmentioned."
+  },
+  "5": {
+   "agrees": true,
+   "confident": true,
+   "notes": "-6 only because the size_t result (2-4-4 wraps to 2^64-6) is truncated by printf %d (UB). Clang run: %d prints -6, %zu prints 18446744073709551610. Explanation says plain 1+1-4-4 and does not mention unsigned wrap / %d mismatch.",
+   "steps": {
+    "0": "agree",
+    "1": "agree",
+    "2": "agree"
+   },
+   "rubricSum": "agree"
+  }
+ }
+}

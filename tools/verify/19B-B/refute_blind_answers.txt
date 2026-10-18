@@ -1,0 +1,6 @@
+Blind answers (written before opening claims)
+Q1 per line: sum of chars excl '\n'; write line + ' ' + sum + (char)(sum%128); always end with \n even if last line lacks it. Edge: sum%128==0 -> NUL byte, ==10 -> '\n' char (bad); line-length buffer limits.
+Q2 sorted insert of non-present strings, pointer-to-pointer head, strdup new node; S may contain duplicates (checking against growing L handles it). Needs strcmp insert before first node with string>=.
+Q3 runs by parity; parity test must be !=0 not ==1 (negatives); rows rows copy; n=0 edge.
+4a d (pointer to bit). 4b b (padding makes >=). 4c d (global zero-init, valid; e arguable, void main nonstandard) ; 4d b on 64-bit (8), 4 on 32-bit: platform-defined, %d with size_t UB.
+Q5 sizeof s[0]=1,sizeof s[1]=1, sizeof 'a'=4 in C; size_t arithmetic 2-4-4 wraps; %d prints -6 (UB/implementation).

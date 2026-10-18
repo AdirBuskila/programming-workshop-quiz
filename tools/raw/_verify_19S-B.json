@@ -1,0 +1,72 @@
+{
+ "examCode": "19S-B",
+ "verifier": "refuter",
+ "answers": {
+  "1": {
+   "agrees": true,
+   "confident": true,
+   "notes": "Correct only for CRLF text files (Windows). On an LF file my clang run gave t=1,f=2 and garbage output; the claim's note and pitfall state the CRLF assumption.",
+   "steps": {
+    "0": "agree",
+    "1": "agree",
+    "2": "agree",
+    "3": "agree",
+    "4": "agree"
+   },
+   "rubricSum": "agree"
+  },
+  "2": {
+   "agrees": true,
+   "confident": true,
+   "steps": {
+    "0": "agree",
+    "1": "agree",
+    "2": "agree",
+    "3": "agree",
+    "4": "agree"
+   },
+   "rubricSum": "agree"
+  },
+  "3": {
+   "agrees": true,
+   "confident": true,
+   "steps": {
+    "0": "agree",
+    "1": "agree",
+    "2": "agree",
+    "3": "agree",
+    "4": "agree"
+   },
+   "rubricSum": "agree"
+  },
+  "4a": {
+   "answer": "c",
+   "confident": true
+  },
+  "4b": {
+   "answer": "b",
+   "confident": true,
+   "notes": "Key b is right on all mainstream platforms (8==8 in my run) but the explanation 'all pointer sizes are equal' is not guaranteed by the C standard (implementation-defined; unmentioned)."
+  },
+  "4c": {
+   "answer": "b",
+   "confident": true,
+   "notes": "~0 is -1 on two's complement; other representations unmentioned (irrelevant in practice)."
+  },
+  "4d": {
+   "answer": "a",
+   "confident": true
+  },
+  "5": {
+   "agrees": true,
+   "confident": true,
+   "notes": "408 is the 32-bit answer, 416 on 64-bit (clang run). Official text says sizeof has type int (it is size_t) and printf %d with size_t is UB; claim's transcriber note covers the 4/8 split.",
+   "steps": {
+    "0": "agree",
+    "1": "agree",
+    "2": "agree"
+   },
+   "rubricSum": "agree"
+  }
+ }
+}
