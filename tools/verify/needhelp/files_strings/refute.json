@@ -1,0 +1,15 @@
+{
+  "verdict": "agree",
+  "questions": 42,
+  "agree": 42,
+  "disagree": 0,
+  "fixed": [
+    "C05-Q6 order step: 'rec a;' and the fopen line were independent (swappable); merged them into one line in courses/files_strings/C05.js and content.py"
+  ],
+  "notes": [
+    "feof/fscanf/fgets loops (C04) verified at -O0 and -O2; trailing-newline dependence is taught in the lesson"
+  ],
+  "method": "blind: solved every non-bank question cold from tools/raw/_blind_course_<id>.json, then course_dump --compare; all code questions re-run with clang -O0 and -O2 (binary-mode files); lessons read for teach-before-ask; boss bankIds checked in questions.json",
+  "bank_ids": "all exist exactly once in questions.json, none held, topic matches the course",
+  "courseId": "files_strings"
+}

@@ -1,0 +1,15 @@
+{
+  "verdict": "agree",
+  "questions": 35,
+  "agree": 35,
+  "disagree": 0,
+  "fixed": [],
+  "notes": [
+    "C02-Q2 distractors (calloc(3,sizeof(int)) etc.) fail by under-allocation, i.e. only via UB; the lesson states the 64-bit size explicitly so they are defensibly wrong. Left as is",
+    "sizeof answers (8, 16, 72) are stated as 64-bit in the prompt or lesson",
+    "all order steps forced"
+  ],
+  "method": "blind: solved every non-bank question cold from tools/raw/_blind_course_<id>.json, then course_dump --compare; all code questions re-run with clang -O0 and -O2 (binary-mode files); lessons read for teach-before-ask; boss bankIds checked in questions.json",
+  "bank_ids": "all exist exactly once in questions.json, none held, topic matches the course",
+  "courseId": "dyn_2d"
+}

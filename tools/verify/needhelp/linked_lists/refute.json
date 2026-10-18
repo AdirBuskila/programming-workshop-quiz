@@ -1,0 +1,15 @@
+{
+  "verdict": "agree",
+  "questions": 35,
+  "agree": 35,
+  "disagree": 0,
+  "fixed": [],
+  "notes": [
+    "first compare run showed C05-Q4 as a disagree, but that was my own mis-indexing (the buggy line is the for-loop, index 4); the key is right",
+    "C03-Q2/C03-Q5/C06-Q1 correct options rely on a NULL dereference crash: ubiquitous, but technically UB (left as is)",
+    "order step C07-Q1 is forced (checked every swap); findbug lines unique"
+  ],
+  "method": "blind: solved every non-bank question cold from tools/raw/_blind_course_<id>.json, then course_dump --compare; all code questions re-run with clang -O0 and -O2 (binary-mode files); lessons read for teach-before-ask; boss bankIds checked in questions.json",
+  "bank_ids": "all exist exactly once in questions.json, none held, topic matches the course",
+  "courseId": "linked_lists"
+}

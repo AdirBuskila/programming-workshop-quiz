@@ -1,0 +1,14 @@
+{
+  "verdict": "agree",
+  "questions": 47,
+  "agree": 47,
+  "disagree": 0,
+  "fixed": [],
+  "notes": [
+    "C02-Q1 assumes C99 truncating division, taught in the lesson",
+    "C05-Q5 and C07-Q5 correct options say UB explicitly"
+  ],
+  "method": "blind: solved every non-bank question cold from tools/raw/_blind_course_<id>.json, then course_dump --compare; all code questions re-run with clang -O0 and -O2 (binary-mode files); lessons read for teach-before-ask; boss bankIds checked in questions.json",
+  "bank_ids": "all exist exactly once in questions.json, none held, topic matches the course",
+  "courseId": "c_traps"
+}
