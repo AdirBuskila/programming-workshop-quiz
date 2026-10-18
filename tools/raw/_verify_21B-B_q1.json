@@ -1,0 +1,29 @@
+{
+  "examCode": "21B-B",
+  "item": "1",
+  "verifier": "refuter",
+  "ownDerivation": "Loop `fgetc(in1)!=EOF && fgetc(in2)!=EOF` stops either (A) in1 at EOF, in2 never read (short-circuit, in2 sits at the start of its remaining rows), or (B) in1 consumed one char of its next row and in2 is at EOF. So only case B needs one char given back, and only to in1; the official unconditional fseek(-1) on both files steps an EOF/unread file back onto the last '\n' and emits a blank line. Fix: `if(!feof(in1)) fseek(in1,-1,SEEK_CUR);` (fseek clears EOF so feof is only true in case A).",
+  "tested": "clang, BINARY mode (_set_fmode(_O_BINARY)); Windows text-mode ftell/fseek fail (fseek(-1) returns -1), so binary is required. Note that text-mode failure already hits the official in-loop fseek calls, not just the fix.",
+  "answers": {
+    "solution": {"verdict": "agree", "note": "20000 random differential cases (0-4 lines per file, 1-5 sorted ints per line, all length relations) vs a line-wise reference merge: 0 mismatches. Exam example reproduced exactly (modulo the official trailing space before newline)."},
+    "edgeCases": {
+      "empty in1": "agree (case A, output = in2)",
+      "empty in2": "agree (case B, seek back restores the first char)",
+      "both empty": "agree (empty output)",
+      "unequal length, either side longer": "agree",
+      "equal length": "agree (case A, nothing left)",
+      "no trailing newline / final char not newline": "outside the stated spec (every line, including the last, ends with newline). Not a defect of the fix: the official rows_merge/next_number already loops forever on such input (fgetc gives EOF, fscanf fails, ch never '\n'); with in1 longer and the unterminated row in the copied remainder, fixed code copies it raw correctly. CRLF input in binary mode also hangs the official loop (ch becomes '\r'); out of spec."
+    },
+    "minimal": "agree. Drops the in2 seek and guards the in1 seek: two-line delta over the official. !feof(in2), feof(in1) both lose the leading '4' of the last row on the example; while(!feof(in1)) never terminates (fseek clears EOF). Verified by run.",
+    "rubric": "agree (4+8+14+6+8 = 40, matches the question; the five items map to the real code sections)",
+    "pitfalls": "agree. 1) seeking both back: reproduced, 1 blank line at end on the example and 2 blank lines between the merged part and the in2 remainder when in2 is longer. 2) forgetting to restore the consumed char: real. 3) fscanf skipping newline: real."
+  },
+  "stepVerdicts": {
+    "1": {"verdict": "agree", "note": "numeric 1: official original on the example gives exactly one blank line (at end)."},
+    "2": {"verdict": "agree", "note": "fillblank: line 52 is `___` directly above the indented fseek(in1,...); option a gives the exact official output; b/c lose the leading '4'; d never terminates. Unique right option."},
+    "3": {"verdict": "agree", "note": "findbug: only line 18 differs from the fixed code (`num1 > num2`), bugIndex 18 correct; output no longer sorted."}
+  },
+  "minorWording": "Solution note says blank lines appear 'in the middle of the file' when infile_2 is longer; precisely they appear after the merged rows and before in2's remainder (visible as 2 blank lines). Cosmetic, not a disagreement.",
+  "counts": {"agree": 6, "disagree": 0, "unclear": 0},
+  "files": ["tools/verify/21B-B/refute_q1_fuzz.c", "tools/verify/21B-B/refute_q1_edges.c"]
+}
