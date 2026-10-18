@@ -1767,10 +1767,10 @@ window.COURSES = {
        }
       ],
       "correctId": "a",
-      "explanation": "שלוש שורות = שלושה מצביעים = $3 \\cdot 8 = 24$ בתים, וזה `calloc(3, sizeof(int *))`. `calloc(3, sizeof(int))` מבקשת $3 \\cdot 4 = 12$ בתים, `calloc(4, sizeof(int))` מבקשת $4 \\cdot 4 = 16$, ו-`calloc(3, 3 * sizeof(int *))` מבקשת $3 \\cdot 24 = 72$. רק הראשונה מבקשת בדיוק 24 (נבדק עם מקצה מתעד).",
+      "explanation": "שלוש שורות = שלושה מצביעים = $3 \\cdot 8 = 24$ בתים, וזה `calloc(3, sizeof(int *))`. `calloc(3, sizeof(int))` מבקשת $3 \\cdot 4 = 12$ בתים, `calloc(4, sizeof(int))` מבקשת $4 \\cdot 4 = 16$, ו-`calloc(3, 3 * sizeof(int *))` מבקשת $3 \\cdot 24 = 72$. רק `calloc(3, sizeof(int *))` מבקשת בדיוק 24 (נבדק עם מקצה מתעד).",
       "recap": "למערך המצביעים: מספר השורות כפול `sizeof(int *)`.",
       "questionHtml": "צריך להקצות את מערך המצביעים של מטריצה עם 3 שורות ו-4 עמודות, ב-64 סיביות, בגודל של בדיוק מצביע אחד לכל שורה. איזו קריאה מבקשת בדיוק את הכמות הזאת?",
-      "explanationHtml": "שלוש שורות = שלושה מצביעים = <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mn>3</mn><mo>⋅</mo><mn>8</mn><mo>=</mo><mn>24</mn></mrow><annotation encoding=\"application/x-tex\">3 \\cdot 8 = 24</annotation></semantics></math></span> בתים, וזה <code class=\"tok\" dir=\"ltr\">calloc(3, sizeof(int *))</code>. <code class=\"tok\" dir=\"ltr\">calloc(3, sizeof(int))</code> מבקשת <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mn>3</mn><mo>⋅</mo><mn>4</mn><mo>=</mo><mn>12</mn></mrow><annotation encoding=\"application/x-tex\">3 \\cdot 4 = 12</annotation></semantics></math></span> בתים, <code class=\"tok\" dir=\"ltr\">calloc(4, sizeof(int))</code> מבקשת <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mn>4</mn><mo>⋅</mo><mn>4</mn><mo>=</mo><mn>16</mn></mrow><annotation encoding=\"application/x-tex\">4 \\cdot 4 = 16</annotation></semantics></math></span>, ו-<code class=\"tok\" dir=\"ltr\">calloc(3, 3 * sizeof(int *))</code> מבקשת <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mn>3</mn><mo>⋅</mo><mn>24</mn><mo>=</mo><mn>72</mn></mrow><annotation encoding=\"application/x-tex\">3 \\cdot 24 = 72</annotation></semantics></math></span>. רק הראשונה מבקשת בדיוק 24 (נבדק עם מקצה מתעד).",
+      "explanationHtml": "שלוש שורות = שלושה מצביעים = <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mn>3</mn><mo>⋅</mo><mn>8</mn><mo>=</mo><mn>24</mn></mrow><annotation encoding=\"application/x-tex\">3 \\cdot 8 = 24</annotation></semantics></math></span> בתים, וזה <code class=\"tok\" dir=\"ltr\">calloc(3, sizeof(int *))</code>. <code class=\"tok\" dir=\"ltr\">calloc(3, sizeof(int))</code> מבקשת <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mn>3</mn><mo>⋅</mo><mn>4</mn><mo>=</mo><mn>12</mn></mrow><annotation encoding=\"application/x-tex\">3 \\cdot 4 = 12</annotation></semantics></math></span> בתים, <code class=\"tok\" dir=\"ltr\">calloc(4, sizeof(int))</code> מבקשת <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mn>4</mn><mo>⋅</mo><mn>4</mn><mo>=</mo><mn>16</mn></mrow><annotation encoding=\"application/x-tex\">4 \\cdot 4 = 16</annotation></semantics></math></span>, ו-<code class=\"tok\" dir=\"ltr\">calloc(3, 3 * sizeof(int *))</code> מבקשת <span class=\"math-inline\"><math dir=\"ltr\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mn>3</mn><mo>⋅</mo><mn>24</mn><mo>=</mo><mn>72</mn></mrow><annotation encoding=\"application/x-tex\">3 \\cdot 24 = 72</annotation></semantics></math></span>. רק <code class=\"tok\" dir=\"ltr\">calloc(3, sizeof(int *))</code> מבקשת בדיוק 24 (נבדק עם מקצה מתעד).",
       "recapHtml": "למערך המצביעים: מספר השורות כפול <code class=\"tok\" dir=\"ltr\">sizeof(int *)</code>."
      },
      {
@@ -3430,10 +3430,10 @@ window.COURSES = {
        }
       ],
       "correctId": "a",
-      "explanation": "רק הראשונה בודקת את ערך ההחזרה של `fscanf`, ולכן נעצרת מיד כשהקריאה נכשלת. שלוש האחרות מדפיסות `1 2 3 3` (נבדק עם clang): השנייה והרביעית שקולות, והשלישית מדפיסה לפני שהיא בודקת כלום.",
+      "explanation": "רק הלולאה `while (fscanf(f, \"%d\", &x) == 1)` בודקת את ערך ההחזרה של `fscanf`, ולכן נעצרת מיד כשהקריאה נכשלת. שלוש האחרות מדפיסות `1 2 3 3` (נבדק עם clang): הלולאות `while (!feof(f))` ו-`while (feof(f) == 0)` שקולות, ולולאת ה-`do` מדפיסה לפני שהיא בודקת כלום.",
       "recap": "בודקים את ערך ההחזרה של הקריאה, לא את `feof`.",
       "questionHtml": "הקובץ מכיל <code class=\"tok\" dir=\"ltr\">1 2 3</code> ואחרי ה-3 רווח. איזו לולאה מדפיסה כל מספר פעם אחת בדיוק (<code class=\"tok\" dir=\"ltr\">1 2 3</code>) ?",
-      "explanationHtml": "רק הראשונה בודקת את ערך ההחזרה של <code class=\"tok\" dir=\"ltr\">fscanf</code>, ולכן נעצרת מיד כשהקריאה נכשלת. שלוש האחרות מדפיסות <code class=\"tok\" dir=\"ltr\">1 2 3 3</code> (נבדק עם clang): השנייה והרביעית שקולות, והשלישית מדפיסה לפני שהיא בודקת כלום.",
+      "explanationHtml": "רק הלולאה <code class=\"tok\" dir=\"ltr\">while (fscanf(f, \"%d\", &amp;x) == 1)</code> בודקת את ערך ההחזרה של <code class=\"tok\" dir=\"ltr\">fscanf</code>, ולכן נעצרת מיד כשהקריאה נכשלת. שלוש האחרות מדפיסות <code class=\"tok\" dir=\"ltr\">1 2 3 3</code> (נבדק עם clang): הלולאות <code class=\"tok\" dir=\"ltr\">while (!feof(f))</code> ו-<code class=\"tok\" dir=\"ltr\">while (feof(f) == 0)</code> שקולות, ולולאת ה-<code class=\"tok\" dir=\"ltr\">do</code> מדפיסה לפני שהיא בודקת כלום.",
       "recapHtml": "בודקים את ערך ההחזרה של הקריאה, לא את <code class=\"tok\" dir=\"ltr\">feof</code>."
      },
      {
@@ -3569,10 +3569,10 @@ window.COURSES = {
        }
       ],
       "correctId": "a",
-      "explanation": "`fwrite` כותבת תמיד `sizeof(int)` בתים, בלי קשר לערך. `fprintf` כותבת את הספרות כתווים, ולכן 7 הוא תו אחד ו-1234567 הוא שבעה תווים (נבדק עם clang). שתי התשובות האחרונות אינן מתאימות לאף אחת מהשיטות, והשנייה הפוכה.",
+      "explanation": "`fwrite` כותבת תמיד `sizeof(int)` בתים, בלי קשר לערך. `fprintf` כותבת את הספרות כתווים, ולכן 7 הוא תו אחד ו-1234567 הוא שבעה תווים (נבדק עם clang). שתי התשובות \"בשתי השיטות שני הקבצים באותו גודל\" ו-\"בשתי השיטות הקובץ של 1234567 גדול יותר\" אינן מתאימות לאף אחת מהשיטות, והתשובה שבה הגדלים זהים ב-`fprintf` היא ההפוכה.",
       "recap": "ב-`fwrite` הגודל קבוע, בטקסט הוא תלוי במספר הספרות.",
       "questionHtml": "כותבים קודם את הערך 7 ואחר כך את הערך 1234567 (כל אחד לקובץ חדש). מה נכון?",
-      "explanationHtml": "<code class=\"tok\" dir=\"ltr\">fwrite</code> כותבת תמיד <code class=\"tok\" dir=\"ltr\">sizeof(int)</code> בתים, בלי קשר לערך. <code class=\"tok\" dir=\"ltr\">fprintf</code> כותבת את הספרות כתווים, ולכן 7 הוא תו אחד ו-1234567 הוא שבעה תווים (נבדק עם clang). שתי התשובות האחרונות אינן מתאימות לאף אחת מהשיטות, והשנייה הפוכה.",
+      "explanationHtml": "<code class=\"tok\" dir=\"ltr\">fwrite</code> כותבת תמיד <code class=\"tok\" dir=\"ltr\">sizeof(int)</code> בתים, בלי קשר לערך. <code class=\"tok\" dir=\"ltr\">fprintf</code> כותבת את הספרות כתווים, ולכן 7 הוא תו אחד ו-1234567 הוא שבעה תווים (נבדק עם clang). שתי התשובות \"בשתי השיטות שני הקבצים באותו גודל\" ו-\"בשתי השיטות הקובץ של 1234567 גדול יותר\" אינן מתאימות לאף אחת מהשיטות, והתשובה שבה הגדלים זהים ב-<code class=\"tok\" dir=\"ltr\">fprintf</code> היא ההפוכה.",
       "recapHtml": "ב-<code class=\"tok\" dir=\"ltr\">fwrite</code> הגודל קבוע, בטקסט הוא תלוי במספר הספרות."
      },
      {
@@ -4121,10 +4121,10 @@ window.COURSES = {
        }
       ],
       "correctId": "a",
-      "explanation": "הלולאה נעצרת רק כשהתנאי `p` שקר, כלומר כש-`p == NULL`. לכן `p` לא מצביע על האיבר האחרון אלא אחריו. אם צריך את האחרון, עוצרים מוקדם יותר עם התנאי `p->next`. הערך מוגדר היטב, ולכן לא התשובה האחרונה.",
+      "explanation": "הלולאה נעצרת רק כשהתנאי `p` שקר, כלומר כש-`p == NULL`. לכן `p` לא מצביע על האיבר האחרון אלא אחריו. אם צריך את האחרון, עוצרים מוקדם יותר עם התנאי `p->next`. הערך מוגדר היטב, ולכן לא התשובה \"ערך לא מוגדר\".",
       "recap": "אחרי לולאה עד `p == NULL`, המצביע `p` הוא NULL ולא האיבר האחרון.",
       "questionHtml": "מה הערך של <code class=\"tok\" dir=\"ltr\">p</code> מיד אחרי שהלולאה הבאה מסתיימת, על רשימה לא ריקה?<pre class=\"code-block\" dir=\"ltr\" data-lang=\"c\"><code>for (p = head; p; p = p-&gt;next)\n    ;</code></pre>",
-      "explanationHtml": "הלולאה נעצרת רק כשהתנאי <code class=\"tok\" dir=\"ltr\">p</code> שקר, כלומר כש-<code class=\"tok\" dir=\"ltr\">p == NULL</code>. לכן <code class=\"tok\" dir=\"ltr\">p</code> לא מצביע על האיבר האחרון אלא אחריו. אם צריך את האחרון, עוצרים מוקדם יותר עם התנאי <code class=\"tok\" dir=\"ltr\">p-&gt;next</code>. הערך מוגדר היטב, ולכן לא התשובה האחרונה.",
+      "explanationHtml": "הלולאה נעצרת רק כשהתנאי <code class=\"tok\" dir=\"ltr\">p</code> שקר, כלומר כש-<code class=\"tok\" dir=\"ltr\">p == NULL</code>. לכן <code class=\"tok\" dir=\"ltr\">p</code> לא מצביע על האיבר האחרון אלא אחריו. אם צריך את האחרון, עוצרים מוקדם יותר עם התנאי <code class=\"tok\" dir=\"ltr\">p-&gt;next</code>. הערך מוגדר היטב, ולכן לא התשובה \"ערך לא מוגדר\".",
       "recapHtml": "אחרי לולאה עד <code class=\"tok\" dir=\"ltr\">p == NULL</code>, המצביע <code class=\"tok\" dir=\"ltr\">p</code> הוא NULL ולא האיבר האחרון."
      }
     ]
@@ -4512,10 +4512,10 @@ window.COURSES = {
        }
       ],
       "correctId": "a",
-      "explanation": "האופרטור `&&` מוערך משמאל לימין, ולכן `p->data` נקרא לפני שבדקנו אם `p` הוא NULL. כשהערך חסר, זו גישה ל-NULL: התנהגות לא מוגדרת (UB), שבדרך כלל מסתיימת בקריסה. כשהערך נמצא, הלולאה עוצרת לפני כן ואין בעיה (נבדק עם clang), ולכן התשובה האחרונה שגויה. `&&` לא חילופי כשיש תלות בין האגפים, והקוד מתקמפל.",
+      "explanation": "האופרטור `&&` מוערך משמאל לימין, ולכן `p->data` נקרא לפני שבדקנו אם `p` הוא NULL. כשהערך חסר, זו גישה ל-NULL: התנהגות לא מוגדרת (UB), שבדרך כלל מסתיימת בקריסה. כשהערך נמצא, הלולאה עוצרת לפני כן ואין בעיה (נבדק עם clang), ולכן התשובה \"הלולאה אף פעם לא מסתיימת כשהערך נמצא\" שגויה. `&&` לא חילופי כשיש תלות בין האגפים, והקוד מתקמפל.",
       "recap": "קודם `p`, אחר כך `p->data`.",
       "questionHtml": "מה הבעיה בתנאי הלולאה <code class=\"tok\" dir=\"ltr\">while (p-&gt;data != x &amp;&amp; p)</code> בחיפוש הערך <code class=\"tok\" dir=\"ltr\">x</code> ברשימה?",
-      "explanationHtml": "האופרטור <code class=\"tok\" dir=\"ltr\">&amp;&amp;</code> מוערך משמאל לימין, ולכן <code class=\"tok\" dir=\"ltr\">p-&gt;data</code> נקרא לפני שבדקנו אם <code class=\"tok\" dir=\"ltr\">p</code> הוא NULL. כשהערך חסר, זו גישה ל-NULL: התנהגות לא מוגדרת (UB), שבדרך כלל מסתיימת בקריסה. כשהערך נמצא, הלולאה עוצרת לפני כן ואין בעיה (נבדק עם clang), ולכן התשובה האחרונה שגויה. <code class=\"tok\" dir=\"ltr\">&amp;&amp;</code> לא חילופי כשיש תלות בין האגפים, והקוד מתקמפל.",
+      "explanationHtml": "האופרטור <code class=\"tok\" dir=\"ltr\">&amp;&amp;</code> מוערך משמאל לימין, ולכן <code class=\"tok\" dir=\"ltr\">p-&gt;data</code> נקרא לפני שבדקנו אם <code class=\"tok\" dir=\"ltr\">p</code> הוא NULL. כשהערך חסר, זו גישה ל-NULL: התנהגות לא מוגדרת (UB), שבדרך כלל מסתיימת בקריסה. כשהערך נמצא, הלולאה עוצרת לפני כן ואין בעיה (נבדק עם clang), ולכן התשובה \"הלולאה אף פעם לא מסתיימת כשהערך נמצא\" שגויה. <code class=\"tok\" dir=\"ltr\">&amp;&amp;</code> לא חילופי כשיש תלות בין האגפים, והקוד מתקמפל.",
       "recapHtml": "קודם <code class=\"tok\" dir=\"ltr\">p</code>, אחר כך <code class=\"tok\" dir=\"ltr\">p-&gt;data</code>."
      }
     ]
