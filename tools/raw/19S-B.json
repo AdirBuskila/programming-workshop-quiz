@@ -162,7 +162,7 @@
    "kind": "code",
    "topic": "list_manipulation",
    "question": "נתונות ההגדרות הבאות של הטיפוסים:\n```c\ntypedef struct data_item {\n  int data;\n  struct data_item *next;\n} DataItem;\n```\n```c\ntypedef struct ptr_item {\n  int *ptr;\n  struct ptr_item *next;\n} PtrItem;\n```\nכתוב פונקציה המקבלת **מערך `AL` של רשימות מקושרות** של מספרים שלמים וגודלו. הרשימות מורכבות מאיברים מסוג `DataItem`.\n\nעל הפונקציה לבנות **רשימה מקושרת `LA` של מערכים** של מספרים שלמים. הרשימה תהיה מורכבת מאיברים מסוג `PtrItem`. שדה `ptr` של איבר מס' `i` ב-`LA` יצביע לתחילת **מערך מספרים** מס' `i` ושדה `next` שלו יצביע לאיבר הבא ב-`LA`.\n\nגודל מערך מס' `i` ב-`LA` יהיה שווה לגודל רשימה מס' `i` ב-`AL`. איבר מס' `j` של מערך מס' `i` ב-`LA` יהיה שווה לשדה `data` של איבר מס' `j` ברשימה מס' `i` ב-`AL`. אם רשימה מס' `i` ב-`AL` ריקה אז שדה `ptr` של איבר מס' `i` ב-`LA` יהיה שווה ל-NULL.\n\nהפונקציה תחזיר את **כתובת** ראש הרשימה `LA`.\nבנוסף הפונקציה תיצור ותעביר במצביעים (by reference) מערך דינאמי `SIZE` המורכב מגדלי המערכים ב-`LA` כך שאיבר מס' `i` של `SIZE` יהיה שווה לגודל מערך מס' `i` ב-`LA`.\n\nניתן להניח שיש בזיכרון מספיק מקום להקצאה.",
-   "solution": "```c\nPtrItem *array_of_lists_to_list_of_arrays (DataItem **AL, int n,\n                                                  int **SIZE)\n{\n      PtrItem *LA, *curr_ptr;\n      DataItem *data_lst;\n      int i, j;\n\n      *SIZE = (int *)calloc(n, sizeof(int));\n      LA = (PtrItem *)malloc(sizeof(PtrItem)); //dummy\n      curr_ptr = LA;\n      for (i=0; i<n; i++)\n      {\n            curr_ptr->next = (PtrItem *)malloc(sizeof(PtrItem));\n            curr_ptr = curr_ptr->next;\n\n            /* Computing size of i-th list in AL (i-th array in LA) */\n            (*SIZE)[i] = 0;\n            if (AL[i])\n            {\n                  data_lst = AL[i];\n                  while (data_lst)\n                  {\n                        (*SIZE)[i]++;\n                        data_lst = data_lst->next;\n                  }\n                  curr_ptr->ptr = (int *)calloc((*SIZE)[i], sizeof(int));\n            }\n            else\n                  curr_ptr->ptr = NULL;\n\n            /* Copy i-th array of AL to i-th list in LA */\n            data_lst = AL[i];\n            j = 0;\n            while (data_lst)\n            {\n                  curr_ptr->ptr[j++] = data_lst->data;\n                  data_lst = data_lst->next;\n            }\n      }\n      curr_ptr->next = NULL;\n\n      /* deletion of dummy */\n      curr_ptr = LA;\n      LA = LA->next;\n      free (curr_ptr);\n      return LA;\n}\n```",
+   "solution": "```c\nPtrItem *array_of_lists_to_list_of_arrays (DataItem **AL, int n,\n            int **SIZE)\n{\n      PtrItem *LA, *curr_ptr;\n      DataItem *data_lst;\n      int i, j;\n\n      *SIZE = (int *)calloc(n, sizeof(int));\n      LA = (PtrItem *)malloc(sizeof(PtrItem)); //dummy\n      curr_ptr = LA;\n      for (i=0; i<n; i++)\n      {\n            curr_ptr->next = (PtrItem *)malloc(sizeof(PtrItem));\n            curr_ptr = curr_ptr->next;\n\n            /* Computing size of i-th list in AL (i-th array in LA) */\n            (*SIZE)[i] = 0;\n            if (AL[i])\n            {\n                  data_lst = AL[i];\n                  while (data_lst)\n                  {\n                        (*SIZE)[i]++;\n                        data_lst = data_lst->next;\n                  }\n                  curr_ptr->ptr = (int *)calloc((*SIZE)[i], sizeof(int));\n            }\n            else\n                  curr_ptr->ptr = NULL;\n\n            /* Copy i-th array of AL to i-th list in LA */\n            data_lst = AL[i];\n            j = 0;\n            while (data_lst)\n            {\n                  curr_ptr->ptr[j++] = data_lst->data;\n                  data_lst = data_lst->next;\n            }\n      }\n      curr_ptr->next = NULL;\n\n      /* deletion of dummy */\n      curr_ptr = LA;\n      LA = LA->next;\n      free (curr_ptr);\n      return LA;\n}\n```",
    "solutionSource": "official-pdf",
    "official": true,
    "confidence": "high",
@@ -238,7 +238,7 @@
      "code": true,
      "lines": [
       "PtrItem *array_of_lists_to_list_of_arrays (DataItem **AL, int n,",
-      "                                                  int **SIZE)",
+      "            int **SIZE)",
       "{",
       "      PtrItem *LA, *curr_ptr;",
       "      DataItem *data_lst;",
@@ -310,7 +310,7 @@
      "code": true,
      "lines": [
       "PtrItem *array_of_lists_to_list_of_arrays (DataItem **AL, int n,",
-      "                                                  int **SIZE)",
+      "            int **SIZE)",
       "{",
       "      PtrItem *LA, *curr_ptr;",
       "      DataItem *data_lst;",

@@ -134,7 +134,7 @@ typedef struct ptr_item {
 
 Q2_SOL = r"""```c
 PtrItem *array_of_lists_to_list_of_arrays (DataItem **AL, int n,
-                                                  int **SIZE)
+            int **SIZE)
 {
       PtrItem *LA, *curr_ptr;
       DataItem *data_lst;
