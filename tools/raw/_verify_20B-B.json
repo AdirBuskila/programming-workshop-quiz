@@ -1,0 +1,72 @@
+{
+ "examCode": "20B-B",
+ "verifier": "refuter",
+ "answers": {
+  "1": {
+   "agrees": true,
+   "confident": true
+  },
+  "2": {
+   "agrees": true,
+   "confident": true
+  },
+  "3": {
+   "agrees": true,
+   "confident": true
+  },
+  "4a": {
+   "answer": "e",
+   "confident": true,
+   "verdict": "disagree-explanation",
+   "explanationIssue": "key matches the official answer but only if 'static array' means an ordinary fixed-size (automatic) array. A literal `static char a[N]` is zero-initialised, so under C semantics option g would hold. The explanation contradicts itself ('no element of a static array is initialised') and should say 'local non-dynamic array'."
+  },
+  "4b": {
+   "answer": "a",
+   "confident": true
+  },
+  "4c": {
+   "answer": "c",
+   "confident": true,
+   "note": "pointer difference of unrelated string literals is formally UB in C; result type ptrdiff_t (integer), so c is the intended answer. Optional note."
+  },
+  "4d": {
+   "answer": "b",
+   "confident": true
+  },
+  "5": {
+   "agrees": true,
+   "confident": true,
+   "verdict": "disagree-incomplete-caveat",
+   "issue": "'Ah!' needs 32-bit AND an address below ~2^26 (64 MB). Clang -m32 prints Ah!, 64-bit crashes (both already noted). Missing: pow() is a double, so for x*x > 2^53 (address > ~94M) the result of (long long)(pow(x,2)-4)/(x+2) is s-1 in ~30-45% of random addresses (see verify/20B-B/refute_q5_precision.py), so even on 32-bit with ASLR the output is not guaranteed."
+  }
+ },
+ "stepVerdicts": {
+  "1": [
+   "agree",
+   "agree",
+   "agree",
+   "agree"
+  ],
+  "2": [
+   "agree",
+   "agree",
+   "agree",
+   "agree",
+   "agree"
+  ],
+  "3": [
+   "agree",
+   "agree",
+   "agree",
+   "agree",
+   "agree"
+  ],
+  "5": [
+   "agree",
+   "agree",
+   "agree",
+   "agree"
+  ]
+ },
+ "notes": "Own derivation first: bonus Ah! (32-bit), 4a e (ordinary array), 4b a, 4c c, 4d b. All code solutions/steps compiled or hand-traced; distractors fail observably."
+}

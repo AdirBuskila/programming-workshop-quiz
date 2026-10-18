@@ -1,0 +1,68 @@
+{
+ "examCode": "19B-A",
+ "verifier": "refuter",
+ "answers": {
+  "1": {
+   "agrees": true,
+   "confident": true
+  },
+  "2": {
+   "agrees": true,
+   "confident": true
+  },
+  "3": {
+   "agrees": false,
+   "confident": true,
+   "verdict": "disagree-solution",
+   "divergence": "solution uses A[i][j]%2 and '%2 == 1'. For negative odd integers %2 gives -1: odd_count goes wrong and the odd elements are not copied. E.g. row {-3,-5,2,4,6,8} (sum 4, two odds) is dropped; row {-1,-1,2,2,2,2} too (verified with clang, verify/19B-A/refute_q3.c). The task says 'integers' (no sign restriction). Fix: A[i][j]%2 != 0. Also realloc(B,0) when no row qualifies is implementation-defined. Steps/rubric follow the same code and the example matrix (non-negative) is fine."
+  },
+  "4a": {
+   "answer": "a",
+   "confident": true
+  },
+  "4b": {
+   "answer": "d",
+   "confident": true
+  },
+  "4c": {
+   "answer": "b",
+   "confident": true
+  },
+  "4d": {
+   "answer": "b",
+   "confident": true,
+   "note": "'pointer that can change to a constant' is loosely worded but the only defensible option (q is a non-const pointer to const int)."
+  },
+  "5": {
+   "agrees": true,
+   "confident": true
+  }
+ },
+ "stepVerdicts": {
+  "1": [
+   "agree",
+   "agree",
+   "agree",
+   "agree"
+  ],
+  "2": [
+   "agree",
+   "agree",
+   "agree",
+   "agree"
+  ],
+  "3": [
+   "agree",
+   "agree",
+   "agree",
+   "agree",
+   "agree"
+  ],
+  "5": [
+   "agree",
+   "agree",
+   "agree"
+  ]
+ },
+ "notes": "Own derivation first: 4a a, 4b d (XOR), 4c b, 4d b, bonus 1. Clang runs: Q1 Q2 solutions and all distractors as claimed; Q3 passes the example but fails for negative odd values. Rubric sums 28/28/28/10."
+}

@@ -1,0 +1,81 @@
+{
+ "examCode": "20B-A",
+ "verifier": "refuter",
+ "answers": {
+  "1": {
+   "agrees": true,
+   "confident": true
+  },
+  "2": {
+   "agrees": true,
+   "confident": true,
+   "verdict": "agree-with-wording-issue",
+   "stepIssue": "step 1 explain says '<=' never stops in a cycle; for strictly sorted lists with >=2 items '<=' stops at the max like '<'. It hangs only on the one-element list (which the prompt does mention). Reword."
+  },
+  "3": {
+   "agrees": true,
+   "confident": true,
+   "verdict": "disagree-pitfall",
+   "pitfallIssue": "pitfall 3 says counting rows with fgets would miss a last row that has no trailing newline. Backwards: fgets counts such a row, counting '\n' misses it. The spec also guarantees the final newline, so the pitfall is not real here. Also minor: char c vs EOF in both fgetc loops."
+  },
+  "4a": {
+   "answer": "c",
+   "confident": true
+  },
+  "4b": {
+   "answer": "d",
+   "confident": true,
+   "verdict": "disagree-explanation",
+   "explanationIssue": "key is 'depends on system' (right shift of negative int is implementation-defined) but explanation is only 'per C rules'; should say so explicitly (arithmetic vs logical shift)."
+  },
+  "4c": {
+   "answer": "e",
+   "confident": true
+  },
+  "4d": {
+   "answer": "b",
+   "confident": true
+  },
+  "4e": {
+   "answer": "a",
+   "confident": true
+  },
+  "4f": {
+   "answer": "e",
+   "confident": true,
+   "verdict": "disagree-explanation",
+   "explanationIssue": "float y=2.6 gives a warning only on some compilers (MSVC C4305 'truncation from double to float'); clang gives none by default (only with -Wconversion / -Wimplicit-float-conversion), others none. Key is compiler-dependent and explanation does not say so."
+  },
+  "5": {
+   "agrees": true,
+   "confident": true
+  }
+ },
+ "stepVerdicts": {
+  "1": [
+   "agree",
+   "agree",
+   "agree",
+   "agree"
+  ],
+  "2": [
+   "agree",
+   "agree(explain wording)",
+   "agree",
+   "agree"
+  ],
+  "3": [
+   "agree",
+   "agree",
+   "agree",
+   "agree",
+   "agree"
+  ],
+  "5": [
+   "agree",
+   "agree",
+   "agree"
+  ]
+ },
+ "notes": "Own derivation first: 4a c, 4b d, 4c e, 4d b, 4e a, 4f e(compiler-dependent), bonus C--. Clang runs of all solutions pass; distractors fail observably (row1<n/2+1 only on even n, as the explanation says)."
+}

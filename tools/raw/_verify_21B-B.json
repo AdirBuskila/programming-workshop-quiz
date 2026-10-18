@@ -1,0 +1,62 @@
+{
+ "examCode": "21B-B",
+ "verifier": "refuter",
+ "answers": {
+  "1": {
+   "agrees": false,
+   "confident": false,
+   "answer": null,
+   "note": "held, skipped"
+  },
+  "2": {
+   "agrees": true,
+   "confident": true
+  },
+  "3": {
+   "agrees": true,
+   "confident": true
+  },
+  "4a": {
+   "answer": "d",
+   "confident": true
+  },
+  "4b": {
+   "answer": "b",
+   "confident": true
+  },
+  "4c": {
+   "answer": "c",
+   "confident": true,
+   "verdict": "disagree-explanation",
+   "explanationIssue": "realloc(p,0) is implementation-defined (C17) / UB (C23). glibc and MSVC free and return NULL, other libcs return a unique pointer. Explanation says 'per C rules it returns NULL' and does not flag it as platform-dependent."
+  },
+  "4d": {
+   "answer": "d",
+   "confident": true
+  },
+  "5": {
+   "agrees": true,
+   "confident": true
+  }
+ },
+ "stepVerdicts": {
+  "2": [
+   "agree",
+   "agree",
+   "agree",
+   "agree"
+  ],
+  "3": [
+   "agree",
+   "agree",
+   "agree",
+   "agree"
+  ],
+  "5": [
+   "agree",
+   "agree",
+   "agree"
+  ]
+ },
+ "notes": "Own derivation first: 4a=010112 d, 4b=7 times b, 4d=d, bonus=1111222. Compiled with clang: all solutions pass, all distractor variants fail observably. Rubric sums 40/40/10."
+}
