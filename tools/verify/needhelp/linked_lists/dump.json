@@ -1,0 +1,844 @@
+{
+ "courseId": "linked_lists",
+ "levels": [
+  {
+   "id": "C01",
+   "order": 1,
+   "boss": false,
+   "questions": [
+    {
+     "id": "C01-Q1",
+     "question": "מגדירים:\n```c\ntypedef struct {\n    int data;\n    Item *next;\n} Item;\n```\nמה קורה בהידור?",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "שגיאת הידור: השם `Item` עדיין לא מוכר בתוך ההגדרה"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "ההידור תקין והרשימה תעבוד כרגיל"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "ההידור תקין, אבל `next` תמיד יהיה `NULL`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "אזהרה בלבד, והמבנה יתפוס זיכרון אינסופי"
+      }
+     ]
+    },
+    {
+     "id": "C01-Q2",
+     "step": {
+      "type": "numeric",
+      "prompt": "הרשימה היא `3 → 5 → 2 → 4` ו-`head` מצביע על האיבר הראשון. מה ידפיס הקוד?\n```c\nint s = 0;\nItem *p;\nfor (p = head; p; p = p->next)\n    s += p->data;\nprintf(\"%d\", s);\n```"
+     }
+    },
+    {
+     "id": "C01-Q3",
+     "question": "הרשימה היא `3 → 5 → 2 → 4` ו-`head` מצביע על האיבר הראשון. מה הערך של `head->next->next->data` ?",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`2`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`3`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`5`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`4`"
+      }
+     ]
+    },
+    {
+     "id": "C01-Q4",
+     "step": {
+      "type": "numeric",
+      "prompt": "הרשימה ריקה (`head == NULL`). כמה פעמים ירוץ גוף הלולאה `for (p = head; p; p = p->next)` ?"
+     }
+    },
+    {
+     "id": "C01-Q5",
+     "question": "מה הערך של `p` מיד אחרי שהלולאה הבאה מסתיימת, על רשימה לא ריקה?\n```c\nfor (p = head; p; p = p->next)\n    ;\n```",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`NULL`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "הכתובת של האיבר האחרון"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "הכתובת של האיבר הראשון"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "ערך לא מוגדר"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "C02",
+   "order": 2,
+   "boss": false,
+   "questions": [
+    {
+     "id": "C02-Q1",
+     "question": "מתחילים עם `Item *h = NULL;` ומריצים:\n```c\ninsert_head(&h, 1);\ninsert_head(&h, 2);\ninsert_head(&h, 3);\n```\nמה מדפיסה מעבר על הרשימה מהראש?",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`3 2 1`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`1 2 3`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`1`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`3`"
+      }
+     ]
+    },
+    {
+     "id": "C02-Q2",
+     "step": {
+      "type": "numeric",
+      "prompt": "ברשימה יש 8 איברים, ומכניסים איבר חדש לסוף בלי מצביע `tail`, בעזרת:\n```c\nItem *p = head;\nwhile (p->next)\n    p = p->next;\n```\nכמה פעמים מתבצעת ההוראה `p = p->next` ?"
+     }
+    },
+    {
+     "id": "C02-Q3",
+     "question": "הרשימה `h` היא `3 → 5`. מגדירים:\n```c\nvoid add(Item *head, int x)\n{\n    head = new_item(x, head);\n}\n```\nאחרי הקריאה `add(h, 9)` מדפיסים את הרשימה דרך `h`. מה מודפס?",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`3 5`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`9 3 5`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`3 5 9`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`9`"
+      }
+     ]
+    },
+    {
+     "id": "C02-Q4",
+     "step": {
+      "type": "findbug",
+      "prompt": "הפונקציה אמורה להכניס איבר לראש. בגרסה הבאה שורה אחת שונתה, ואחרי `insert_head(&h, 3)` על הרשימה `2 → 1` מתקבלת הרשימה `3` בלבד. מצאו את השורה.",
+      "code": true,
+      "lines": [
+       "void insert_head(Item **head, int x)",
+       "{",
+       "    Item *t = (Item *)malloc(sizeof(Item));",
+       "    t->data = x;",
+       "    t->next = NULL;",
+       "    *head = t;",
+       "}"
+      ]
+     }
+    },
+    {
+     "id": "C02-Q5",
+     "step": {
+      "type": "fillblank",
+      "prompt": "השלימו את פונקציית ההכנסה לסוף עם מצביע `tail`. אחרי ארבע הכנסות של 1, 2, 3, 4 הרשימה צריכה להיות `1 2 3 4`.",
+      "code": true,
+      "options": [
+       {
+        "id": "a",
+        "type": "text",
+        "value": "(*tail)->next = t;"
+       },
+       {
+        "id": "b",
+        "type": "text",
+        "value": "t->next = *tail;"
+       },
+       {
+        "id": "c",
+        "type": "text",
+        "value": "(*head)->next = t;"
+       },
+       {
+        "id": "d",
+        "type": "text",
+        "value": "*head = t;"
+       }
+      ],
+      "lines": [
+       "void append(Item **head, Item **tail, int x)",
+       "{",
+       "    Item *t = new_item(x, NULL);",
+       "    if (*head == NULL)",
+       "        *head = *tail = t;",
+       "    else",
+       "    {",
+       "        ___",
+       "        *tail = t;",
+       "    }",
+       "}"
+      ],
+      "blankIndex": 7
+     }
+    }
+   ]
+  },
+  {
+   "id": "C03",
+   "order": 3,
+   "boss": false,
+   "questions": [
+    {
+     "id": "C03-Q1",
+     "step": {
+      "type": "numeric",
+      "prompt": "הרשימה היא `5 → 1 → 4 → 3 → 8`. כמה איברים עם ערך גדול מ-3 מונה הקוד?\n```c\nint c = 0;\nfor (p = head; p; p = p->next)\n    if (p->data > 3)\n        c++;\n```"
+     }
+    },
+    {
+     "id": "C03-Q2",
+     "question": "מריצים `while (p->next) p = p->next;` כש-`p` הוא `head` והרשימה ריקה (`head == NULL`). מה קורה?",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "קריסה: גישה ל-`NULL->next`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "הלולאה לא רצה ו-`p` נשאר `NULL`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "הלולאה רצה לנצח"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "הלולאה מסתיימת מיד, כי רשימה ריקה נחשבת לבעלת איבר אחד"
+      }
+     ]
+    },
+    {
+     "id": "C03-Q3",
+     "step": {
+      "type": "findbug",
+      "prompt": "הפונקציה אמורה להחזיר את האיבר האחרון ברשימה לא ריקה. בגרסה הבאה שורה אחת שונתה, והפונקציה מחזירה `NULL`. מצאו את השורה.",
+      "code": true,
+      "lines": [
+       "Item *last(Item *head)",
+       "{",
+       "    Item *p = head;",
+       "    while (p)",
+       "        p = p->next;",
+       "    return p;",
+       "}"
+      ]
+     }
+    },
+    {
+     "id": "C03-Q4",
+     "step": {
+      "type": "fillblank",
+      "prompt": "השלימו את תנאי הלולאה בפונקציית החיפוש. היא צריכה להחזיר את האיבר הראשון עם הערך `x`, או `NULL` אם אין כזה.",
+      "code": true,
+      "options": [
+       {
+        "id": "a",
+        "type": "text",
+        "value": "p && p->data != x"
+       },
+       {
+        "id": "b",
+        "type": "text",
+        "value": "p && p->data == x"
+       },
+       {
+        "id": "c",
+        "type": "text",
+        "value": "p && p->data < x"
+       },
+       {
+        "id": "d",
+        "type": "text",
+        "value": "p->next->data != x"
+       }
+      ],
+      "lines": [
+       "Item *find(Item *head, int x)",
+       "{",
+       "    Item *p = head;",
+       "    while (___)",
+       "        p = p->next;",
+       "    return p;",
+       "}"
+      ],
+      "blankIndex": 3
+     }
+    },
+    {
+     "id": "C03-Q5",
+     "question": "מה הבעיה בתנאי הלולאה `while (p->data != x && p)` בחיפוש הערך `x` ברשימה?",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "כש-`x` לא נמצא ברשימה, `p` מגיע ל-`NULL` ואז נקרא `p->data` לפני הבדיקה: קריסה"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "אין בעיה, כי האופרטור `&&` חילופי"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "שגיאת הידור, כי אי אפשר לכתוב מצביע בתוך תנאי"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "הלולאה אף פעם לא מסתיימת כשהערך נמצא"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "C04",
+   "order": 4,
+   "boss": false,
+   "questions": [
+    {
+     "id": "C04-Q1",
+     "question": "ברשימה `1 → 2 → 3` מצביע `prev` על 1 ומצביע `curr` על 2. רוצים להוציא את 2 מהרשימה כך שהמעבר מ-`head` ידפיס `1 3`, ואחר כך מבצעים `free(curr)`. איזו שורה מתאימה לפני ה-`free`?",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`prev->next = curr->next;`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`prev = curr->next;`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`curr->next = prev;`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`prev->next = curr;`"
+      }
+     ]
+    },
+    {
+     "id": "C04-Q2",
+     "step": {
+      "type": "numeric",
+      "prompt": "מפעילים את `delete_value(&h, 2)` מהשיעור על הרשימה `2 → 2 → 5 → 2 → 7`. כמה קריאות `free` מתבצעות?"
+     }
+    },
+    {
+     "id": "C04-Q3",
+     "step": {
+      "type": "findbug",
+      "prompt": "בגרסה הבאה של `delete_value` שורה אחת שונתה. התוכנית קורסת כשמוחקים את הראש. מצאו את השורה.",
+      "code": true,
+      "lines": [
+       "void delete_value(Item **head, int val)",
+       "{",
+       "    Item *curr = *head, *prev = NULL;",
+       "    while (curr)",
+       "    {",
+       "        Item *next = curr->next;",
+       "        if (curr->data == val)",
+       "        {",
+       "            if (prev != NULL)",
+       "                *head = next;",
+       "            else",
+       "                prev->next = next;",
+       "            free(curr);",
+       "        }",
+       "        else",
+       "            prev = curr;",
+       "        curr = next;",
+       "    }",
+       "}"
+      ]
+     }
+    },
+    {
+     "id": "C04-Q4",
+     "question": "הרשימה היא `4 → 4 → 1 → 4 → 4 → 2 → 4`. מפעילים `delete_value(&h, 4)` מהשיעור. מה מדפיס מעבר על `h` ?",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`1 2`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`4 4 1 2`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`1 4 2`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`2`"
+      }
+     ]
+    },
+    {
+     "id": "C04-Q5",
+     "step": {
+      "type": "fillblank",
+      "prompt": "השלימו את הגרסה עם מצביע למצביע. היא צריכה למחוק את כל האיברים בעלי הערך `val`.",
+      "code": true,
+      "options": [
+       {
+        "id": "a",
+        "type": "text",
+        "value": "*pp = dead->next;"
+       },
+       {
+        "id": "b",
+        "type": "text",
+        "value": "*pp = (*pp)->next->next;"
+       },
+       {
+        "id": "c",
+        "type": "text",
+        "value": "*pp = NULL;"
+       },
+       {
+        "id": "d",
+        "type": "text",
+        "value": "*head = dead->next;"
+       }
+      ],
+      "lines": [
+       "void delete_value2(Item **head, int val)",
+       "{",
+       "    Item **pp = head;",
+       "    while (*pp)",
+       "    {",
+       "        if ((*pp)->data == val)",
+       "        {",
+       "            Item *dead = *pp;",
+       "            ___",
+       "            free(dead);",
+       "        }",
+       "        else",
+       "            pp = &(*pp)->next;",
+       "    }",
+       "}"
+      ],
+      "blankIndex": 8
+     }
+    }
+   ]
+  },
+  {
+   "id": "C05",
+   "order": 5,
+   "boss": false,
+   "questions": [
+    {
+     "id": "C05-Q1",
+     "question": "הרשימה היא `1 → 2 → 3 → 4 → 5 → 6`. לולאה עוברת עליה מההתחלה לסוף, ולכל ערך זוגי קוראת ל-`insert_head(&res, p->data)` כש-`res` מתחיל ב-`NULL`. מה הרשימה `res` בסוף?",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`6 4 2`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`2 4 6`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`2`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`6`"
+      }
+     ]
+    },
+    {
+     "id": "C05-Q2",
+     "step": {
+      "type": "fillblank",
+      "prompt": "השלימו את הפונקציה שמעתיקה את הערכים הזוגיים לרשימה חדשה בסדר המקורי. על `1 → 2 → 3 → 4` היא צריכה להחזיר `2 → 4`.",
+      "code": true,
+      "options": [
+       {
+        "id": "a",
+        "type": "text",
+        "value": "tail = tail->next;"
+       },
+       {
+        "id": "b",
+        "type": "text",
+        "value": "tail = &dummy;"
+       },
+       {
+        "id": "c",
+        "type": "text",
+        "value": "tail->next = NULL;"
+       },
+       {
+        "id": "d",
+        "type": "text",
+        "value": "tail = src;"
+       }
+      ],
+      "lines": [
+       "Item *evens(const Item *src)",
+       "{",
+       "    Item dummy, *tail = &dummy;",
+       "    dummy.next = NULL;",
+       "    for (; src; src = src->next)",
+       "        if (src->data % 2 == 0)",
+       "        {",
+       "            tail->next = new_item(src->data, NULL);",
+       "            ___",
+       "        }",
+       "    return dummy.next;",
+       "}"
+      ],
+      "blankIndex": 8
+     }
+    },
+    {
+     "id": "C05-Q3",
+     "step": {
+      "type": "numeric",
+      "prompt": "כמה קריאות `malloc` מבצעת `evens` מהשיעור על הרשימה `1 → 2 → 3 → 4 → 5 → 6 → 7` ?"
+     }
+    },
+    {
+     "id": "C05-Q4",
+     "step": {
+      "type": "findbug",
+      "prompt": "הפונקציה אמורה להחזיר רשימה עם ערכי המערך בסדר המערך. בגרסה הבאה שורה אחת שונתה והרשימה יוצאת הפוכה: על `{1, 2, 3}` מתקבל `3 2 1`. מצאו את השורה.",
+      "code": true,
+      "lines": [
+       "Item *from_array(const int *a, int n)",
+       "{",
+       "    Item *head = NULL;",
+       "    int i;",
+       "    for (i = 0; i < n; i++)",
+       "        insert_head(&head, a[i]);",
+       "    return head;",
+       "}"
+      ]
+     }
+    },
+    {
+     "id": "C05-Q5",
+     "step": {
+      "type": "numeric",
+      "prompt": "בונים רשימה של 5 ערכים, ערך אחרי ערך, בלי `tail`: כל הכנסה לסוף סורקת מהראש בלולאה `while (p->next) p = p->next;` (ההכנסה הראשונה לרשימה ריקה לא סורקת). כמה פעמים מתבצעת ההוראה `p = p->next` בסך הכל, על פני חמש ההכנסות?"
+     }
+    }
+   ]
+  },
+  {
+   "id": "C06",
+   "order": 6,
+   "boss": false,
+   "questions": [
+    {
+     "id": "C06-Q1",
+     "question": "מה קורה כשמריצים `while (p->next) p = p->next;` על רשימה מעגלית לא ריקה?",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "הלולאה אינסופית, כי אין איבר ש-`next` שלו `NULL`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "הלולאה עוצרת באיבר האחרון"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "הלולאה עוצרת כשהיא חוזרת להתחלה"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "קריסה מיידית"
+      }
+     ]
+    },
+    {
+     "id": "C06-Q2",
+     "step": {
+      "type": "numeric",
+      "prompt": "הרשימה המעגלית היא `2 → 4 → 7 → 9` (אחרי 9 חוזרים ל-2), ו-`start` מצביע על 7. מה ידפיס הקוד?\n```c\nint s = 0;\nItem *p = start;\ndo\n{\n    s += p->data;\n    p = p->next;\n} while (p != start);\nprintf(\"%d\", s);\n```"
+     }
+    },
+    {
+     "id": "C06-Q3",
+     "question": "ברשימה מעגלית ממוינת יש איבר אחד, `L`, ו-`L->next == L`. כמה פעמים רץ גוף הלולאה `while (L->data < L->next->data) L = L->next;` ?",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "אף פעם"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "פעם אחת"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "לנצח"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "קריסה"
+      }
+     ]
+    },
+    {
+     "id": "C06-Q4",
+     "step": {
+      "type": "numeric",
+      "prompt": "הרשימה המעגלית הממוינת היא `3 → 5 → 8 → 12` (אחרי 12 חוזרים ל-3), ו-`L` מצביע על 5. כמה פעמים ירוץ גוף הלולאה `while (L->data < L->next->data) L = L->next;` ?"
+     }
+    },
+    {
+     "id": "C06-Q5",
+     "step": {
+      "type": "findbug",
+      "prompt": "הפונקציה אמורה לספור את האיברים ברשימה מעגלית. בגרסה הבאה שורה אחת שונתה, ועל רשימה בת 4 איברים מתקבל 3. מצאו את השורה.",
+      "code": true,
+      "lines": [
+       "int count(Item *start)",
+       "{",
+       "    Item *p = start;",
+       "    int c = 0;",
+       "    do",
+       "    {",
+       "        c++;",
+       "        p = p->next;",
+       "    } while (p->next != start);",
+       "    return c;",
+       "}"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "C07",
+   "order": 7,
+   "boss": false,
+   "questions": [
+    {
+     "id": "C07-Q1",
+     "step": {
+      "type": "order",
+      "prompt": "סדרו את גוף הלולאה של היפוך הרשימה.",
+      "code": true,
+      "lines": [
+       "curr->next = prev;",
+       "prev = curr;",
+       "curr = next;",
+       "Item *next = curr->next;"
+      ]
+     }
+    },
+    {
+     "id": "C07-Q2",
+     "question": "הרשימה היא `1 → 2 → 3 → 4` ו-`head` מצביע על 1. מריצים את גוף לולאת ההיפוך (השיעור) פעם אחת בלבד, עם `curr = head` ו-`prev = NULL`. מה ידפיס מעבר על הרשימה דרך המשתנה `head` ?",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`1`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`4 3 2 1`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`2 3 4`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`1 2 3 4`"
+      }
+     ]
+    },
+    {
+     "id": "C07-Q3",
+     "step": {
+      "type": "fillblank",
+      "prompt": "השלימו את ערך ההחזרה של פונקציית ההשוואה בין שתי רשימות. היא צריכה להחזיר 1 רק כששתי הרשימות זהות.",
+      "code": true,
+      "options": [
+       {
+        "id": "a",
+        "type": "text",
+        "value": "return a == NULL && b == NULL;"
+       },
+       {
+        "id": "b",
+        "type": "text",
+        "value": "return 1;"
+       },
+       {
+        "id": "c",
+        "type": "text",
+        "value": "return a == NULL;"
+       },
+       {
+        "id": "d",
+        "type": "text",
+        "value": "return b == NULL;"
+       }
+      ],
+      "lines": [
+       "int equal(const Item *a, const Item *b)",
+       "{",
+       "    while (a && b)",
+       "    {",
+       "        if (a->data != b->data)",
+       "            return 0;",
+       "        a = a->next;",
+       "        b = b->next;",
+       "    }",
+       "    ___",
+       "}"
+      ],
+      "blankIndex": 9
+     }
+    },
+    {
+     "id": "C07-Q4",
+     "step": {
+      "type": "findbug",
+      "prompt": "בגרסה הבאה של `contains_all` שורה אחת שונתה. התוכנית קורסת כשערך של `sub` לא נמצא ב-`list`. מצאו את השורה.",
+      "code": true,
+      "lines": [
+       "int contains_all(const Item *sub, const Item *list)",
+       "{",
+       "    for (; sub; sub = sub->next)",
+       "    {",
+       "        const Item *p = list;",
+       "        while (p->data != sub->data)",
+       "            p = p->next;",
+       "        if (p == NULL)",
+       "            return 0;",
+       "    }",
+       "    return 1;",
+       "}"
+      ]
+     }
+    },
+    {
+     "id": "C07-Q5",
+     "step": {
+      "type": "numeric",
+      "prompt": "המערך `A` מכיל ארבע רשימות: `1,2`, `2,1,3`, `3`, `1,2,3`, והרשימה `L` היא `1,2`. הלולאה החיצונית קוראת ל-`contains_all(L, A[i])` לכל `i`. בכמה רשימות מ-`A` היא מחזירה 1 ?"
+     }
+    }
+   ]
+  },
+  {
+   "id": "C08",
+   "order": 8,
+   "boss": true,
+   "questions": [
+    {
+     "id": "bank:25B-A-Q1",
+     "bankId": "25B-A-Q1"
+    },
+    {
+     "id": "bank:25B-B-Q1",
+     "bankId": "25B-B-Q1"
+    },
+    {
+     "id": "bank:20B-A-Q2",
+     "bankId": "20B-A-Q2"
+    },
+    {
+     "id": "bank:20B-B-Q2",
+     "bankId": "20B-B-Q2"
+    }
+   ]
+  }
+ ]
+}
