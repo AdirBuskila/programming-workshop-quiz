@@ -16,7 +16,146 @@
    "solutionSource": "official-pdf",
    "official": true,
    "confidence": "high",
-   "points": 28
+   "points": 28,
+   "rubric": [
+    {
+     "text": "פתיחת שלושת הקבצים ובדיקת הצלחה, ואיפוס שני המונים",
+     "points": 5
+    },
+    {
+     "text": "קריאה תו תו וצבירת סכום קודי ה-ASCII של תווי השורה עד הרווח",
+     "points": 5
+    },
+    {
+     "text": "קריאת מספר הביקורת (`fscanf`) ושמירת מיקום סוף השורה (`ftell`)",
+     "points": 6
+    },
+    {
+     "text": "חזרה להתחלת השורה (`fseek`) והעתקת תווי השורה עד הרווח לקובץ המתאים לפי השוואה לסכום, עם עדכון המונה המתאים",
+     "points": 8
+    },
+    {
+     "text": "מעבר לשורה הבאה: דילוג על סוף השורה (שני מקומות), איפוס הסכום וסגירת הקבצים",
+     "points": 4
+    }
+   ],
+   "rubricSource": "ai-draft",
+   "pitfalls": [
+    "להעתיק גם את הרווח ואת מספר הביקורת לקובץ, כי עוצרים רק בסוף השורה במקום ברווח.",
+    "לשכוח לאפס את הסכום או להזיז את תחילת השורה הבאה, ואז כל השורות אחרי הראשונה נבדקות מול סכום שגוי.",
+    "להניח שסוף שורה הוא תו אחד ולדלג רק על `'\\n'`, כשבקובץ של Windows סוף שורה תופס שני מקומות."
+   ],
+   "steps": [
+    {
+     "type": "numeric",
+     "prompt": "`infile` מכיל חמש שורות: `ab 195`, `xy 241`, `q 114`, `zz 0`, `pq 225` (קבצי טקסט של Windows: סוף שורה הוא `\\r\\n`, כמו בהנחת הפתרון הרשמי). מה ערכו של `*true_rows` בסוף הפונקציה?",
+     "answer": 3,
+     "tol": 0,
+     "explain": "מספרי הביקורת של `ab` (195), `xy` (241) ו-`pq` (225) נכונים, ושל `q` (נכון 113) ו-`zz` (נכון 244) שגויים (ריצה אמיתית: 3 שורות נכונות)."
+    },
+    {
+     "type": "numeric",
+     "prompt": "באותו קובץ, מה ערכו של `*false_rows` בסוף הפונקציה?",
+     "answer": 2,
+     "tol": 0,
+     "explain": "השורות `q 114` ו-`zz 0` עוברות ל-`outfile_false` (ריצה אמיתית: 2)."
+    },
+    {
+     "type": "fillblank",
+     "prompt": "השלימו את תנאי הלולאה שמעתיקה את השורה (בלי מספר הביקורת) לקובץ.",
+     "code": true,
+     "lines": [
+      "void copy_row(FILE *in, FILE *out, int start_row, int *rows)",
+      "{",
+      "      char c;",
+      "      fseek(in, start_row, SEEK_SET);",
+      "___",
+      "            fputc(c, out);",
+      "      fputc('\\n', out);",
+      "      (*rows)++;",
+      "}"
+     ],
+     "blankIndex": 4,
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "while ( (c = fgetc(in)) != ' ' )"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "while ( (c = fgetc(in)) != '\\n' )"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "while ( (c = fgetc(in)) == ' ' )"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "while ( (c = fgetc(in)) != EOF )"
+      }
+     ],
+     "correctId": "a",
+     "explain": "מעתיקים עד הרווח שלפני מספר הביקורת. ב' ממשיך עד סוף השורה וכולל את מספר הביקורת, ג' לא מעתיק דבר, ד' מעתיק את כל המשך הקובץ (ריצה אמיתית: כל אחת מהאפשרויות הללו נותנת קבצי פלט שונים)."
+    },
+    {
+     "type": "findbug",
+     "prompt": "בגרסה הבאה שורה אחת שונתה, ושורה שמספר הביקורת שלה גדול מהסכום הנכון מועתקת לקובץ השורות הנכונות. מצאו אותה.",
+     "code": true,
+     "lines": [
+      "void copy_true_false_file_rows (char *infile, char *outfile_true,",
+      "      char *outfile_false, int *true_rows, int *false_rows)",
+      "{",
+      "      int sum=0, control_num, start_row=0, end_row;",
+      "      char c;",
+      "      FILE *in = fopen(infile, \"r\"),",
+      "            *out_true = fopen(outfile_true, \"w\"),",
+      "            *out_false = fopen(outfile_false, \"w\");",
+      "      if( !in || !out_true || !out_false )",
+      "            exit(1);",
+      "      *true_rows = *false_rows = 0;",
+      "      while ( (c = fgetc(in)) != EOF )",
+      "      {",
+      "            if (c != ' ')",
+      "                  sum += c;",
+      "            else",
+      "            {",
+      "                  fscanf(in, \"%d\", &control_num);",
+      "                  end_row = ftell(in);",
+      "                  if (control_num >= sum)",
+      "                        copy_row(in, out_true, start_row, true_rows);",
+      "                  else",
+      "                        copy_row(in, out_false, start_row, false_rows);",
+      "                  sum = 0;",
+      "                  start_row = end_row + 2;",
+      "                  fseek(in, start_row, SEEK_SET);",
+      "            }",
+      "      }",
+      "      fclose(in);",
+      "      fclose(out_true);",
+      "      fclose(out_false);",
+      "}"
+     ],
+     "bugIndex": 19,
+     "explain": "התנאי חייב להיות שוויון מדויק. עם `>=` השורה `q 114` (נכון 113) נחשבת נכונה (ריצה אמיתית: 4 שורות נכונות במקום 3)."
+    },
+    {
+     "type": "order",
+     "prompt": "סדרו את הבלוקים של `copy_true_false_file_rows` (כל שורה היא בלוק לוגי אחד).",
+     "code": true,
+     "lines": [
+      "int sum=0, control_num, start_row=0, end_row; char c; FILE *in = fopen(infile, \"r\"), *out_true = fopen(outfile_true, \"w\"), *out_false = fopen(outfile_false, \"w\");",
+      "if( !in || !out_true || !out_false ) exit(1); *true_rows = *false_rows = 0;",
+      "while ( (c = fgetc(in)) != EOF ) { if (c != ' ') sum += c; else { fscanf(in, \"%d\", &control_num); end_row = ftell(in); if (control_num == sum) copy_row(in, out_true, start_row, true_rows); else copy_row(in, out_false, start_row, false_rows); sum = 0; start_row = end_row + 2; fseek(in, start_row, SEEK_SET); } }",
+      "fclose(in); fclose(out_true); fclose(out_false);"
+     ],
+     "explain": "הצהרות ופתיחה, בדיקת הפתיחה ואיפוס המונים, לולאת הבדיקה וההעתקה, וסגירה. כל החלפה של שני בלוקים נכשלת בבנייה, קורסת (קובץ קלט שאינו קיים), או נותנת פלט שונה (נבדק בריצה)."
+    }
+   ],
+   "stepsSource": "ai-draft"
   },
   {
    "num": 2,
@@ -28,7 +167,206 @@
    "official": true,
    "confidence": "high",
    "points": 28,
-   "image": "images/exams/19S-B-Q2.png"
+   "image": "images/exams/19S-B-Q2.png",
+   "rubric": [
+    {
+     "text": "הקצאת מערך הגדלים `*SIZE` בגודל `n`",
+     "points": 3
+    },
+    {
+     "text": "בניית רשימת `PtrItem` עם איבר לכל רשימה ב-`AL`, לפי הסדר (בעזרת איבר דמה)",
+     "points": 7
+    },
+    {
+     "text": "ספירת איברי הרשימה `i` והקצאת מערך בגודל המתאים; `NULL` ברשימה ריקה",
+     "points": 8
+    },
+    {
+     "text": "העתקת ערכי `data` של הרשימה למערך, לפי הסדר",
+     "points": 6
+    },
+    {
+     "text": "סיום הרשימה ב-`NULL`, הסרת איבר הדמה והחזרת `LA`",
+     "points": 4
+    }
+   ],
+   "rubricSource": "ai-draft",
+   "pitfalls": [
+    "להקצות מערך בגודל 0 או לגשת ל-`AL[i]->next` כשהרשימה ריקה, במקום להציב `NULL` ב-`ptr`.",
+    "להעתיק את הערכים בלי להתקדם באינדקס `j`, כך שכל הערכים נכנסים לתא הראשון.",
+    "לשכוח את מערך הגדלים `SIZE` או לא להעביר אותו by reference."
+   ],
+   "steps": [
+    {
+     "type": "choice",
+     "prompt": "הרשימה `AL[1]` ריקה. מה ערכו של השדה `ptr` באיבר מספר 1 של `LA`?",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`NULL`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "מצביע למערך בגודל 0"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "מצביע לא מאותחל"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "מצביע למערך של האיבר הקודם"
+      }
+     ],
+     "correctId": "a",
+     "explain": "הפונקציה מציבה `NULL` ב-`ptr` כשהרשימה ריקה (ריצה אמיתית: `ptr==NULL` ו-`SIZE[1]==0`)."
+    },
+    {
+     "type": "numeric",
+     "prompt": "`AL` מכיל שלוש רשימות: `5 6 7`, רשימה ריקה, ו-`8 9`. מה ערכו של `LA->next->next->ptr[1]`, כלומר האיבר השני במערך של האיבר השלישי ב-`LA`?",
+     "answer": 9,
+     "tol": 0,
+     "explain": "האיבר השלישי ב-`LA` מצביע על המערך `8 9` ולכן האיבר השני הוא 9 (ריצה אמיתית: `SIZE = 3 0 2`)."
+    },
+    {
+     "type": "fillblank",
+     "prompt": "השלימו את שורת ההעתקה של ערכי הרשימה למערך.",
+     "code": true,
+     "lines": [
+      "PtrItem *array_of_lists_to_list_of_arrays (DataItem **AL, int n,",
+      "                                                  int **SIZE)",
+      "{",
+      "      PtrItem *LA, *curr_ptr;",
+      "      DataItem *data_lst;",
+      "      int i, j;",
+      "      *SIZE = (int *)calloc(n, sizeof(int));",
+      "      LA = (PtrItem *)malloc(sizeof(PtrItem));",
+      "      curr_ptr = LA;",
+      "      for (i=0; i<n; i++)",
+      "      {",
+      "            curr_ptr->next = (PtrItem *)malloc(sizeof(PtrItem));",
+      "            curr_ptr = curr_ptr->next;",
+      "            (*SIZE)[i] = 0;",
+      "            if (AL[i])",
+      "            {",
+      "                  data_lst = AL[i];",
+      "                  while (data_lst)",
+      "                  {",
+      "                        (*SIZE)[i]++;",
+      "                        data_lst = data_lst->next;",
+      "                  }",
+      "                  curr_ptr->ptr = (int *)calloc((*SIZE)[i], sizeof(int));",
+      "            }",
+      "            else",
+      "                  curr_ptr->ptr = NULL;",
+      "            data_lst = AL[i];",
+      "            j = 0;",
+      "            while (data_lst)",
+      "            {",
+      "___",
+      "                  data_lst = data_lst->next;",
+      "            }",
+      "      }",
+      "      curr_ptr->next = NULL;",
+      "      curr_ptr = LA;",
+      "      LA = LA->next;",
+      "      free (curr_ptr);",
+      "      return LA;",
+      "}"
+     ],
+     "blankIndex": 30,
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "curr_ptr->ptr[j++] = data_lst->data;"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "curr_ptr->ptr[j] = data_lst->data;"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "curr_ptr->ptr[j++] = data_lst->next->data;"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "curr_ptr->ptr[j++] = data_lst->data + j;"
+      }
+     ],
+     "correctId": "a",
+     "explain": "יש להעתיק את `data` של האיבר הנוכחי ולהתקדם באינדקס. ב' לא מתקדם, ג' מעתיק את האיבר הבא (וקורס באחרון), ד' משנה את הערך (ריצה אמיתית: כל אחת מהאפשרויות הללו נותנת מערכים שונים או קורסת)."
+    },
+    {
+     "type": "findbug",
+     "prompt": "בגרסה הבאה שורה אחת שונתה, והרשימה האחרונה של `AL` אינה מופיעה ב-`LA`. מצאו אותה.",
+     "code": true,
+     "lines": [
+      "PtrItem *array_of_lists_to_list_of_arrays (DataItem **AL, int n,",
+      "                                                  int **SIZE)",
+      "{",
+      "      PtrItem *LA, *curr_ptr;",
+      "      DataItem *data_lst;",
+      "      int i, j;",
+      "      *SIZE = (int *)calloc(n, sizeof(int));",
+      "      LA = (PtrItem *)malloc(sizeof(PtrItem));",
+      "      curr_ptr = LA;",
+      "      for (i=0; i<n-1; i++)",
+      "      {",
+      "            curr_ptr->next = (PtrItem *)malloc(sizeof(PtrItem));",
+      "            curr_ptr = curr_ptr->next;",
+      "            (*SIZE)[i] = 0;",
+      "            if (AL[i])",
+      "            {",
+      "                  data_lst = AL[i];",
+      "                  while (data_lst)",
+      "                  {",
+      "                        (*SIZE)[i]++;",
+      "                        data_lst = data_lst->next;",
+      "                  }",
+      "                  curr_ptr->ptr = (int *)calloc((*SIZE)[i], sizeof(int));",
+      "            }",
+      "            else",
+      "                  curr_ptr->ptr = NULL;",
+      "            data_lst = AL[i];",
+      "            j = 0;",
+      "            while (data_lst)",
+      "            {",
+      "                  curr_ptr->ptr[j++] = data_lst->data;",
+      "                  data_lst = data_lst->next;",
+      "            }",
+      "      }",
+      "      curr_ptr->next = NULL;",
+      "      curr_ptr = LA;",
+      "      LA = LA->next;",
+      "      free (curr_ptr);",
+      "      return LA;",
+      "}"
+     ],
+     "bugIndex": 9,
+     "explain": "`i<n-1` מדלג על הרשימה האחרונה (ריצה אמיתית: `LA` מכיל 2 איברים במקום 3, ו-`SIZE[2]` נשאר 0)."
+    },
+    {
+     "type": "order",
+     "prompt": "סדרו את הבלוקים של הפונקציה.",
+     "code": true,
+     "lines": [
+      "PtrItem *LA, *curr_ptr; DataItem *data_lst; int i, j;",
+      "*SIZE = (int *)calloc(n, sizeof(int)); LA = (PtrItem *)malloc(sizeof(PtrItem)); curr_ptr = LA;",
+      "for (i=0; i<n; i++) { curr_ptr->next = (PtrItem *)malloc(sizeof(PtrItem)); curr_ptr = curr_ptr->next; (*SIZE)[i] = 0; if (AL[i]) { data_lst = AL[i]; while (data_lst) { (*SIZE)[i]++; data_lst = data_lst->next; } curr_ptr->ptr = (int *)calloc((*SIZE)[i], sizeof(int)); } else curr_ptr->ptr = NULL; data_lst = AL[i]; j = 0; while (data_lst) { curr_ptr->ptr[j++] = data_lst->data; data_lst = data_lst->next; } }",
+      "curr_ptr->next = NULL; curr_ptr = LA; LA = LA->next; free (curr_ptr); return LA;"
+     ],
+     "explain": "הצהרות, הקצאת `SIZE` ואיבר הדמה, לולאת הבנייה, וסיום הרשימה עם הסרת הדמה. כל החלפה של שני בלוקים נכשלת בבנייה, קורסת או מחזירה תוצאה שונה (נבדק בריצה)."
+    }
+   ],
+   "stepsSource": "ai-draft"
   },
   {
    "num": 3,
@@ -39,7 +377,145 @@
    "solutionSource": "official-pdf",
    "official": true,
    "confidence": "high",
-   "points": 28
+   "points": 28,
+   "rubric": [
+    {
+     "text": "מציאת תחילת המילה האחרונה בסריקה מהסוף, וחזרה בלי שינוי כשיש מילה אחת בלבד",
+     "points": 6
+    },
+    {
+     "text": "הקצאת מחרוזת עזר בגודל `len+1`",
+     "points": 4
+    },
+    {
+     "text": "הרכבת המחרוזת החדשה בסדר: המילה האחרונה, אחריה הרווחים שלפניה, ואחריהם שאר המחרוזת",
+     "points": 12
+    },
+    {
+     "text": "סיום המחרוזת ב-`'\\0'` והעתקתה חזרה אל `str`",
+     "points": 4
+    },
+    {
+     "text": "שחרור מחרוזת העזר",
+     "points": 2
+    }
+   ],
+   "rubricSource": "ai-draft",
+   "pitfalls": [
+    "לשכוח את המקרה של מילה יחידה: אין רווח במחרוזת והסריקה יוצאת מהגבולות.",
+    "לשכוח להעתיק את הרווחים שבין המילה האחרונה לקודמת, ולהדביק את המילים זו לזו.",
+    "לשכוח את `'\\0'` בסוף מחרוזת העזר לפני `strcpy`."
+   ],
+   "steps": [
+    {
+     "type": "text",
+     "prompt": "`str` היא `\"to be or not\"`. מה תכיל `str` אחרי הפונקציה? (כתבו את המחרוזת בלי מרכאות)",
+     "accept": [
+      "not to be or"
+     ],
+     "normalize": "none",
+     "explain": "המילה האחרונה `not` עוברת להתחלה, אחריה הרווח שהיה לפניה ושאר המחרוזת (ריצה אמיתית: `not to be or`)."
+    },
+    {
+     "type": "numeric",
+     "prompt": "`str` היא `\"one  two  three   four\"`. כמה רווחים יש בין `four` למילה `one` אחרי הפונקציה?",
+     "answer": 3,
+     "tol": 0,
+     "explain": "הפתרון מעתיק אחרי המילה האחרונה את שלושת הרווחים שהיו לפניה (ריצה אמיתית: `four   one  two  three`)."
+    },
+    {
+     "type": "fillblank",
+     "prompt": "השלימו את לולאת החיפוש של תחילת המילה האחרונה (מהסוף להתחלה).",
+     "code": true,
+     "lines": [
+      "void cyclic_shift_of_string(char *str)",
+      "{",
+      "      int len = strlen(str), i, j, k;",
+      "      char *temp;",
+      "___",
+      "      if (i<0)",
+      "            return;",
+      "      temp = malloc(len+1);",
+      "      for (j=0, k=i+1; k<len; j++, k++)",
+      "            temp[j] = str[k];",
+      "      for (; str[i]==' '; j++, i--)",
+      "            temp[j] = ' ';",
+      "      for (k=0; k<=i; j++, k++)",
+      "            temp[j] = str[k];",
+      "      temp[j] = '\\0';",
+      "      strcpy(str, temp);",
+      "      free(temp);",
+      "}"
+     ],
+     "blankIndex": 4,
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "for (i=len-1; i>=0 && str[i]!=' '; i--);"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "for (i=len-1; i>=0 && str[i]==' '; i--);"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "for (i=len-1; i>0 && str[i]!=' '; i--);"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "for (i=len-1; i>=0 && str[i]!='\\0'; i--);"
+      }
+     ],
+     "correctId": "a",
+     "explain": "עוצרים ברווח האחרון או בתחילת המחרוזת. ב' עוצר מיד כי התו האחרון אינו רווח, ג' מפספס מילה יחידה, ד' אף פעם לא עוצר ברווח (ריצה אמיתית: כל אחת מהאפשרויות הללו נותנת תוצאה שונה)."
+    },
+    {
+     "type": "findbug",
+     "prompt": "בגרסה הבאה שורה אחת שונתה, ובתוצאה המילה שעברה להתחלה חסרה את התו האחרון שלה. מצאו אותה.",
+     "code": true,
+     "lines": [
+      "void cyclic_shift_of_string(char *str)",
+      "{",
+      "      int len = strlen(str), i, j, k;",
+      "      char *temp;",
+      "      for (i=len-1; i>=0 && str[i]!=' '; i--);",
+      "      if (i<0)",
+      "            return;",
+      "      temp = malloc(len+1);",
+      "      for (j=0, k=i+1; k<len-1; j++, k++)",
+      "            temp[j] = str[k];",
+      "      for (; str[i]==' '; j++, i--)",
+      "            temp[j] = ' ';",
+      "      for (k=0; k<=i; j++, k++)",
+      "            temp[j] = str[k];",
+      "      temp[j] = '\\0';",
+      "      strcpy(str, temp);",
+      "      free(temp);",
+      "}"
+     ],
+     "bugIndex": 8,
+     "explain": "`k<len-1` לא מעתיק את התו האחרון של המילה (ריצה אמיתית: `not to be or` הופך ל-`no to be or`)."
+    },
+    {
+     "type": "order",
+     "prompt": "סדרו את הבלוקים של הפונקציה.",
+     "code": true,
+     "lines": [
+      "int len = strlen(str), i, j, k; char *temp;",
+      "for (i=len-1; i>=0 && str[i]!=' '; i--); if (i<0) return;",
+      "temp = malloc(len+1); for (j=0, k=i+1; k<len; j++, k++) temp[j] = str[k];",
+      "for (; str[i]==' '; j++, i--) temp[j] = ' ';",
+      "for (k=0; k<=i; j++, k++) temp[j] = str[k]; temp[j] = '\\0';",
+      "strcpy(str, temp); free(temp);"
+     ],
+     "explain": "הצהרות, חיפוש המילה האחרונה, העתקת המילה, העתקת הרווחים, העתקת שאר המחרוזת עם הסיום, והעתקה חזרה. כל החלפה של שני בלוקים נכשלת בבנייה, קורסת או נותנת מחרוזת שונה (נבדק בריצה)."
+    }
+   ],
+   "stepsSource": "ai-draft"
   },
   {
    "num": 4,
@@ -192,7 +668,53 @@
    "solutionSource": "official-pdf",
    "official": true,
    "confidence": "high",
-   "points": 10
+   "points": 10,
+   "rubric": [
+    {
+     "text": "`sizeof a` הוא גודל המערך כולו: 100 איברים של 4 בתים, כלומר 400",
+     "points": 4
+    },
+    {
+     "text": "`sizeof sizeof a` הוא הגודל של הטיפוס של התוצאה (שלם בן 4 בתים), כלומר 4, וכך גם `sizeof sizeof sizeof a`",
+     "points": 4
+    },
+    {
+     "text": "סכום: $400+4+4=408$",
+     "points": 2
+    }
+   ],
+   "rubricSource": "ai-draft",
+   "pitfalls": [
+    "לחשוב ש-`sizeof a` הוא גודל מצביע (4) ולא גודל המערך כולו, כי כאן `a` הוא מערך ולא פרמטר של פונקציה.",
+    "לשכוח שגם `sizeof sizeof a` הוא ביטוי שיש לו גודל (גודל הטיפוס של התוצאה) ולא 400.",
+    "לשכוח שהמפתח הרשמי מניח מערכת של 32 סיביות: ב-64 סיביות `sizeof` הוא בן 8 בתים והפלט 416."
+   ],
+   "steps": [
+    {
+     "type": "numeric",
+     "prompt": "מה ערכו של `sizeof a` עבור `int a[100]`?",
+     "answer": 400,
+     "tol": 0,
+     "explain": "100 איברים בני 4 בתים כל אחד (ריצה אמיתית: 400)."
+    },
+    {
+     "type": "numeric",
+     "prompt": "במערכת של 32 סיביות (כמו במפתח הרשמי), מה ערכו של `sizeof sizeof a`?",
+     "answer": 4,
+     "tol": 0,
+     "explain": "התוצאה של `sizeof` היא מספר שלם בן 4 בבתים במערכת של 32 סיביות (ריצה אמיתית עם `clang -m32`: 4)."
+    },
+    {
+     "type": "text",
+     "prompt": "מה הפלט של התוכנית, במערכת של 32 סיביות?",
+     "accept": [
+      "408"
+     ],
+     "normalize": "none",
+     "explain": "$400+4+4=408$ (ריצה אמיתית עם `clang -m32`: `408`; ב-64 סיביות הפלט הוא `416`)."
+    }
+   ],
+   "stepsSource": "ai-draft"
   }
  ]
 }

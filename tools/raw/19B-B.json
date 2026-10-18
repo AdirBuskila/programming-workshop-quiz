@@ -16,7 +16,151 @@
    "solutionSource": "official-pdf",
    "official": true,
    "confidence": "high",
-   "points": 28
+   "points": 28,
+   "rubric": [
+    {
+     "text": "פתיחת `infile` לקריאה ו-`outfile` לכתיבה ובדיקה שהפתיחה הצליחה",
+     "points": 6
+    },
+    {
+     "text": "קריאה תו אחר תו עד `EOF` והעתקת כל תו שאינו סוף שורה אל `outfile`",
+     "points": 6
+    },
+    {
+     "text": "צבירת סכום קודי ה-ASCII של תווי השורה, בלי תו סוף השורה",
+     "points": 6
+    },
+    {
+     "text": "בסוף כל שורה: כתיבת רווח, מספר הביקורת, תו הביקורת (`sum%128`) ותו סוף שורה, ואיפוס הסכום לשורה הבאה",
+     "points": 7
+    },
+    {
+     "text": "סגירת שני הקבצים",
+     "points": 3
+    }
+   ],
+   "rubricSource": "ai-draft",
+   "pitfalls": [
+    "לא לאפס את הסכום אחרי כל שורה, כך שמספר הביקורת של כל שורה כולל את השורות שלפניה.",
+    "לצרף לסכום גם את `'\\n'`, למרות שההוראה היא לא להתחשב בו.",
+    "לכתוב את הסכום עצמו כתו הביקורת במקום את `sum%128`, או לשכוח את הרווח שמפריד בין השורה המקורית למספר הביקורת."
+   ],
+   "steps": [
+    {
+     "type": "numeric",
+     "prompt": "`infile` מכיל את השורה `Hi!` בלבד. מה מספר הביקורת שייכתב אחריה ב-`outfile`?",
+     "answer": 210,
+     "tol": 0,
+     "explain": "$72 + 105 + 33 = 210$ (קודי `H`, `i`, `!`; ריצה אמיתית: הקובץ מכיל `Hi! 210R`)."
+    },
+    {
+     "type": "text",
+     "prompt": "באותו קובץ (`Hi!`), מהו תו הביקורת שייכתב אחרי מספר הביקורת? (תו בודד)",
+     "accept": [
+      "R"
+     ],
+     "normalize": "none",
+     "explain": "$210 \\bmod 128 = 82$ וקוד ה-ASCII 82 הוא `R` (ריצה אמיתית: `Hi! 210R`)."
+    },
+    {
+     "type": "fillblank",
+     "prompt": "השלימו את שורת הכתיבה לסוף כל שורה (רווח, מספר הביקורת, תו הביקורת, סוף שורה).",
+     "code": true,
+     "lines": [
+      "void add_controls_in_file_rows (char *infile, char *outfile)",
+      "{",
+      "      int sum=0;",
+      "      char c;",
+      "      FILE *in = fopen(infile, \"r\"),",
+      "             *out = fopen(outfile, \"w\");",
+      "      if( !in || !out )",
+      "            exit(1);",
+      "      while ( (c = fgetc(in)) != EOF )",
+      "            if (c != '\\n')",
+      "            {",
+      "                  fputc(c, out);",
+      "                  sum += c;",
+      "            }",
+      "            else",
+      "            {",
+      "___",
+      "                  sum = 0;",
+      "            }",
+      "      fclose(in);",
+      "      fclose(out);",
+      "}"
+     ],
+     "blankIndex": 16,
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "fprintf(out, \" %d%c\\n\", sum, sum%128);"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "fprintf(out, \"%d%c\\n\", sum, sum%128);"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "fprintf(out, \" %d%c\\n\", sum, sum/128);"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "fprintf(out, \" %c%d\\n\", sum%128, sum);"
+      }
+     ],
+     "correctId": "a",
+     "explain": "ב' שוכח את הרווח (`abc294&`), ג' מחשב מנה במקום שארית, ד' מחליף את סדר המספר והתו (ריצה אמיתית: כל אחת מהאפשרויות הללו מייצרת קובץ שונה)."
+    },
+    {
+     "type": "findbug",
+     "prompt": "בגרסה הבאה שורה אחת שונתה, ומספר הביקורת בכל שורה שווה לקוד התו האחרון בשורה בלבד. מצאו אותה.",
+     "code": true,
+     "lines": [
+      "void add_controls_in_file_rows (char *infile, char *outfile)",
+      "{",
+      "      int sum=0;",
+      "      char c;",
+      "      FILE *in = fopen(infile, \"r\"),",
+      "             *out = fopen(outfile, \"w\");",
+      "      if( !in || !out )",
+      "            exit(1);",
+      "      while ( (c = fgetc(in)) != EOF )",
+      "            if (c != '\\n')",
+      "            {",
+      "                  fputc(c, out);",
+      "                  sum = c;",
+      "            }",
+      "            else",
+      "            {",
+      "                  fprintf(out, \" %d%c\\n\", sum, sum%128);",
+      "                  sum = 0;",
+      "            }",
+      "      fclose(in);",
+      "      fclose(out);",
+      "}"
+     ],
+     "bugIndex": 12,
+     "explain": "`sum = c;` דורס את הסכום בכל תו במקום להוסיף אליו; בפתרון הנכון `sum += c;` (ריצה אמיתית: אחרי `abc` נכתב `99` במקום `294`)."
+    },
+    {
+     "type": "order",
+     "prompt": "סדרו את הפקודות של הפונקציה (כל שורה היא בלוק לוגי אחד).",
+     "code": true,
+     "lines": [
+      "int sum=0; char c; FILE *in = fopen(infile, \"r\"), *out = fopen(outfile, \"w\");",
+      "if( !in || !out ) exit(1);",
+      "while ( (c = fgetc(in)) != EOF ) if (c != '\\n') { fputc(c, out); sum += c; } else { fprintf(out, \" %d%c\\n\", sum, sum%128); sum = 0; }",
+      "fclose(in); fclose(out);"
+     ],
+     "explain": "הצהרות ופתיחה, בדיקת הפתיחה לפני הקריאה, לולאת ההעתקה, ובסוף סגירה. כל החלפה של שני בלוקים נכשלת בבנייה, קורסת או מייצרת קובץ שונה (נבדק בריצה, כולל קובץ קלט שאינו קיים)."
+    }
+   ],
+   "stepsSource": "ai-draft"
   },
   {
    "num": 2,
@@ -28,7 +172,162 @@
    "official": true,
    "confidence": "high",
    "points": 28,
-   "image": "images/exams/19B-B-Q2.png"
+   "image": "images/exams/19B-B-Q2.png",
+   "rubric": [
+    {
+     "text": "חיפוש המקום המתאים ברשימה הממוינת בעזרת `strcmp`, תוך שמירת האיבר הקודם `prev_point`",
+     "points": 7
+    },
+    {
+     "text": "זיהוי מחרוזת שכבר נמצאת ברשימה (`strcmp == 0`) וחזרה בלי להוסיף אותה",
+     "points": 5
+    },
+    {
+     "text": "הקצאת איבר חדש והקצאת עותק של המחרוזת (`malloc(strlen+1)` ו-`strcpy`)",
+     "points": 6
+    },
+    {
+     "text": "קישור האיבר החדש: באמצע או בסוף דרך `prev_point`, ולפני האיבר הראשון עם עדכון `*plist`",
+     "points": 6
+    },
+    {
+     "text": "פונקציה שעוברת על מערך המחרוזות וקוראת להכנסה לכל מחרוזת, כשהמצביע לראש מועבר by reference",
+     "points": 4
+    }
+   ],
+   "rubricSource": "ai-draft",
+   "pitfalls": [
+    "לשכוח את המקרה של הכנסה לפני האיבר הראשון, שבו צריך לעדכן את `*plist` ולא איבר קודם.",
+    "לבדוק כפילות רק מול האיבר הראשון ברשימה, או להכניס מחרוזת שכבר קיימת.",
+    "לשמור בשדה `string` את המצביע `str` שקיבלנו במקום להקצות עותק חדש."
+   ],
+   "steps": [
+    {
+     "type": "numeric",
+     "prompt": "הרשימה `L` מכילה `ant`, `cat`, והמערך הוא `S = {\"bee\", \"cat\", \"ant\", \"dog\"}`. כמה איברים יהיו ב-`L` אחרי ההכנסות?",
+     "answer": 4,
+     "tol": 0,
+     "explain": "`bee` ו-`dog` חדשות, `cat` ו-`ant` כבר קיימות ואינן מוכנסות שוב: ant, bee, cat, dog (ריצה אמיתית: 4 איברים)."
+    },
+    {
+     "type": "choice",
+     "prompt": "הרשימה `L` מכילה `bee`, `dog`, והמערך הוא `S = {\"cow\", \"ant\"}`. איזו מחרוזת נמצאת באיבר הראשון של `L` אחרי ההכנסות?",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`ant`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`bee`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`cow`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`dog`"
+      }
+     ],
+     "correctId": "a",
+     "explain": "`ant` קטנה מכל המחרוזות ולכן מוכנסת לפני האיבר הראשון, ו-`*plist` מתעדכן (ריצה אמיתית: ant, bee, cow, dog)."
+    },
+    {
+     "type": "fillblank",
+     "prompt": "השלימו את תנאי הלולאה שמחפשת את מקום ההכנסה.",
+     "code": true,
+     "lines": [
+      "void insert_string_in_sort_list (char* str, Item **plist)",
+      "{",
+      "    Item *curr_point = *plist, *prev_point, *temp;",
+      "___",
+      "      {",
+      "            prev_point = curr_point;",
+      "            curr_point = curr_point->next;",
+      "      }",
+      "      if ( curr_point && strcmp(str, curr_point->string)==0 )",
+      "            return;",
+      "      temp = (Item *)malloc(sizeof(Item));",
+      "      temp->string = (char *)malloc(strlen(str)+1);",
+      "      strcpy(temp->string, str);",
+      "      if (curr_point != *plist)",
+      "      {",
+      "            temp->next = curr_point;",
+      "            prev_point->next = temp;",
+      "      }",
+      "      else",
+      "      {",
+      "            temp->next = *plist;",
+      "            *plist = temp;",
+      "      }",
+      "}"
+     ],
+     "blankIndex": 3,
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "while ( curr_point && strcmp(str, curr_point->string)==1 )"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "while ( curr_point && strcmp(str, curr_point->string)==-1 )"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "while ( strcmp(str, curr_point->string)==1 )"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "while ( curr_point && strcmp(str, curr_point->string)>=0 )"
+      }
+     ],
+     "correctId": "a",
+     "explain": "ב' מתקדם בכיוון ההפוך ומכניס במקום שגוי, ג' קורס כשמכניסים מחרוזת שגדולה מכולן (`curr_point` הוא `NULL`), ו-ד' ממשיך גם על מחרוזת זהה ולכן לא מזהה כפילויות (ריצה אמיתית: כל אחת מהאפשרויות הללו נכשלת)."
+    },
+    {
+     "type": "findbug",
+     "prompt": "בגרסה הבאה שורה אחת שונתה, ואחרי הכנסה של מחרוזת באמצע הרשימה כל האיברים שאחריה אובדים. מצאו אותה.",
+     "code": true,
+     "lines": [
+      "void insert_string_in_sort_list (char* str, Item **plist)",
+      "{",
+      "    Item *curr_point = *plist, *prev_point, *temp;",
+      "      while ( curr_point && strcmp(str, curr_point->string)==1 )",
+      "      {",
+      "            prev_point = curr_point;",
+      "            curr_point = curr_point->next;",
+      "      }",
+      "      if ( curr_point && strcmp(str, curr_point->string)==0 )",
+      "            return;",
+      "      temp = (Item *)malloc(sizeof(Item));",
+      "      temp->string = (char *)malloc(strlen(str)+1);",
+      "      strcpy(temp->string, str);",
+      "      if (curr_point != *plist)",
+      "      {",
+      "            temp->next = NULL;",
+      "            prev_point->next = temp;",
+      "      }",
+      "      else",
+      "      {",
+      "            temp->next = *plist;",
+      "            *plist = temp;",
+      "      }",
+      "}"
+     ],
+     "bugIndex": 15,
+     "explain": "האיבר החדש חייב להצביע על `curr_point`, האיבר הבא ברשימה. עם `NULL` הזנב נחתך (ריצה אמיתית: אחרי הכנסת `bee` בין `ant` ל-`cat` נשארים רק `ant`, `bee`)."
+    }
+   ],
+   "stepsSource": "ai-draft"
   },
   {
    "num": 3,
@@ -39,7 +338,160 @@
    "solutionSource": "official-pdf",
    "official": true,
    "confidence": "high",
-   "points": 28
+   "points": 28,
+   "rubric": [
+    {
+     "text": "חישוב גדלי הרצפים: מעבר על `A` והשוואת הזוגיות של כל איבר לקודמו, בניית `S`",
+     "points": 8
+    },
+    {
+     "text": "קביעת מספר השורות `*prows` כמספר הרצפים",
+     "points": 4
+    },
+    {
+     "text": "הקצאת מערך המצביעים `B` והקצאת שורה `i` בגודל `S[i]`",
+     "points": 8
+    },
+    {
+     "text": "העתקת איברי כל רצף של `A` לשורה שלו, תוך התקדמות ב-`A` בכל איבר",
+     "points": 5
+    },
+    {
+     "text": "החזרת `B` והעברת `S` ו-`*prows` by reference",
+     "points": 3
+    }
+   ],
+   "rubricSource": "ai-draft",
+   "pitfalls": [
+    "להשוות את `A[i]` ל-`A[i-1]` עצמם ולא את הזוגיות שלהם (`%2`), ולקבל רצפים של איברים שווים בלבד.",
+    "לשכוח שיש רצף אחד לפחות, ולהתחיל את הספירה של `S[0]` מ-0 במקום מ-1.",
+    "להקצות את `B` לפני שידוע מספר הרצפים, או להקצות כל שורה בגודל `n` במקום בגודל הרצף."
+   ],
+   "steps": [
+    {
+     "type": "numeric",
+     "prompt": "המערך הוא `A = {2, 4, 6, 1, 3, 8, 10, 5}`. כמה רצפים (שורות ב-`B`) יש בו?",
+     "answer": 4,
+     "tol": 0,
+     "explain": "`2 4 6`, `1 3`, `8 10`, `5`: ארבעה רצפים (ריצה אמיתית: `*prows` הוא 4)."
+    },
+    {
+     "type": "numeric",
+     "prompt": "עבור אותו מערך, מה ערכו של `S[0]`, גודל השורה הראשונה?",
+     "answer": 3,
+     "tol": 0,
+     "explain": "השורה הראשונה היא `2 4 6`; ריצה אמיתית: `S` הוא `3 2 2 1`."
+    },
+    {
+     "type": "fillblank",
+     "prompt": "השלימו את התנאי שבודק אם `A[i]` ממשיך את הרצף של `A[i-1]`.",
+     "code": true,
+     "lines": [
+      "int **array_to_array_of_sequences (int *A, int n, int **S, int *prows)",
+      "{",
+      "      int i, j=0, k, **B;",
+      "      *prows = 0;",
+      "      *S = (int *)calloc(n, sizeof(int));",
+      "      (*S)[0] = 1;",
+      "      for (i=1; i<n; i++)",
+      "___",
+      "                  (*S)[j]++;",
+      "            else",
+      "            {",
+      "                  j++;",
+      "                  (*S)[j] = 1;",
+      "            }",
+      "            *prows = j+1;",
+      "      B = (int **)calloc(*prows, sizeof(int *));",
+      "      i=j=0;",
+      "      while (i<n)",
+      "      {",
+      "            B[j] = (int *)calloc((*S)[j], sizeof(int));",
+      "            for (k=0; k<(*S)[j]; k++)",
+      "                  B[j][k] = A[i++];",
+      "            j++;",
+      "      }",
+      "      *S = (int *)realloc(*S, *prows*sizeof(int));",
+      "      return B;",
+      "}"
+     ],
+     "blankIndex": 7,
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "if (A[i]%2 == A[i-1]%2)"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "if (A[i] == A[i-1])"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "if (A[i]%2 != A[i-1]%2)"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "if (A[i]%2 == 0)"
+      }
+     ],
+     "correctId": "a",
+     "explain": "ממשיכים רצף כשהזוגיות זהה. ב' בודק שוויון של הערכים, ג' הפוך, ד' בודק רק זוגיות של האיבר הנוכחי (ריצה אמיתית: כל אחת מהאפשרויות הללו מחלקת את המערך לרצפים אחרים)."
+    },
+    {
+     "type": "findbug",
+     "prompt": "בגרסה הבאה שורה אחת שונתה, והפונקציה אינה מסתיימת (לולאה אינסופית) כשמעתיקים את הרצפים. מצאו אותה.",
+     "code": true,
+     "lines": [
+      "int **array_to_array_of_sequences (int *A, int n, int **S, int *prows)",
+      "{",
+      "      int i, j=0, k, **B;",
+      "      *prows = 0;",
+      "      *S = (int *)calloc(n, sizeof(int));",
+      "      (*S)[0] = 1;",
+      "      for (i=1; i<n; i++)",
+      "            if (A[i]%2 == A[i-1]%2)",
+      "                  (*S)[j]++;",
+      "            else",
+      "            {",
+      "                  j++;",
+      "                  (*S)[j] = 1;",
+      "            }",
+      "            *prows = j+1;",
+      "      B = (int **)calloc(*prows, sizeof(int *));",
+      "      i=j=0;",
+      "      while (i<n)",
+      "      {",
+      "            B[j] = (int *)calloc((*S)[j], sizeof(int));",
+      "            for (k=0; k<(*S)[j]; k++)",
+      "                  B[j][k] = A[i];",
+      "            j++;",
+      "      }",
+      "      *S = (int *)realloc(*S, *prows*sizeof(int));",
+      "      return B;",
+      "}"
+     ],
+     "bugIndex": 21,
+     "explain": "בלי `i++` האינדקס ב-`A` לא מתקדם, ולכן `i<n` נשאר נכון לתמיד והלולאה החיצונית אינה נגמרת (ריצה אמיתית: התוכנית נתקעת)."
+    },
+    {
+     "type": "order",
+     "prompt": "סדרו את הבלוקים של הפונקציה.",
+     "code": true,
+     "lines": [
+      "int i, j=0, k, **B; *prows = 0; *S = (int *)calloc(n, sizeof(int)); (*S)[0] = 1;",
+      "for (i=1; i<n; i++) if (A[i]%2 == A[i-1]%2) (*S)[j]++; else { j++; (*S)[j] = 1; }",
+      "*prows = j+1; B = (int **)calloc(*prows, sizeof(int *));",
+      "i=j=0; while (i<n) { B[j] = (int *)calloc((*S)[j], sizeof(int)); for (k=0; k<(*S)[j]; k++) B[j][k] = A[i++]; j++; }",
+      "*S = (int *)realloc(*S, *prows*sizeof(int)); return B;"
+     ],
+     "explain": "קודם הצהרות ואתחול `S`, אחר כך חישוב הגדלים, אחר כך קביעת `*prows` והקצאת `B` (אחרי שהמספר ידוע), העתקת הרצפים והחזרה. כל החלפה של שני בלוקים קורסת, נכשלת בבנייה או נותנת פלט שונה (נבדק בריצה)."
+    }
+   ],
+   "stepsSource": "ai-draft"
   },
   {
    "num": 4,
@@ -207,7 +659,71 @@
    "solutionSource": "official-pdf",
    "official": true,
    "confidence": "high",
-   "points": 10
+   "points": 10,
+   "rubric": [
+    {
+     "text": "זיהוי ש-`s[0]` ו-`s[1]` הם `char` ולכן הגודל של כל אחד מהם הוא 1",
+     "points": 3
+    },
+    {
+     "text": "זיהוי שקבוע תו כמו `'a'` הוא מטיפוס `int` בשפת C, ולכן הגודל שלו הוא 4",
+     "points": 4
+    },
+    {
+     "text": "חישוב $1+1-4-4=-6$",
+     "points": 3
+    }
+   ],
+   "rubricSource": "ai-draft",
+   "pitfalls": [
+    "לחשוב שגם `sizeof 'a'` שווה ל-1 כי התו הוא `char`, ולקבל 0 במקום `-6`.",
+    "להתבלבל בין `sizeof s[0]` (גודל התו) לבין `sizeof s` (גודל המצביע)."
+   ],
+   "steps": [
+    {
+     "type": "numeric",
+     "prompt": "מה ערכו של `sizeof s[0]`?",
+     "answer": 1,
+     "tol": 0,
+     "explain": "`s[0]` הוא `char` (ריצה אמיתית: 1)."
+    },
+    {
+     "type": "choice",
+     "prompt": "מהו הטיפוס של הקבוע `'a'` בשפת C?",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`char`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`int`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`unsigned char`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`short`"
+      }
+     ],
+     "correctId": "b",
+     "explain": "בשפת C קבוע תו הוא `int` (ריצה אמיתית: `_Generic` בוחר את הענף של `int`, ו-`sizeof 'a'` הוא 4)."
+    },
+    {
+     "type": "numeric",
+     "prompt": "מה הפלט של התוכנית?",
+     "answer": -6,
+     "tol": 0,
+     "explain": "$1+1-4-4=-6$ (ריצה אמיתית: `-6`)."
+    }
+   ],
+   "stepsSource": "ai-draft"
   }
  ]
 }

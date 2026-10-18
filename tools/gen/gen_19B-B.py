@@ -294,6 +294,207 @@ questions = [
     Q(5, "code", "c_traps_mcq", Q5_TEXT, Q5_SOL, points=10),
 ]
 
+# ---- rubric / pitfalls / steps (ai-draft). Every expected value comes from a real clang run in tools/verify/<CODE>/steps_check.py
+# (it compiles the shipped steps and the stored solutions). Lines of order/findbug/fillblank come from the stored solutions.
+import re
+
+
+def rub(*items):
+    return [{"text": t, "points": p} for t, p in items]
+
+
+def strip_c(ln):
+    ln = re.sub(r"\s*//.*$", "", ln)
+    ln = re.sub(r"\s*/\*.*?\*/\s*", " ", ln)
+    return ln.rstrip()
+
+
+def code_lines(src):
+    """Non-blank code lines of a solution, trailing comments removed."""
+    out = []
+    for ln in src.strip("\n").split("\n"):
+        ln = strip_c(ln)
+        if ln.strip() and not ln.startswith("```") and not ln.startswith("**"):
+            out.append(ln)
+    return out
+
+
+def func_lines(src, header_start):
+    """The lines of the function whose header starts with header_start, down to its closing brace at column 0."""
+    ls = code_lines(src)
+    i0 = [i for i, ln in enumerate(ls) if ln.startswith(header_start)]
+    assert len(i0) == 1, header_start
+    i1 = next(i for i in range(i0[0], len(ls)) if ls[i] == "}")
+    return ls[i0[0]:i1 + 1]
+
+
+def swap(lines, old, new):
+    idx = [i for i, ln in enumerate(lines) if ln.strip() == old.strip()]
+    assert len(idx) == 1, old
+    out = list(lines)
+    out[idx[0]] = out[idx[0]].replace(old.strip(), new.strip())
+    return out, idx[0]
+
+
+def blank(lines, target, nth=0):
+    idx = [i for i, ln in enumerate(lines) if ln.strip() == target.strip()]
+    assert len(idx) > nth, target
+    return [("___" if i == idx[nth] else ln) for i, ln in enumerate(lines)], idx[nth]
+
+
+def add(num, part=None, **kw):
+    for q in questions:
+        if q["num"] == num and q.get("part") == part:
+            q.update(kw)
+            return
+    raise KeyError(num)
+
+
+def co(*vals):
+    return [{"id": IDS[i], "type": "text", "value": v} for i, v in enumerate(vals)]
+
+
+# Q1 -- add_controls_in_file_rows
+F1 = func_lines(Q1_SOL, "void add_controls_in_file_rows")
+B1 = [r'int sum=0; char c; FILE *in = fopen(infile, "r"), *out = fopen(outfile, "w");',
+      "if( !in || !out ) exit(1);",
+      r'''while ( (c = fgetc(in)) != EOF ) if (c != '\n') { fputc(c, out); sum += c; } else { fprintf(out, " %d%c\n", sum, sum%128); sum = 0; }''',
+      "fclose(in); fclose(out);"]
+f1, j1 = blank(F1, r'''fprintf(out, " %d%c\n", sum, sum%128);''')
+b1, i1 = swap(F1, "sum += c;", "sum = c;")
+add(1,
+    rubric=rub(("פתיחת `infile` לקריאה ו-`outfile` לכתיבה ובדיקה שהפתיחה הצליחה", 6),
+               ("קריאה תו אחר תו עד `EOF` והעתקת כל תו שאינו סוף שורה אל `outfile`", 6),
+               ("צבירת סכום קודי ה-ASCII של תווי השורה, בלי תו סוף השורה", 6),
+               ("בסוף כל שורה: כתיבת רווח, מספר הביקורת, תו הביקורת (`sum%128`) ותו סוף שורה, ואיפוס הסכום לשורה הבאה", 7),
+               ("סגירת שני הקבצים", 3)),
+    rubricSource="ai-draft",
+    pitfalls=["לא לאפס את הסכום אחרי כל שורה, כך שמספר הביקורת של כל שורה כולל את השורות שלפניה.",
+              "לצרף לסכום גם את `'\\n'`, למרות שההוראה היא לא להתחשב בו.",
+              "לכתוב את הסכום עצמו כתו הביקורת במקום את `sum%128`, או לשכוח את הרווח שמפריד בין השורה המקורית למספר הביקורת."],
+    steps=[
+        {"type": "numeric",
+         "prompt": "`infile` מכיל את השורה `Hi!` בלבד. מה מספר הביקורת שייכתב אחריה ב-`outfile`?",
+         "answer": 210, "tol": 0,
+         "explain": "$72 + 105 + 33 = 210$ (קודי `H`, `i`, `!`; ריצה אמיתית: הקובץ מכיל `Hi! 210R`)."},
+        {"type": "text",
+         "prompt": "באותו קובץ (`Hi!`), מהו תו הביקורת שייכתב אחרי מספר הביקורת? (תו בודד)",
+         "accept": ["R"], "normalize": "none",
+         "explain": "$210 \\bmod 128 = 82$ וקוד ה-ASCII 82 הוא `R` (ריצה אמיתית: `Hi! 210R`)."},
+        {"type": "fillblank", "prompt": "השלימו את שורת הכתיבה לסוף כל שורה (רווח, מספר הביקורת, תו הביקורת, סוף שורה).", "code": True,
+         "lines": f1, "blankIndex": j1,
+         "options": co(r'''fprintf(out, " %d%c\n", sum, sum%128);''',
+                       r'''fprintf(out, "%d%c\n", sum, sum%128);''',
+                       r'''fprintf(out, " %d%c\n", sum, sum/128);''',
+                       r'''fprintf(out, " %c%d\n", sum%128, sum);'''),
+         "correctId": "a",
+         "explain": "ב' שוכח את הרווח (`abc294&`), ג' מחשב מנה במקום שארית, ד' מחליף את סדר המספר והתו (ריצה אמיתית: כל אחת מהאפשרויות הללו מייצרת קובץ שונה)."},
+        {"type": "findbug", "prompt": "בגרסה הבאה שורה אחת שונתה, ומספר הביקורת בכל שורה שווה לקוד התו האחרון בשורה בלבד. מצאו אותה.", "code": True,
+         "lines": b1, "bugIndex": i1,
+         "explain": "`sum = c;` דורס את הסכום בכל תו במקום להוסיף אליו; בפתרון הנכון `sum += c;` (ריצה אמיתית: אחרי `abc` נכתב `99` במקום `294`)."},
+        {"type": "order", "prompt": "סדרו את הפקודות של הפונקציה (כל שורה היא בלוק לוגי אחד).", "code": True, "lines": B1,
+         "explain": "הצהרות ופתיחה, בדיקת הפתיחה לפני הקריאה, לולאת ההעתקה, ובסוף סגירה. כל החלפה של שני בלוקים נכשלת בבנייה, קורסת או מייצרת קובץ שונה (נבדק בריצה, כולל קובץ קלט שאינו קיים)."},
+    ],
+    stepsSource="ai-draft")
+
+# Q2 -- sorted insertion of strings into a linked list
+F2 = func_lines(Q2_SOL, "void insert_string_in_sort_list")
+f2, j2 = blank(F2, "while ( curr_point && strcmp(str, curr_point->string)==1 )")
+b2, i2 = swap(F2, "temp->next = curr_point;", "temp->next = NULL;")
+add(2,
+    rubric=rub(("חיפוש המקום המתאים ברשימה הממוינת בעזרת `strcmp`, תוך שמירת האיבר הקודם `prev_point`", 7),
+               ("זיהוי מחרוזת שכבר נמצאת ברשימה (`strcmp == 0`) וחזרה בלי להוסיף אותה", 5),
+               ("הקצאת איבר חדש והקצאת עותק של המחרוזת (`malloc(strlen+1)` ו-`strcpy`)", 6),
+               ("קישור האיבר החדש: באמצע או בסוף דרך `prev_point`, ולפני האיבר הראשון עם עדכון `*plist`", 6),
+               ("פונקציה שעוברת על מערך המחרוזות וקוראת להכנסה לכל מחרוזת, כשהמצביע לראש מועבר by reference", 4)),
+    rubricSource="ai-draft",
+    pitfalls=["לשכוח את המקרה של הכנסה לפני האיבר הראשון, שבו צריך לעדכן את `*plist` ולא איבר קודם.",
+              "לבדוק כפילות רק מול האיבר הראשון ברשימה, או להכניס מחרוזת שכבר קיימת.",
+              "לשמור בשדה `string` את המצביע `str` שקיבלנו במקום להקצות עותק חדש."],
+    steps=[
+        {"type": "numeric",
+         "prompt": "הרשימה `L` מכילה `ant`, `cat`, והמערך הוא `S = {\"bee\", \"cat\", \"ant\", \"dog\"}`. כמה איברים יהיו ב-`L` אחרי ההכנסות?",
+         "answer": 4, "tol": 0,
+         "explain": "`bee` ו-`dog` חדשות, `cat` ו-`ant` כבר קיימות ואינן מוכנסות שוב: ant, bee, cat, dog (ריצה אמיתית: 4 איברים)."},
+        {"type": "choice",
+         "prompt": "הרשימה `L` מכילה `bee`, `dog`, והמערך הוא `S = {\"cow\", \"ant\"}`. איזו מחרוזת נמצאת באיבר הראשון של `L` אחרי ההכנסות?",
+         "options": co("`ant`", "`bee`", "`cow`", "`dog`"), "correctId": "a",
+         "explain": "`ant` קטנה מכל המחרוזות ולכן מוכנסת לפני האיבר הראשון, ו-`*plist` מתעדכן (ריצה אמיתית: ant, bee, cow, dog)."},
+        {"type": "fillblank", "prompt": "השלימו את תנאי הלולאה שמחפשת את מקום ההכנסה.", "code": True,
+         "lines": f2, "blankIndex": j2,
+         "options": co("while ( curr_point && strcmp(str, curr_point->string)==1 )",
+                       "while ( curr_point && strcmp(str, curr_point->string)==-1 )",
+                       "while ( strcmp(str, curr_point->string)==1 )",
+                       "while ( curr_point && strcmp(str, curr_point->string)>=0 )"),
+         "correctId": "a",
+         "explain": "ב' מתקדם בכיוון ההפוך ומכניס במקום שגוי, ג' קורס כשמכניסים מחרוזת שגדולה מכולן (`curr_point` הוא `NULL`), ו-ד' ממשיך גם על מחרוזת זהה ולכן לא מזהה כפילויות (ריצה אמיתית: כל אחת מהאפשרויות הללו נכשלת)."},
+        {"type": "findbug", "prompt": "בגרסה הבאה שורה אחת שונתה, ואחרי הכנסה של מחרוזת באמצע הרשימה כל האיברים שאחריה אובדים. מצאו אותה.", "code": True,
+         "lines": b2, "bugIndex": i2,
+         "explain": "האיבר החדש חייב להצביע על `curr_point`, האיבר הבא ברשימה. עם `NULL` הזנב נחתך (ריצה אמיתית: אחרי הכנסת `bee` בין `ant` ל-`cat` נשארים רק `ant`, `bee`)."},
+    ],
+    stepsSource="ai-draft")
+
+# Q3 -- array_to_array_of_sequences
+F3 = func_lines(Q3_SOL, "int **array_to_array_of_sequences")
+B3 = ["int i, j=0, k, **B; *prows = 0; *S = (int *)calloc(n, sizeof(int)); (*S)[0] = 1;",
+      "for (i=1; i<n; i++) if (A[i]%2 == A[i-1]%2) (*S)[j]++; else { j++; (*S)[j] = 1; }",
+      "*prows = j+1; B = (int **)calloc(*prows, sizeof(int *));",
+      "i=j=0; while (i<n) { B[j] = (int *)calloc((*S)[j], sizeof(int)); for (k=0; k<(*S)[j]; k++) B[j][k] = A[i++]; j++; }",
+      "*S = (int *)realloc(*S, *prows*sizeof(int)); return B;"]
+f3, j3 = blank(F3, "if (A[i]%2 == A[i-1]%2)")
+b3, i3 = swap(F3, "B[j][k] = A[i++];", "B[j][k] = A[i];")
+add(3,
+    rubric=rub(("חישוב גדלי הרצפים: מעבר על `A` והשוואת הזוגיות של כל איבר לקודמו, בניית `S`", 8),
+               ("קביעת מספר השורות `*prows` כמספר הרצפים", 4),
+               ("הקצאת מערך המצביעים `B` והקצאת שורה `i` בגודל `S[i]`", 8),
+               ("העתקת איברי כל רצף של `A` לשורה שלו, תוך התקדמות ב-`A` בכל איבר", 5),
+               ("החזרת `B` והעברת `S` ו-`*prows` by reference", 3)),
+    rubricSource="ai-draft",
+    pitfalls=["להשוות את `A[i]` ל-`A[i-1]` עצמם ולא את הזוגיות שלהם (`%2`), ולקבל רצפים של איברים שווים בלבד.",
+              "לשכוח שיש רצף אחד לפחות, ולהתחיל את הספירה של `S[0]` מ-0 במקום מ-1.",
+              "להקצות את `B` לפני שידוע מספר הרצפים, או להקצות כל שורה בגודל `n` במקום בגודל הרצף."],
+    steps=[
+        {"type": "numeric",
+         "prompt": "המערך הוא `A = {2, 4, 6, 1, 3, 8, 10, 5}`. כמה רצפים (שורות ב-`B`) יש בו?",
+         "answer": 4, "tol": 0,
+         "explain": "`2 4 6`, `1 3`, `8 10`, `5`: ארבעה רצפים (ריצה אמיתית: `*prows` הוא 4)."},
+        {"type": "numeric",
+         "prompt": "עבור אותו מערך, מה ערכו של `S[0]`, גודל השורה הראשונה?",
+         "answer": 3, "tol": 0,
+         "explain": "השורה הראשונה היא `2 4 6`; ריצה אמיתית: `S` הוא `3 2 2 1`."},
+        {"type": "fillblank", "prompt": "השלימו את התנאי שבודק אם `A[i]` ממשיך את הרצף של `A[i-1]`.", "code": True,
+         "lines": f3, "blankIndex": j3,
+         "options": co("if (A[i]%2 == A[i-1]%2)", "if (A[i] == A[i-1])", "if (A[i]%2 != A[i-1]%2)", "if (A[i]%2 == 0)"),
+         "correctId": "a",
+         "explain": "ממשיכים רצף כשהזוגיות זהה. ב' בודק שוויון של הערכים, ג' הפוך, ד' בודק רק זוגיות של האיבר הנוכחי (ריצה אמיתית: כל אחת מהאפשרויות הללו מחלקת את המערך לרצפים אחרים)."},
+        {"type": "findbug", "prompt": "בגרסה הבאה שורה אחת שונתה, והפונקציה אינה מסתיימת (לולאה אינסופית) כשמעתיקים את הרצפים. מצאו אותה.", "code": True,
+         "lines": b3, "bugIndex": i3,
+         "explain": "בלי `i++` האינדקס ב-`A` לא מתקדם, ולכן `i<n` נשאר נכון לתמיד והלולאה החיצונית אינה נגמרת (ריצה אמיתית: התוכנית נתקעת)."},
+        {"type": "order", "prompt": "סדרו את הבלוקים של הפונקציה.", "code": True, "lines": B3,
+         "explain": "קודם הצהרות ואתחול `S`, אחר כך חישוב הגדלים, אחר כך קביעת `*prows` והקצאת `B` (אחרי שהמספר ידוע), העתקת הרצפים והחזרה. כל החלפה של שני בלוקים קורסת, נכשלת בבנייה או נותנת פלט שונה (נבדק בריצה)."},
+    ],
+    stepsSource="ai-draft")
+
+# Q5 (bonus) -- sizes inside sizeof expressions
+add(5,
+    rubric=rub(("זיהוי ש-`s[0]` ו-`s[1]` הם `char` ולכן הגודל של כל אחד מהם הוא 1", 3),
+               ("זיהוי שקבוע תו כמו `'a'` הוא מטיפוס `int` בשפת C, ולכן הגודל שלו הוא 4", 4),
+               ("חישוב $1+1-4-4=-6$", 3)),
+    rubricSource="ai-draft",
+    pitfalls=["לחשוב שגם `sizeof 'a'` שווה ל-1 כי התו הוא `char`, ולקבל 0 במקום `-6`.",
+              "להתבלבל בין `sizeof s[0]` (גודל התו) לבין `sizeof s` (גודל המצביע)."],
+    steps=[
+        {"type": "numeric", "prompt": "מה ערכו של `sizeof s[0]`?",
+         "answer": 1, "tol": 0, "explain": "`s[0]` הוא `char` (ריצה אמיתית: 1)."},
+        {"type": "choice", "prompt": "מהו הטיפוס של הקבוע `'a'` בשפת C?",
+         "options": co("`char`", "`int`", "`unsigned char`", "`short`"), "correctId": "b",
+         "explain": "בשפת C קבוע תו הוא `int` (ריצה אמיתית: `_Generic` בוחר את הענף של `int`, ו-`sizeof 'a'` הוא 4)."},
+        {"type": "numeric", "prompt": "מה הפלט של התוכנית?",
+         "answer": -6, "tol": 0, "explain": "$1+1-4-4=-6$ (ריצה אמיתית: `-6`)."},
+    ],
+    stepsSource="ai-draft")
+
+
 exam = {
     "examCode": "19B-B",
     "examLabel": "סדנה מתקדמת בתכנות 61108, סמסטר ב' תשע\"ט, מועד ב'",
