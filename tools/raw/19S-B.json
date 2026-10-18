@@ -12,7 +12,7 @@
    "kind": "code",
    "topic": "files",
    "question": "כתוב פונקציה אשר מקבלת מחרוזת `infile` וגם מחרוזות `outfile_true` ו-`outfile_false` המהוות שמות של שלושה קבצי טקסט.\nתוכן של קובץ ששמו נכלל ב-`infile` הוא טקסט מוצפן שנוצר מהטקסט המקורי באופן הבא:\nאחרי תו אחרון של כל שורה בטקסט המקורי מוספים רווח (ניתן להניח שאין רווחים בטקסט המקורי);\nאחרי הרווח מוספים מספר ביקורת ששווה לסכום קודי ASCII של כל תווי השורה;\nתו של סוף השורה אמור להופיע גם בסוף של השורה האחרונה של הקובץ.\n\nעל הפונקציה לבדוק נכונות של מספר הביקורת בכל שורה.\nיש להעתיק כל שורה שבה מספר הביקורת נכון לקובץ `outfile_true` וכל שורה שבה מספר הביקורת לא נכון לקובץ `outfile_false`. לא להעתיק את מספרי הביקורת עצמם.\nבנוסף הפונקציה תעביר במצביעים (by reference) את מספר השורות בקובץ `outfile_true` ואת מספר השורות בקובץ `outfile_false`.\nלא להשתמש במחרוזות ומערכי עזר.\n\n**דוגמא:**\n`infile`:\n```\nabc 294\n3+2+1=6 352\nA 65\n```\n`outfile_true`:\n```\nabc\nA\n```\n`outfile_false`:\n```\n3+2+1=6\n```\n**הסבר:**\nשורה ראשונה. קודי ASCII של 'a', 'b', 'c' הם 97, 98, 99 בהתאמה. 294=97+98+99.\nשורה שנייה. סכום קודי ASCII של כל תווי השורה (ספרות ותווים לפעולות אריתמטיות) הוא 351. לכן מספר ביקורת 352 יהיה לא נכון.\nשורה שלישית. קוד ה-ASCII של 'A' שהוא התו היחיד בשורה שווה ל-65.\n\nהפונקציה תעביר 2 (מספר שורות ב-`outfile_true`) ו-1 (מספר שורות ב-`outfile_false`).",
-   "solution": "```c\n/* auxiliary function */\nvoid copy_row(FILE *in, FILE *out, int start_row, int *rows)\n{\n      char c;\n      fseek(in, start_row, SEEK_SET); //to the beginning of row\n      while ( (c = fgetc(in)) != ' ' ) //copy chars till space\n            fputc(c, out);\n      fputc('\\n', out);\n      (*rows)++;\n}\n\nvoid copy_true_false_file_rows (char *infile, char *outfile_true,\n      char *outfile_false, int *true_rows, int *false_rows)\n{\n      int sum=0, control_num, start_row=0, end_row;\n      char c;\n      FILE *in = fopen(infile, \"r\"),\n            *out_true = fopen(outfile_true, \"w\"),\n            *out_false = fopen(outfile_false, \"w\");\n      if( !in || !out_true || !out_false )\n            exit(1);\n      *true_rows = *false_rows = 0;\n      while ( (c = fgetc(in)) != EOF )\n      {\n            if (c != ' ')\n                  sum += c;\n            else //start of control number\n            {\n                  fscanf(in, \"%d\", &control_num);\n                  end_row = ftell(in); //save end of row\n                  if (control_num == sum)\n                        copy_row(in, out_true, start_row, true_rows);\n                  else\n                        copy_row(in, out_false, start_row, false_rows);\n                  sum = 0;\n                  start_row = end_row + 2; //start of next row ('\\' and 'n' are two positions)\n                  fseek(in, start_row, SEEK_SET);//to the beginning of next row\n            }\n      }\n      fclose(in);\n      fclose(out_true);\n      fclose(out_false);\n}\n```\n\n**הערת מתמלל (לא חלק מהפתרון הרשמי):** הפתרון מניח שסוף שורה בקובץ תופס שני מקומות (`\\r\\n`, קובץ טקסט של Windows). הוא הורץ עם clang (`tools/verify/19S-B/q1.c`) על דוגמת המבחן בקובץ כזה ופלט את התוצאה הנכונה (2 שורות נכונות ושורה אחת לא נכונה).",
+   "solution": "```c\n/* auxiliary function */\nvoid copy_row(FILE *in, FILE *out, int start_row, int *rows)\n{\n      char c;\n      fseek(in, start_row, SEEK_SET); //to the beginning of row\n      while ( (c = fgetc(in)) != ' ' ) //copy chars till space\n            fputc(c, out);\n      fputc('\\n', out);\n      (*rows)++;\n}\n\nvoid copy_true_false_file_rows (char *infile, char *outfile_true,\n      char *outfile_false, int *true_rows, int *false_rows)\n{\n      int sum=0, control_num, start_row=0, end_row;\n      char c;\n      FILE *in = fopen(infile, \"r\"),\n            *out_true = fopen(outfile_true, \"w\"),\n            *out_false = fopen(outfile_false, \"w\");\n      if( !in || !out_true || !out_false )\n            exit(1);\n      *true_rows = *false_rows = 0;\n      while ( (c = fgetc(in)) != EOF )\n      {\n            if (c != ' ')\n                  sum += c;\n            else //start of control number\n            {\n                  fscanf(in, \"%d\", &control_num);\n                  end_row = ftell(in); //save end of row\n                  if (control_num == sum)\n                        copy_row(in, out_true, start_row, true_rows);\n                  else\n                        copy_row(in, out_false, start_row, false_rows);\n                  sum = 0;\n                  start_row = end_row + 2; //start of next row ('\\' and 'n' are two positions)\n                  fseek(in, start_row, SEEK_SET);//to the beginning of next row\n            }\n      }\n      fclose(in);\n      fclose(out_true);\n      fclose(out_false);\n}\n```\n\n**הערה:** המשתנה `c` מוגדר כ-`char` ומושווה ל-`EOF` (שהוא `int`). במערכת שבה `char` הוא ללא סימן הלולאה לא נגמרת, ובמערכת עם סימן היא נעצרת מוקדם כשנקרא הבייט `0xFF`. הנכון הוא `int c`.\n\n**הערה:** הפתרון עובד רק על קובץ עם סוף שורה של שני תווים (`\\r\\n`, קובץ טקסט של Windows): ההתקדמות `start_row = end_row + 2` מניחה זאת. בקובץ עם `\\n` בלבד (Linux/macOS) התוצאה שגויה.\n\n**הערת מתמלל (לא חלק מהפתרון הרשמי):** הפתרון מניח שסוף שורה בקובץ תופס שני מקומות (`\\r\\n`, קובץ טקסט של Windows). הוא הורץ עם clang (`tools/verify/19S-B/q1.c`) על דוגמת המבחן בקובץ כזה ופלט את התוצאה הנכונה (2 שורות נכונות ושורה אחת לא נכונה).",
    "solutionSource": "official-pdf",
    "official": true,
    "confidence": "high",
@@ -39,7 +39,7 @@
      "points": 4
     }
    ],
-   "rubricSource": "ai-draft",
+   "rubricSource": "ai-verified",
    "pitfalls": [
     "להעתיק גם את הרווח ואת מספר הביקורת לקובץ, כי עוצרים רק בסוף השורה במקום ברווח.",
     "לשכוח לאפס את הסכום או להזיז את תחילת השורה הבאה, ואז כל השורות אחרי הראשונה נבדקות מול סכום שגוי.",
@@ -155,7 +155,7 @@
      "explain": "הצהרות ופתיחה, בדיקת הפתיחה ואיפוס המונים, לולאת הבדיקה וההעתקה, וסגירה. כל החלפה של שני בלוקים נכשלת בבנייה, קורסת (קובץ קלט שאינו קיים), או נותנת פלט שונה (נבדק בריצה)."
     }
    ],
-   "stepsSource": "ai-draft"
+   "stepsSource": "ai-verified"
   },
   {
    "num": 2,
@@ -190,7 +190,7 @@
      "points": 4
     }
    ],
-   "rubricSource": "ai-draft",
+   "rubricSource": "ai-verified",
    "pitfalls": [
     "להקצות מערך בגודל 0 או לגשת ל-`AL[i]->next` כשהרשימה ריקה, במקום להציב `NULL` ב-`ptr`.",
     "להעתיק את הערכים בלי להתקדם באינדקס `j`, כך שכל הערכים נכנסים לתא הראשון.",
@@ -366,7 +366,7 @@
      "explain": "הצהרות, הקצאת `SIZE` ואיבר הדמה, לולאת הבנייה, וסיום הרשימה עם הסרת הדמה. כל החלפה של שני בלוקים נכשלת בבנייה, קורסת או מחזירה תוצאה שונה (נבדק בריצה)."
     }
    ],
-   "stepsSource": "ai-draft"
+   "stepsSource": "ai-verified"
   },
   {
    "num": 3,
@@ -400,7 +400,7 @@
      "points": 2
     }
    ],
-   "rubricSource": "ai-draft",
+   "rubricSource": "ai-verified",
    "pitfalls": [
     "לשכוח את המקרה של מילה יחידה: אין רווח במחרוזת והסריקה יוצאת מהגבולות.",
     "לשכוח להעתיק את הרווחים שבין המילה האחרונה לקודמת, ולהדביק את המילים זו לזו.",
@@ -515,7 +515,7 @@
      "explain": "הצהרות, חיפוש המילה האחרונה, העתקת המילה, העתקת הרווחים, העתקת שאר המחרוזת עם הסיום, והעתקה חזרה. כל החלפה של שני בלוקים נכשלת בבנייה, קורסת או נותנת מחרוזת שונה (נבדק בריצה)."
     }
    ],
-   "stepsSource": "ai-draft"
+   "stepsSource": "ai-verified"
   },
   {
    "num": 4,
@@ -589,7 +589,7 @@
     }
    ],
    "correctId": "b",
-   "explanation": "כי גדלי של כל מצביעים שווים.",
+   "explanation": "כי גדלי של כל מצביעים שווים.\n\n**הערה:** שוויון גדלי המצביעים מתקיים בכל הפלטפורמות הנפוצות, אבל התקן של C אינו מבטיח אותו (הגודל נתון למימוש).",
    "official": true,
    "confidence": "high"
   },
@@ -683,7 +683,7 @@
      "points": 2
     }
    ],
-   "rubricSource": "ai-draft",
+   "rubricSource": "ai-verified",
    "pitfalls": [
     "לחשוב ש-`sizeof a` הוא גודל מצביע (4) ולא גודל המערך כולו, כי כאן `a` הוא מערך ולא פרמטר של פונקציה.",
     "לשכוח שגם `sizeof sizeof a` הוא ביטוי שיש לו גודל (גודל הטיפוס של התוצאה) ולא 400.",
@@ -714,7 +714,7 @@
      "explain": "$400+4+4=408$ (ריצה אמיתית עם `clang -m32`: `408`; ב-64 סיביות הפלט הוא `416`)."
     }
    ],
-   "stepsSource": "ai-draft"
+   "stepsSource": "ai-verified"
   }
  ]
 }

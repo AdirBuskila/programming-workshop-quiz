@@ -12,7 +12,7 @@
    "kind": "code",
    "topic": "files",
    "question": "כתוב פונקציה אשר מקבלת מחרוזת `fileName`.\nתוכן של קובץ טקסט ששמו נכלל ב-`fileName` הוא טקסט מוצפן שנוצר מהטקסט המקורי באופן הבא:\nאחרי תו אחרון של כל שורה בטקסט המקורי מוספים רווח (ניתן להניח שאין רווחים בטקסט המקורי);\nאחרי הרווח מוספים מספר ביקורת וצמוד למספר מוספים תו ביקורת;\nמספר הביקורת יהיה מספר ששווה לסכום קודי ASCII של כל תווי השורה;\nתו הביקורת יהיה תו שקוד ASCII שלו הוא שארית החלוקה של מספר הביקורת ב-128;\nתו של סוף השורה אמור להופיע גם בסוף של השורה האחרונה של הקובץ.\n\n**דוגמא:**\nטקסט מקורי:\n```\nabc\n3+2+1=6\nA\n```\nתוכן הקובץ:\n```\nabc 294&\n3+2+1=6 351_\nA 65A\n```\n**הסבר:**\nשורה ראשונה. קודי ASCII של 'a', 'b', 'c' הם 97, 98, 99 בהתאמה. 294=97+98+99, 294%128=38. 38 הוא קוד ה-ASCII של '&'.\nשורה שנייה. סכום קודי ASCII של כל תווי השורה (ספרות ותווים לפעולות אריתמטיות) הוא 351. 351%128=95. 95 הוא קוד ה-ASCII של '_'.\nשורה שלישית. קוד ה-ASCII של 'A' שהוא התו היחיד בשורה שווה ל-65. 65%128=65.\n\nעל הפונקציה לבדוק נכונות של מספר ביקורת ותו ביקורת בכל שורה.\nאם המספר והתו נכונים בכל שורה הפונקציה תחזיר **1**. אם לפחות בשורה אחת המספר או התו לא נכונים, היא תחזיר **0**. אם הקובץ לא נפתח יש להחזיר **-1**.",
-   "solution": "**גרסה 1**\n```c\nint check_controls_in_file_rows (char *fileName)\n{\n      int sum=0, control_num;\n      char c, control_char;\n      FILE *fptr = fopen(fileName, \"r\");\n      if( !fptr )\n            return -1;\n      while ( (c = fgetc(fptr)) != EOF )\n      {\n            if (c != ' ')\n                  sum += c;\n            else\n            {\n                  fscanf(fptr, \"%d%c\", &control_num, &control_char);\n                  if (control_char == '\\n')\n      //real control char is digit that was interpreted as last digit of control number\n                  {\n                         control_char = control_num%10 + '0';\n                         control_num /= 10;\n                  }\n                  else\n                         fgetc(fptr); //input '/n'\n                  if (control_num != sum || control_char != sum%128)\n                  {\n                         fclose(fptr);\n                         return 0;\n                  }\n                  else\n                        sum = 0;\n            } //else\n      } //while\n      fclose(fptr);\n      return 1;\n}\n```\n**גרסה 2**\n```c\nint check_controls_in_file_rows_2 (char *fileName)\n{\n      int sum=0, control_sum;\n      char c, last_char;\n      FILE *fptr = fopen(fileName, \"r\");\n      if( !fptr )\n            return -1;\n      while ( (c = fgetc(fptr)) != EOF )\n      {\n            if (c != ' ')\n                  sum += c;\n            else\n            {\n                  control_sum = fgetc(fptr)-'0'; //first digit\n                  last_char = fgetc(fptr);\n                  while ( (c = fgetc(fptr)) != '\\n' )\n                  {\n                        //last_char is current digit of control_sum\n                        control_sum = control_sum*10 + last_char-'0';\n                        last_char = c;\n                  }\n                  if (control_sum != sum || last_char != sum%128)\n                  {\n                        fclose(fptr);\n                        return 0;\n                  }\n                  else\n                        sum = 0;\n            }\n      }\n      fclose(fptr);\n      return 1;\n}\n```\n**הערת מתמלל (לא חלק מהפתרון הרשמי):** שתי הגרסאות הורצו עם clang (`tools/verify/19S-A/q1.c`) על דוגמת המבחן ועל קבצים עם מספר או תו ביקורת שגויים ועל תו ביקורת שהוא ספרה, וכולן החזירו את הערך הנכון.",
+   "solution": "**גרסה 1**\n```c\nint check_controls_in_file_rows (char *fileName)\n{\n      int sum=0, control_num;\n      char c, control_char;\n      FILE *fptr = fopen(fileName, \"r\");\n      if( !fptr )\n            return -1;\n      while ( (c = fgetc(fptr)) != EOF )\n      {\n            if (c != ' ')\n                  sum += c;\n            else\n            {\n                  fscanf(fptr, \"%d%c\", &control_num, &control_char);\n                  if (control_char == '\\n')\n      //real control char is digit that was interpreted as last digit of control number\n                  {\n                         control_char = control_num%10 + '0';\n                         control_num /= 10;\n                  }\n                  else\n                         fgetc(fptr); //input '/n'\n                  if (control_num != sum || control_char != sum%128)\n                  {\n                         fclose(fptr);\n                         return 0;\n                  }\n                  else\n                        sum = 0;\n            } //else\n      } //while\n      fclose(fptr);\n      return 1;\n}\n```\n**גרסה 2**\n```c\nint check_controls_in_file_rows_2 (char *fileName)\n{\n      int sum=0, control_sum;\n      char c, last_char;\n      FILE *fptr = fopen(fileName, \"r\");\n      if( !fptr )\n            return -1;\n      while ( (c = fgetc(fptr)) != EOF )\n      {\n            if (c != ' ')\n                  sum += c;\n            else\n            {\n                  control_sum = fgetc(fptr)-'0'; //first digit\n                  last_char = fgetc(fptr);\n                  while ( (c = fgetc(fptr)) != '\\n' )\n                  {\n                        //last_char is current digit of control_sum\n                        control_sum = control_sum*10 + last_char-'0';\n                        last_char = c;\n                  }\n                  if (control_sum != sum || last_char != sum%128)\n                  {\n                        fclose(fptr);\n                        return 0;\n                  }\n                  else\n                        sum = 0;\n            }\n      }\n      fclose(fptr);\n      return 1;\n}\n```\n**הערה:** המשתנה `c` מוגדר כ-`char` ומושווה ל-`EOF` (שהוא `int`). במערכת שבה `char` הוא ללא סימן הלולאה לא נגמרת, ובמערכת עם סימן היא נעצרת מוקדם כשנקרא הבייט `0xFF`. הנכון הוא `int c`.\n\n**הערה:** אם תו הביקורת הוא `'\\n'` (סכום הקודים בשורה מתחלק ב-128 עם שארית 10, למשל השורה `AI`), הוא שובר את מבנה השורה בקובץ ושתי הגרסאות מחזירות 0 גם עבור קובץ תקין.\n\n**הערת מתמלל (לא חלק מהפתרון הרשמי):** שתי הגרסאות הורצו עם clang (`tools/verify/19S-A/q1.c`) על דוגמת המבחן ועל קבצים עם מספר או תו ביקורת שגויים ועל תו ביקורת שהוא ספרה, וכולן החזירו את הערך הנכון.",
    "solutionSource": "official-pdf",
    "official": true,
    "confidence": "high",
@@ -39,7 +39,7 @@
      "points": 4
     }
    ],
-   "rubricSource": "ai-draft",
+   "rubricSource": "ai-verified",
    "pitfalls": [
     "לקרוא את מספר הביקורת עם `%d` ולאבד את תו הביקורת כשהוא ספרה (למשל השורה `0 480`), כי הספרה נבלעת במספר.",
     "להשוות את מספר הביקורת ל-`sum%128` או את תו הביקורת ל-`sum`, במקום מספר מול `sum` ותו מול `sum%128`.",
@@ -194,7 +194,7 @@
      "explain": "הצהרות ופתיחה, בדיקת הפתיחה לפני הקריאה, לולאת הבדיקה, ובסוף סגירה והחזרת 1. כל החלפה של שני בלוקים נכשלת בבנייה, קורסת (קובץ שאינו קיים) או מחזירה ערך שונה (נבדק בריצה)."
     }
    ],
-   "stepsSource": "ai-draft"
+   "stepsSource": "ai-verified"
   },
   {
    "num": 2,
@@ -225,7 +225,7 @@
      "points": 6
     }
    ],
-   "rubricSource": "ai-draft",
+   "rubricSource": "ai-verified",
    "pitfalls": [
     "לקרוא רק עד `'\\0'` ולהעתיק את כל המחרוזת במקום עד הרווח הראשון.",
     "לשכוח את התו `'\\0'` במחרוזת החדשה, או להקצות מקום בלי אותו תו.",
@@ -344,7 +344,7 @@
      "explain": "הצהרות, יצירת איבר הדמה, לולאת הבנייה, ולבסוף סיום הרשימה והסרת הדמה. כל החלפה של שני בלוקים נכשלת בבנייה, קורסת או מחזירה רשימה שונה (נבדק בריצה)."
     }
    ],
-   "stepsSource": "ai-draft"
+   "stepsSource": "ai-verified"
   },
   {
    "num": 3,
@@ -378,7 +378,7 @@
      "points": 3
     }
    ],
-   "rubricSource": "ai-draft",
+   "rubricSource": "ai-verified",
    "pitfalls": [
     "לקחת את הגודל המקסימלי או את `SA[i]` בלבד, ואז לקרוא מעבר לסוף השורה הקצרה יותר.",
     "לכתוב `SC[i]` במקום `(*SC)[i]`, כך שהמערך לא מועבר לפונקציה הקוראת.",
@@ -481,7 +481,7 @@
      "explain": "הצהרות, הקצאת `C` ו-`*SC`, לולאה שממלאת את הגדלים והשורות, והחזרה. כל החלפה של שני בלוקים נכשלת בבנייה, קורסת או מחזירה תוצאה שונה (נבדק בריצה)."
     }
    ],
-   "stepsSource": "ai-draft"
+   "stepsSource": "ai-verified"
   },
   {
    "num": 4,
@@ -598,7 +598,7 @@
     }
    ],
    "correctId": "c",
-   "explanation": "כי גישה לקבוע דרך מצביע רגיל תאפשר לשנות את הקבוע.",
+   "explanation": "כי גישה לקבוע דרך מצביע רגיל תאפשר לשנות את הקבוע.\n\n**הערה:** לפי התקן ההשמה `ptr1 = &y;` היא הפרת אילוץ, אבל ב-gcc וב-clang היא מייצרת רק אזהרה (והקוד מתקמפל), ולכן התשובה 'בלתי חוקית' נכונה לפי כללי השפה ולא לפי התנהגות המהדר.",
    "official": true,
    "confidence": "high"
   },
@@ -669,7 +669,7 @@
      "points": 3
     }
    ],
-   "rubricSource": "ai-draft",
+   "rubricSource": "ai-verified",
    "pitfalls": [
     "לחשוב שהתוכנית מדפיסה את הכתובת כמספר, ולשכוח שההמרה ל-`char *` והקריאה ל-`puts` מדפיסות מחרוזת.",
     "לפשט ל-`s` במקום ל-`s+1`, ולהדפיס את כל המחרוזת `123`.",
@@ -721,7 +721,7 @@
      "explain": "`puts` מדפיס מהתו `'2'` עד סוף המחרוזת: `23` (ריצה אמיתית עם `clang -m32`: `23`; ב-64 סיביות התוכנית קורסת)."
     }
    ],
-   "stepsSource": "ai-draft"
+   "stepsSource": "ai-verified"
   }
  ]
 }

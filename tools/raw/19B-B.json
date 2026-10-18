@@ -12,7 +12,7 @@
    "kind": "code",
    "topic": "files",
    "question": "כתוב פונקציה אשר מקבלת מחרוזות `infile` ו-`outfile` המהוות שמות של שני קבצי טקסט.\nקובץ `infile` מורכב משורות טקסט.\n\nעל הפונקציה להעתיק את התוכן של קובץ `infile` לקובץ `outfile` ולהוסיף מספר ביקורת ותו ביקורת בסוף כל שורה באופן הבא:\nמספר הביקורת יהיה מספר ששווה לסכום קודי ASCII של כל תווי השורה;\nתו הביקורת יהיה תו שקוד ASCII שלו הוא שארית החלוקה של מספר הביקורת ב-128;\nבחישוב מספר הביקורת ותו הביקורת נא **לא להתחשב** בתו של סוף השורה;\nיש להכניס רווח בין התו האחרון של השורה המקורית למספר הביקורת, וצמוד למספר הביקורת לכתוב את תו הביקורת.\n\nתו של סוף השורה אמור להופיע גם בסוף של **השורה האחרונה** בקובץ `infile` ובקובץ `outfile`.\n\n**דוגמא:**\n`infile`:\n```\nabc\n3+2+1=6\nA\n```\n`outfile`:\n```\nabc 294&\n3+2+1=6 351_\nA 65A\n```\n**הסבר:**\nשורה ראשונה. קודי ASCII של 'a', 'b', 'c' הם 97, 98, 99 בהתאמה. 294=97+98+99, 294%128=38. 38 הוא קוד ה-ASCII של '&'.\nשורה שנייה. סכום קודי ASCII של כל תווי השורה (ספרות ותווים לפעולות אריתמטיות) הוא 351. 351%128=95. 95 הוא קוד ה-ASCII של '_'.\nשורה שלישית. קוד ה-ASCII של 'A' שהוא התו היחיד בשורה שווה ל-65. 65%128=65.",
-   "solution": "```c\nvoid add_controls_in_file_rows (char *infile, char *outfile)\n{\n      int sum=0;\n      char c;\n      FILE *in = fopen(infile, \"r\"),\n             *out = fopen(outfile, \"w\");\n      if( !in || !out )\n            exit(1);\n      while ( (c = fgetc(in)) != EOF )\n            if (c != '\\n')\n            {\n                  fputc(c, out);\n                  sum += c;\n            }\n            else\n            {\n                  fprintf(out, \" %d%c\\n\", sum, sum%128);\n                  sum = 0;\n            }\n      fclose(in);\n      fclose(out);\n}\n```",
+   "solution": "```c\nvoid add_controls_in_file_rows (char *infile, char *outfile)\n{\n      int sum=0;\n      char c;\n      FILE *in = fopen(infile, \"r\"),\n             *out = fopen(outfile, \"w\");\n      if( !in || !out )\n            exit(1);\n      while ( (c = fgetc(in)) != EOF )\n            if (c != '\\n')\n            {\n                  fputc(c, out);\n                  sum += c;\n            }\n            else\n            {\n                  fprintf(out, \" %d%c\\n\", sum, sum%128);\n                  sum = 0;\n            }\n      fclose(in);\n      fclose(out);\n}\n```\n\n**הערה:** המשתנה `c` מוגדר כ-`char` ומושווה ל-`EOF` (שהוא `int`). במערכת שבה `char` הוא ללא סימן הלולאה לא נגמרת, ובמערכת עם סימן היא נעצרת מוקדם כשנקרא הבייט `0xFF`. הנכון הוא `int c`.",
    "solutionSource": "official-pdf",
    "official": true,
    "confidence": "high",
@@ -39,7 +39,7 @@
      "points": 3
     }
    ],
-   "rubricSource": "ai-draft",
+   "rubricSource": "ai-verified",
    "pitfalls": [
     "לא לאפס את הסכום אחרי כל שורה, כך שמספר הביקורת של כל שורה כולל את השורות שלפניה.",
     "לצרף לסכום גם את `'\\n'`, למרות שההוראה היא לא להתחשב בו.",
@@ -160,7 +160,7 @@
      "explain": "הצהרות ופתיחה, בדיקת הפתיחה לפני הקריאה, לולאת ההעתקה, ובסוף סגירה. כל החלפה של שני בלוקים נכשלת בבנייה, קורסת או מייצרת קובץ שונה (נבדק בריצה, כולל קובץ קלט שאינו קיים)."
     }
    ],
-   "stepsSource": "ai-draft"
+   "stepsSource": "ai-verified"
   },
   {
    "num": 2,
@@ -195,7 +195,7 @@
      "points": 4
     }
    ],
-   "rubricSource": "ai-draft",
+   "rubricSource": "ai-verified",
    "pitfalls": [
     "לשכוח את המקרה של הכנסה לפני האיבר הראשון, שבו צריך לעדכן את `*plist` ולא איבר קודם.",
     "לבדוק כפילות רק מול האיבר הראשון ברשימה, או להכניס מחרוזת שכבר קיימת.",
@@ -327,14 +327,14 @@
      "explain": "האיבר החדש חייב להצביע על `curr_point`, האיבר הבא ברשימה. עם `NULL` הזנב נחתך (ריצה אמיתית: אחרי הכנסת `bee` בין `ant` ל-`cat` נשארים רק `ant`, `bee`)."
     }
    ],
-   "stepsSource": "ai-draft"
+   "stepsSource": "ai-verified"
   },
   {
    "num": 3,
    "kind": "code",
    "topic": "dynamic_arrays_2d",
    "question": "כתוב פונקציה אשר מקבלת מערך `A` של מספרים שלמים.\n\nעל הפונקציה ליצור מערך דו-ממדי דינאמי `B` בו מספר השורות יהיה שווה למספר הרצפים של מספרים זוגיים ושל מספרים אי-זוגיים ב-`A`. שורה מס' `i` ב-`B` תהיה זהה (אותם איברים באותו סדר) לרצף מס' `i` ב-`A` (כאשר הרצפים ב-`A` ממוספרים החל מ-0).\n\nהפונקציה תחזיר את הכתובת של מערך `B` ותעביר by reference את מספר השורות בתוכו. בנוסף הפונקציה תעביר by reference מערך דינאמי `S` המורכב מגדלי השורות של מערך `B`. איבר מס' `i` של מערך `S` יהיה שווה לגודל שורה מס' `i` של `B`.\n\nניתן להניח שיש בזיכרון מספיק מקום להקצאות.\n\n**דוגמא:**\n`A` (משמאל לימין):\n```\n3 7 20 12 6 9 13 1 2 7 55 31 9\n```\n`B`:\n```\n3 7\n20 12 6\n9 13 1\n2\n7 55 31 9\n```\n`S`:\n```\n2\n3\n3\n1\n4\n```\nהפונקציה גם תעביר by reference 5 כמספר השורות במערך `B`.",
-   "solution": "```c\nint **array_to_array_of_sequences (int *A, int n, int **S, int *prows)\n{\n      int i, j=0, k, **B;\n      *prows = 0;\n      *S = (int *)calloc(n, sizeof(int));\n      (*S)[0] = 1;\n      for (i=1; i<n; i++)\n            if (A[i]%2 == A[i-1]%2) //the same sequence\n                  (*S)[j]++;\n            else //new sequence\n            {\n                  j++;\n                  (*S)[j] = 1;\n            }\n            *prows = j+1;\n\n      B = (int **)calloc(*prows, sizeof(int *));\n\n      i=j=0;\n      while (i<n)\n      {\n            B[j] = (int *)calloc((*S)[j], sizeof(int));\n            for (k=0; k<(*S)[j]; k++)\n                  B[j][k] = A[i++];\n            j++;\n      }\n      *S = (int *)realloc(*S, *prows*sizeof(int));\n      return B;\n}\n```",
+   "solution": "```c\nint **array_to_array_of_sequences (int *A, int n, int **S, int *prows)\n{\n      int i, j=0, k, **B;\n      *prows = 0;\n      *S = (int *)calloc(n, sizeof(int));\n      (*S)[0] = 1;\n      for (i=1; i<n; i++)\n            if (A[i]%2 == A[i-1]%2) //the same sequence\n                  (*S)[j]++;\n            else //new sequence\n            {\n                  j++;\n                  (*S)[j] = 1;\n            }\n            *prows = j+1;\n\n      B = (int **)calloc(*prows, sizeof(int *));\n\n      i=j=0;\n      while (i<n)\n      {\n            B[j] = (int *)calloc((*S)[j], sizeof(int));\n            for (k=0; k<(*S)[j]; k++)\n                  B[j][k] = A[i++];\n            j++;\n      }\n      *S = (int *)realloc(*S, *prows*sizeof(int));\n      return B;\n}\n```\n\n**הערה:** הבדיקה `A[i]%2 == A[i-1]%2` שגויה עבור מספרים אי-זוגיים שליליים, כי `-3%2` הוא `-1` ו-`1%2` הוא `1`, ולכן `{-3, 1, -5, 2}` מפוצל ל-4 רצפים במקום 2. התיקון: `(A[i]&1) == (A[i-1]&1)` (או `abs(A[i]%2)`). בנוסף, כש-`n==0` הפקודה `(*S)[0] = 1` כותבת מעבר לזיכרון שהוקצה, ולכן יש להוסיף בתחילת הפונקציה (אחרי `*prows = 0`) את הבדיקה `if (n==0) { *S = NULL; return NULL; }`. התיקון נבדק בריצה (`tools/verify/19B-B/fix_q3_neg_n0.c`: שתי שורות, `S = 3 1`, ו-`n==0` מחזיר 0 שורות).",
    "solutionSource": "official-pdf",
    "official": true,
    "confidence": "high",
@@ -361,7 +361,7 @@
      "points": 3
     }
    ],
-   "rubricSource": "ai-draft",
+   "rubricSource": "ai-verified",
    "pitfalls": [
     "להשוות את `A[i]` ל-`A[i-1]` עצמם ולא את הזוגיות שלהם (`%2`), ולקבל רצפים של איברים שווים בלבד.",
     "לשכוח שיש רצף אחד לפחות, ולהתחיל את הספירה של `S[0]` מ-0 במקום מ-1.",
@@ -491,7 +491,7 @@
      "explain": "קודם הצהרות ואתחול `S`, אחר כך חישוב הגדלים, אחר כך קביעת `*prows` והקצאת `B` (אחרי שהמספר ידוע), העתקת הרצפים והחזרה. כל החלפה של שני בלוקים קורסת, נכשלת בבנייה או נותנת פלט שונה (נבדק בריצה)."
     }
    ],
-   "stepsSource": "ai-draft"
+   "stepsSource": "ai-verified"
   },
   {
    "num": 4,
@@ -608,7 +608,7 @@
     }
    ],
    "correctId": "e",
-   "explanation": "`x` הוא משתנה גלובלי (לא מומלץ להשתמש) וברירת המחדל ערך התחלתי שלו הוא 0.",
+   "explanation": "**הערה:** בניסוח המילולי של השאלה גם אפשרות ד' (\"התכנית תקינה\") נכונה מילולית. המפתח הרשמי הוא ה' (תקינה אך לא מומלצת), והוא שיקול סגנוני.\n\n`x` הוא משתנה גלובלי (לא מומלץ להשתמש) וברירת המחדל ערך התחלתי שלו הוא 0.",
    "official": true,
    "confidence": "high"
   },
@@ -646,7 +646,7 @@
     }
    ],
    "correctId": "a",
-   "explanation": "כי `arr` הוא מצביע וגודל של מצביע שווה ל-4.\n\n**הערת מתמלל (לא חלק מהפתרון הרשמי):** התשובה מניחה מערכת של 32 סיביות. בהרצה אמיתית (`tools/verify/19B-B/q4.c`) הקומפילציה ל-32 סיביות מדפיסה `4`, ואילו ל-64 סיביות `8`.",
+   "explanation": "כי `arr` הוא מצביע וגודל של מצביע שווה ל-4.\n\n**הערה:** התשובה תלויה בפלטפורמה ומניחה מערכת של 32 סיביות. בהרצה אמיתית (`tools/verify/19B-B/q4.c`) הקומפילציה ל-32 סיביות מדפיסה `4`, ואילו ל-64 סיביות `8`.",
    "official": true,
    "confidence": "high"
   },
@@ -655,7 +655,7 @@
    "kind": "code",
    "topic": "c_traps_mcq",
    "question": "*שאלת בונוס (10 נק').*\nמהו הפלט של התוכנית הבאה?\n```c\n#include <stdio.h>\nvoid main()\n{\n     char *s=\"ab\";\n     printf(\"%d\\n\",sizeof s[0]+sizeof s[1]-sizeof'a'-sizeof'b');\n}\n```\nיש לנמק את התשובה.",
-   "solution": "**הפלט:**\n```\n-6\n```\n**נימוק:**\nגודל של משתנה מסוג `char` הוא 1. תו קבוע הוא פשוט ייצוג של מספר שלם בקוד ASCII שלו וגודל של קבוע שלם הוא 4. לכן `1+1-4-4=-6`.",
+   "solution": "**הפלט:**\n```\n-6\n```\n**נימוק:**\nגודל של משתנה מסוג `char` הוא 1. תו קבוע הוא פשוט ייצוג של מספר שלם בקוד ASCII שלו וגודל של קבוע שלם הוא 4. לכן `1+1-4-4=-6`.\n\n**הערה:** התוצאה `-6` תלויה בפלטפורמה: הביטוי הוא מטיפוס `size_t` (ללא סימן), ולכן `2-4-4` גולש ל-`2^64-6` (ב-64 סיביות), ורק החיתוך של `printf` עם `%d` (התנהגות לא מוגדרת) מדפיס `-6`. בהדפסה עם `%zu` מתקבל `18446744073709551610`.",
    "solutionSource": "official-pdf",
    "official": true,
    "confidence": "high",
@@ -674,7 +674,7 @@
      "points": 3
     }
    ],
-   "rubricSource": "ai-draft",
+   "rubricSource": "ai-verified",
    "pitfalls": [
     "לחשוב שגם `sizeof 'a'` שווה ל-1 כי התו הוא `char`, ולקבל 0 במקום `-6`.",
     "להתבלבל בין `sizeof s[0]` (גודל התו) לבין `sizeof s` (גודל המצביע)."
@@ -723,7 +723,7 @@
      "explain": "$1+1-4-4=-6$ (ריצה אמיתית: `-6`)."
     }
    ],
-   "stepsSource": "ai-draft"
+   "stepsSource": "ai-verified"
   }
  ]
 }
