@@ -1,0 +1,1025 @@
+{
+ "courseId": "c_traps",
+ "levels": [
+  {
+   "id": "C01",
+   "order": 1,
+   "boss": false,
+   "questions": [
+    {
+     "id": "C01-Q1",
+     "question": "מה מדפיס הקוד?\n```c\nprintf(\"%d\", '0');\n```",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`0`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`48`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`'0'`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "שגיאת הידור"
+      }
+     ]
+    },
+    {
+     "id": "C01-Q2",
+     "step": {
+      "type": "numeric",
+      "prompt": "מה מדפיס הקוד?\n```c\nprintf(\"%d\", '7' - '0');\n```"
+     }
+    },
+    {
+     "id": "C01-Q3",
+     "question": "מה מדפיס הקוד?\n```c\nprintf(\"%c%c%c\", 'a' + 1, 'A' + 2, '0' + 3);\n```",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`bC3`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`98 67 51`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`aA0`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`b C 3`"
+      }
+     ]
+    },
+    {
+     "id": "C01-Q4",
+     "question": "איזו מההוראות הבאות **לא** מדפיסה 0?",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`printf(\"%d\", '\\0');`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`printf(\"%d\", '0');`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`printf(\"%d\", '0' - '0');`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`printf(\"%d\", 'a' - 'a');`"
+      }
+     ]
+    },
+    {
+     "id": "C01-Q5",
+     "step": {
+      "type": "numeric",
+      "prompt": "מה מדפיס הקוד?\n```c\nchar c = 'x';\nc = c - 'a' + 'A';\nprintf(\"%d\", c);\n```"
+     }
+    }
+   ]
+  },
+  {
+   "id": "C02",
+   "order": 2,
+   "boss": false,
+   "questions": [
+    {
+     "id": "C02-Q1",
+     "question": "מה מדפיס הקוד?\n```c\nprintf(\"%d %d\", 7 / 2, -7 / 2);\n```",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`3 -3`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`3.5 -3.5`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`3 -4`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`4 -4`"
+      }
+     ]
+    },
+    {
+     "id": "C02-Q2",
+     "step": {
+      "type": "numeric",
+      "prompt": "מה מדפיס הקוד?\n```c\nprintf(\"%d\", -7 % 3);\n```"
+     }
+    },
+    {
+     "id": "C02-Q3",
+     "question": "מה מדפיס הקוד?\n```c\ndouble x = 5 / 2;\nprintf(\"%.1f\", x);\n```",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`2.5`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`2.0`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`3.0`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`2`"
+      }
+     ]
+    },
+    {
+     "id": "C02-Q4",
+     "question": "מה מדפיס הקוד?\n```c\ndouble y = 1 / 2 + 1 / 2.0;\nprintf(\"%.1f\", y);\n```",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`1.0`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`0.0`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`0.5`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`1.5`"
+      }
+     ]
+    },
+    {
+     "id": "C02-Q5",
+     "step": {
+      "type": "numeric",
+      "prompt": "מה מדפיס הקוד?\n```c\nprintf(\"%d\", 10 / 4 * 4);\n```"
+     }
+    },
+    {
+     "id": "C02-Q6",
+     "question": "מה מדפיס הקוד?\n```c\nint s[] = {5, 5 / 5, 5 / 5 / 5, 7};\nint i;\nfor (i = 0; s[i]; i++)\n    printf(\"%d\", s[i]);\n```",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`5107`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`51`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`517`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`5`"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "C03",
+   "order": 3,
+   "boss": false,
+   "questions": [
+    {
+     "id": "C03-Q1",
+     "question": "מה מדפיס הקוד?\n```c\nint x = 5;\nif (x = 0)\n    printf(\"A\");\nelse\n    printf(\"B\");\nprintf(\"%d\", x);\n```",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`B0`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`A0`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`B5`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`A5`"
+      }
+     ]
+    },
+    {
+     "id": "C03-Q2",
+     "step": {
+      "type": "numeric",
+      "prompt": "מה מדפיס הקוד?\n```c\nprintf(\"%d\", 4 & 3 == 3);\n```"
+     }
+    },
+    {
+     "id": "C03-Q3",
+     "question": "מה מדפיס הקוד?\n```c\nprintf(\"%d %d\", 3 ^ 2, 1 << 4);\n```",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`1 16`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`9 16`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`1 4`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`9 4`"
+      }
+     ]
+    },
+    {
+     "id": "C03-Q4",
+     "question": "מה מדפיס הקוד?\n```c\nint i = 0, j = 0;\nif (i++ && j++)\n    ;\nprintf(\"%d %d\", i, j);\n```",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`1 0`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`1 1`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`0 0`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`0 1`"
+      }
+     ]
+    },
+    {
+     "id": "C03-Q5",
+     "step": {
+      "type": "numeric",
+      "prompt": "מה מדפיס הקוד?\n```c\nprintf(\"%d\", 5 > 3 > 1);\n```"
+     }
+    },
+    {
+     "id": "C03-Q6",
+     "step": {
+      "type": "numeric",
+      "prompt": "מה מדפיס הקוד?\n```c\nprintf(\"%d\", 2 + 3 * 4 % 5);\n```"
+     }
+    }
+   ]
+  },
+  {
+   "id": "C04",
+   "order": 4,
+   "boss": false,
+   "questions": [
+    {
+     "id": "C04-Q1",
+     "step": {
+      "type": "numeric",
+      "prompt": "מה מדפיס הקוד?\n```c\nprintf(\"%d\", (int)sizeof \"hello\");\n```"
+     }
+    },
+    {
+     "id": "C04-Q2",
+     "question": "מה מדפיס הקוד?\n```c\nchar s[10] = \"abc\";\nprintf(\"%d %d\", (int)sizeof s, (int)strlen(s));\n```",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`10 3`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`4 3`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`3 3`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`10 10`"
+      }
+     ]
+    },
+    {
+     "id": "C04-Q3",
+     "step": {
+      "type": "numeric",
+      "prompt": "מה מדפיס הקוד (המספר שמודפס אינו תלוי בגודל של `int`)?\n```c\nint a[10];\nprintf(\"%d\", (int)(sizeof a / sizeof a[0]));\n```"
+     }
+    },
+    {
+     "id": "C04-Q4",
+     "question": "מה מדפיס הקוד?\n```c\nint i = 5;\nint n = sizeof(i++);\nprintf(\"%d\", i);\n```",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`5`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`6`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`4`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`n`"
+      }
+     ]
+    },
+    {
+     "id": "C04-Q5",
+     "question": "הפונקציה:\n```c\nvoid f(int a[])\n{\n    int n = sizeof a / sizeof a[0];\n}\n```\nנקראת עם מערך של 10 איברים. איזו טענה נכונה?",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`sizeof a` בתוך `f` הוא גודל של מצביע, ולכן `n` אינו מספר האיברים של המערך"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`n` שווה תמיד ל-10"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "הקוד לא מתקמפל כי אי אפשר להשתמש ב-`sizeof` על פרמטר"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`sizeof a` הוא גודל כל המערך שהועבר"
+      }
+     ]
+    },
+    {
+     "id": "C04-Q6",
+     "step": {
+      "type": "numeric",
+      "prompt": "מה מדפיס הקוד?\n```c\nprintf(\"%d\", (int)sizeof \"abc\"[1]);\n```"
+     }
+    }
+   ]
+  },
+  {
+   "id": "C05",
+   "order": 5,
+   "boss": false,
+   "questions": [
+    {
+     "id": "C05-Q1",
+     "question": "מה מדפיס הקוד?\n```c\nchar a[] = \"hi\";\nchar b[] = \"hi\";\nprintf(\"%d\", a == b);\n```",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`0`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`1`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`2`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "שגיאת הידור"
+      }
+     ]
+    },
+    {
+     "id": "C05-Q2",
+     "question": "מה מדפיס הקוד?\n```c\nprintf(\"%s\", \"hello\" + 2);\n```",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`llo`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`hello2`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`ello`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`he`"
+      }
+     ]
+    },
+    {
+     "id": "C05-Q3",
+     "question": "מה מדפיס הקוד?\n```c\nchar s[] = \"hello\";\ns[2] = '\\0';\nprintf(\"%d %s\", (int)strlen(s), s);\n```",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`2 he`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`5 hello`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`3 hel`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`2 llo`"
+      }
+     ]
+    },
+    {
+     "id": "C05-Q4",
+     "question": "מה מדפיס הקוד?\n```c\nchar *a = \"x\";\nchar *b = \"x\";\nif (strcmp(a, b))\n    printf(\"diff\");\nelse\n    printf(\"same\");\n```",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`same`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`diff`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`diffsame`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "אין פלט"
+      }
+     ]
+    },
+    {
+     "id": "C05-Q5",
+     "question": "מה קורה בקוד הבא לפי תקן שפת C?\n```c\nchar *s = \"hi\";\ns[0] = 'H';\n```",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "התנהגות לא מוגדרת: כתיבה למחרוזת קבועה"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "שגיאת הידור, כי `s` מצביע לקבוע"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`s` הופך להיות `\"Hi\"`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "נוצר עותק של המחרוזת וה-`H` נכתב אליו"
+      }
+     ]
+    },
+    {
+     "id": "C05-Q6",
+     "step": {
+      "type": "numeric",
+      "prompt": "מה מדפיס הקוד?\n```c\nchar s[6] = \"ab\";\nprintf(\"%d\", s[4]);\n```"
+     }
+    }
+   ]
+  },
+  {
+   "id": "C06",
+   "order": 6,
+   "boss": false,
+   "questions": [
+    {
+     "id": "C06-Q1",
+     "question": "הקובץ `data.txt` מכיל את הטקסט `abc` (בלי שורה חדשה בסוף). מה מדפיס הקוד?\n```c\nFILE *f = fopen(\"data.txt\", \"r\");\nint c;\nwhile ((c = fgetc(f)) != EOF)\n    printf(\"%d \", c);\nfclose(f);\n```",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`97 98 99`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`a b c`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`1 1 1`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`97 98 99 -1`"
+      }
+     ]
+    },
+    {
+     "id": "C06-Q2",
+     "question": "הקובץ `data.txt` מכיל את הטקסט `hi` (בלי שורה חדשה בסוף). מה מדפיס הקוד?\n```c\nFILE *f = fopen(\"data.txt\", \"r\");\nchar ch;\nwhile (ch = fgetc(f) != EOF)\n    printf(\"%d\", ch);\nfclose(f);\n```",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`11`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`104105`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`hi`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`00`"
+      }
+     ]
+    },
+    {
+     "id": "C06-Q3",
+     "question": "הקובץ `data.txt` מכיל `1 2 3` ואחריהם **תו שורה חדשה** (שלושה מספרים בשורה אחת). מה מדפיס הקוד?\n```c\nFILE *f = fopen(\"data.txt\", \"r\");\nint x = 0;\nwhile (!feof(f))\n{\n    fscanf(f, \"%d\", &x);\n    printf(\"%d \", x);\n}\nfclose(f);\n```",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`1 2 3 3`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`1 2 3`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`1 2 3 0`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`1 2 3 -1`"
+      }
+     ]
+    },
+    {
+     "id": "C06-Q4",
+     "step": {
+      "type": "numeric",
+      "prompt": "הקובץ `data.txt` מכיל שתי שורות: `ab` ואחריה `cd`, וכל שורה נגמרת בתו שורה חדשה. מה מדפיס הקוד?\n```c\nFILE *f = fopen(\"data.txt\", \"r\");\nchar st[10];\nfgets(st, 10, f);\nprintf(\"%d\", (int)strlen(st));\nfclose(f);\n```"
+     }
+    },
+    {
+     "id": "C06-Q5",
+     "step": {
+      "type": "numeric",
+      "prompt": "הקובץ `data.txt` מכיל את הטקסט `5 x`. מה מדפיס הקוד?\n```c\nFILE *f = fopen(\"data.txt\", \"r\");\nint a = 0, b = 0;\nint n = fscanf(f, \"%d %d\", &a, &b);\nprintf(\"%d\", n);\nfclose(f);\n```"
+     }
+    },
+    {
+     "id": "C06-Q6",
+     "question": "הקובץ `nope.txt` **לא קיים**. מה מדפיס הקוד?\n```c\nFILE *f = fopen(\"nope.txt\", \"r\");\nprintf(\"%d\", f == NULL);\n```",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`1`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`0`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "הקוד קורס בשורת ה-`fopen`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`-1`"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "C07",
+   "order": 7,
+   "boss": false,
+   "questions": [
+    {
+     "id": "C07-Q1",
+     "question": "מה מדפיס הקוד?\n```c\nint g;\nstatic int s;\nint main(void)\n{\n    int a[5] = {1, 2};\n    printf(\"%d %d %d %d %d\", g, s, a[0], a[2], a[4]);\n    return 0;\n}\n```",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`0 0 1 0 0`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`0 0 1 2 2`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "ערכי זבל לא ידועים"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`0 0 1 1 1`"
+      }
+     ]
+    },
+    {
+     "id": "C07-Q2",
+     "question": "מה מדפיס הקוד?\n```c\nint *p = (int *)calloc(3, sizeof(int));\nprintf(\"%d%d%d\", p[0], p[1], p[2]);\n```",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`000`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`123`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "ערכי זבל לא ידועים"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`0`"
+      }
+     ]
+    },
+    {
+     "id": "C07-Q3",
+     "question": "מה הערך של `p[0]` מיד אחרי ההקצאה?\n```c\nint *p = (int *)malloc(sizeof(int));\n```",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "לא מוגדר: `malloc` לא מאתחלת"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "תמיד 0"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "תמיד `NULL`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "תמיד -1"
+      }
+     ]
+    },
+    {
+     "id": "C07-Q4",
+     "question": "מה מדפיס הקוד?\n```c\nvoid f(void)\n{\n    static int n = 0;\n    n++;\n    printf(\"%d\", n);\n}\nint main(void)\n{\n    f(); f(); f();\n    return 0;\n}\n```",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`123`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`111`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`012`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`000`"
+      }
+     ]
+    },
+    {
+     "id": "C07-Q5",
+     "question": "מה נכון לגבי הקוד הבא?\n```c\nint a[3];\nfree(a);\n```",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "התנהגות לא מוגדרת: `a` לא הוקצה בהקצאה דינמית"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`free` משחררת את המערך ללא בעיה"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "שגיאת הידור"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`free` לא עושה כלום כי המערך קטן"
+      }
+     ]
+    },
+    {
+     "id": "C07-Q6",
+     "step": {
+      "type": "numeric",
+      "prompt": "מה מדפיס הקוד?\n```c\nint *p = (int *)malloc(3 * sizeof(int));\np[0] = 7;\np = (int *)realloc(p, 6 * sizeof(int));\nprintf(\"%d\", p[0]);\n```"
+     }
+    }
+   ]
+  },
+  {
+   "id": "C08",
+   "order": 8,
+   "boss": false,
+   "questions": [
+    {
+     "id": "C08-Q1",
+     "question": "מה מדפיס הקוד?\n```c\nstruct S { int a; int *p; };\nint x = 1;\nstruct S s1 = {5, &x};\nstruct S s2 = s1;\ns2.a = 9;\n*s2.p = 7;\nprintf(\"%d %d %d\", s1.a, *s1.p, x);\n```",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`5 7 7`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`9 7 7`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`5 1 1`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`9 1 1`"
+      }
+     ]
+    },
+    {
+     "id": "C08-Q2",
+     "step": {
+      "type": "numeric",
+      "prompt": "מה מדפיס הקוד?\n```c\nstruct T { int v[2]; };\nstruct T t1 = {{1, 2}};\nstruct T t2 = t1;\nt2.v[0] = 9;\nprintf(\"%d\", t1.v[0]);\n```"
+     }
+    },
+    {
+     "id": "C08-Q3",
+     "question": "מה מדפיס הקוד?\n```c\nunion U { int a; int b; } u;\nu.a = 5;\nu.b = 8;\nprintf(\"%d\", u.a);\n```",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`8`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`5`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`13`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`0`"
+      }
+     ]
+    },
+    {
+     "id": "C08-Q4",
+     "question": "מה מדפיס הקוד?\n```c\nint x = 10;\nvoid f(int x)\n{\n    x = x + 1;\n    printf(\"%d \", x);\n}\nint main(void)\n{\n    f(1);\n    printf(\"%d\", x);\n    return 0;\n}\n```",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`2 10`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`11 11`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`2 2`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`11 10`"
+      }
+     ]
+    },
+    {
+     "id": "C08-Q5",
+     "question": "מה מדפיס הקוד?\n```c\nint x = 1;\n{\n    int x = 2;\n    x++;\n}\nprintf(\"%d\", x);\n```",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`1`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`2`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`3`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "שגיאת הידור"
+      }
+     ]
+    },
+    {
+     "id": "C08-Q6",
+     "question": "מה מהבאים **אינו** חלק מהנחיית קדם-מעבד?",
+     "options": [
+      {
+       "id": "a",
+       "type": "text",
+       "value": "`typedef`"
+      },
+      {
+       "id": "b",
+       "type": "text",
+       "value": "`define`"
+      },
+      {
+       "id": "c",
+       "type": "text",
+       "value": "`ifndef`"
+      },
+      {
+       "id": "d",
+       "type": "text",
+       "value": "`include`"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "C09",
+   "order": 9,
+   "boss": true,
+   "questions": [
+    {
+     "id": "bank:19S-A-Q4d",
+     "bankId": "19S-A-Q4d"
+    },
+    {
+     "id": "bank:20B-A-Q4a",
+     "bankId": "20B-A-Q4a"
+    },
+    {
+     "id": "bank:19B-A-Q5",
+     "bankId": "19B-A-Q5"
+    },
+    {
+     "id": "bank:25B-A-Q6",
+     "bankId": "25B-A-Q6"
+    },
+    {
+     "id": "bank:25B-B-Q6",
+     "bankId": "25B-B-Q6"
+    }
+   ]
+  }
+ ]
+}
