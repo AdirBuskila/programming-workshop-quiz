@@ -20,11 +20,10 @@ Open questions for Adir. One entry per item; the orchestrator moves it to Resolv
 - Needed: confirm whether to keep the official code as is (current), or add a corrected variant.
 - Status: noted, not held
 
-### 21B-B Q1 - official filesMerge fails the exam's own example
-- Path: official solution of sitting 21B-B (tools/verify/21B-B/q1.c reproduces it)
-- Page: 2-3
-- Question: the official filesMerge merges the common rows correctly, but when the two files differ in length the fseek(-1) on the unread or EOF file plus copy_file adds a stray newline. The exam example (4 lines vs 3) ends with an extra blank line, and with infile_2 longer the blank lines land between rows. Held per GATE1 (a solution that fails its tests).
-- Needed: decide whether to ship the official code as is with the transcriber note (current text), or add a corrected variant.
-- Status: hold
-
 ## Resolved
+
+### 21B-B Q1 - official filesMerge fails the exam's own example
+- Path: official solution of sitting 21B-B (tools/verify/21B-B/arb_q1.c)
+- Page: 2-3
+- Ruling (arbiter, standing ruling "official answer ... fails a check"): shipped with a minimal fix: after the merge loop only in1 is moved back, and only if not at EOF (`if (!feof(in1)) fseek(in1, -1, SEEK_CUR);`), replacing the two unconditional fseeks. Labelled "הפתרון הרשמי עם תיקון", solutionSource solved, official false. The fix passes the example plus longer-infile_2, equal-length and empty-file cases with clang.
+- Status: resolved, un-held, steps ai-draft (refute pending)

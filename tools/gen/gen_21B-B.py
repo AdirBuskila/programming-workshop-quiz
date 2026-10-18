@@ -2,7 +2,7 @@
 """Generator for tools/raw/21B-B.json -- programming-workshop (C), semester B 2021, moed B (13.07.2021).
 Part 1: Q1, Q2, Q3 (40 pts each, answer two of three). Part 2: Q4 (20 pts, four pick-and-justify items).
 Part 3: Q5 bonus (10 pts). Solutions transcribed from the official solution PDF (typed code + marked options).
-Code solutions compiled and run with clang: tools/verify/21B-B/. Q1 is held: the official solution fails its own example.
+Code solutions compiled and run with clang: tools/verify/21B-B/. Q1: official solution with a minimal fix (arbiter, tools/verify/21B-B/arb_*).
 Run: PYTHONUTF8=1 py tools/gen/gen_21B-B.py"""
 import json, pathlib
 
@@ -23,7 +23,7 @@ def Q(num, kind, topic, question, solution, **kw):
 
 CHOOSE = "\n\n*בחלק זה יש לענות על שתי שאלות מתוך שלוש.*"
 
-# ---------------------------------------------------------------- Q1 (held)
+# ---------------------------------------------------------------- Q1 (official + minimal fix)
 Q1_TEXT = r"""כתוב פונקציה אשר מקבלת מחרוזות `infile_1`, `infile_2` ו-`outfile` המהוות שמות של שלושה קבצי טקסט.
 תוכן של כל שורה בקבצים `infile_1` ו-`infile_2` הוא רצף של מספרים שלמים **ממוינים** (מתחילת השורה עד סופה) מופרדים ברווחים. התו של סוף השורה מופיע מיד אחרי המספר האחרון בכל שורה, כולל השורה האחרונה.
 
@@ -52,7 +52,9 @@ Q1_TEXT = r"""כתוב פונקציה אשר מקבלת מחרוזות `infile_1
 4 4 4 5
 ```""" + CHOOSE
 
-Q1_SOL = r"""```c
+Q1_SOL = r"""**הפתרון הרשמי עם תיקון:** אחרי לולאת המיזוג הפתרון הרשמי מחזיר את שני הקבצים תו אחד אחורה (`fseek(in1, -1, SEEK_CUR); fseek(in2, -1, SEEK_CUR);`), וזה מוסיף ל-`outfile` שורות ריקות (בדוגמה: שורה ריקה בסוף). התיקון: רק `in1` מחזירים תו אחורה, ורק אם הוא לא הגיע ל-EOF (`if (!feof(in1))`). שאר הקוד הוא הפתרון הרשמי.
+
+```c
 /* Auxiliary function. Copy a number from file to file
 and input of a next number */
 void next_number(FILE* in, FILE* out, int* num, char* ch)
@@ -112,8 +114,9 @@ void filesMerge(char* infile1, char* infile2, char* outfile)
     }
 
     /* Copying remainder of a larger file */
-    fseek(in1, -1, SEEK_CUR);
-    fseek(in2, -1, SEEK_CUR);
+    /* fix: only in1 can have one character read past the common rows */
+    if (!feof(in1))
+        fseek(in1, -1, SEEK_CUR);
     copy_file(in1, out);
     copy_file(in2, out);
 
@@ -123,7 +126,11 @@ void filesMerge(char* infile1, char* infile2, char* outfile)
 }
 ```
 
-**הערת מתמלל (לא חלק מהפתרון הרשמי):** בהרצה אמיתית (`tools/verify/21B-B/q1.c`) הפתרון הרשמי ממזג נכון את השורות המשותפות, אך אינו מייצר את הפלט של הדוגמה. כשאחד הקבצים נגמר לפני השני, `fseek(..., -1, SEEK_CUR)` על הקובץ שלא נקרא (או שכבר הגיע ל-EOF) מחזיר אותו תו אחד אחורה, ו-`copy_file` מעתיק אליו תו `\n` עודף. בדוגמה (ל-`infile_1` ארבע שורות ול-`infile_2` שלוש) מתקבלת שורה ריקה בסוף `outfile`, וכש-`infile_2` ארוך יותר מ-`infile_1` מתקבלות שורות ריקות בין השורות. בנוסף, ב-Windows עם הספרייה המודרנית `fseek` בכיוון אחורה על קובץ שנפתח במצב טקסט נכשל, ולכן ההרצה נעשתה במצב בינארי."""
+**הערה:** למה התיקון נכון: הלולאה `while (fgetc(in1) != EOF && fgetc(in2) != EOF)` נעצרת באחד משני מצבים. אם `in1` נגמר, `fgetc(in2)` לא מתבצע בכלל (הערכה מקוצרת של `&&`), ולכן `in2` עומד בדיוק בתחילת השורות שנותרו בו. אם `in2` נגמר, מ-`in1` כבר נקרא התו הראשון של השורה הבאה, ורק אותו צריך להחזיר. בפתרון הרשמי המקורי `fseek(-1)` על קובץ שלא נקרא או שכבר הגיע ל-EOF מחזיר אותו אל ה-`
+` של השורה הקודמת, ו-`copy_file` מעתיק אותו כשורה ריקה (כש-`infile_2` ארוך יותר השורות הריקות נוצרות באמצע הקובץ).
+
+בנוסף: כל מספר נכתב עם `"%d "`, ולכן בשורות הממוזגות יש רווח לפני `
+`. בהרצה ב-Windows הקבצים נפתחו במצב בינארי, כי `fseek` אחורה בקובץ שנפתח במצב טקסט אינו מובטח בתקן ונכשל בספרייה של Windows (`tools/verify/21B-B/arb_q1.c`)."""
 
 # ---------------------------------------------------------------- Q2
 Q2_TEXT = r"""נתונה הגדרה הבאה של הטיפוס `person` אשר מהווה שם משפחה, שם פרטי ומס' זהות של בן-אדם:
@@ -317,8 +324,7 @@ Q5_SOL = r"""**הפלט:**
 
 questions = [
     Q(1, "code", "files", Q1_TEXT, Q1_SOL, points=40,
-      hold="official solution fails its own example (stray blank lines in outfile when the files differ in length); see ASK_ADIR 21B-B Q1",
-      confidence="low"),
+      solutionSource="solved", official=False, confidence="med"),
     Q(2, "code", "structs_unions", Q2_TEXT, Q2_SOL, points=40),
     Q(3, "code", "list_manipulation", Q3_TEXT, Q3_SOL, points=40, image="images/exams/21B-B-Q3.png"),
     {"num": 4, "part": "א", "kind": "mcq", "topic": "storage_classes", "question": Q4A_TEXT,
@@ -393,6 +399,36 @@ def step(type_, **kw):
     s = {"type": type_}
     s.update(kw)
     return s
+
+S1 = lines_of(code_of(Q1_SOL))
+S1_fb, S1_bl = blank(S1, "if (!feof(in1))")
+S1_bug, S1_bi = swap1(S1, "if (num1 < num2)", "if (num1 > num2)")
+
+add(1,
+    rubric=rub(("פתיחת שלושת הקבצים (שניים לקריאה, אחד לכתיבה) ובדיקת הצלחה", 4),
+               ("לולאה על השורות כל עוד בשני הקבצים יש שורה נוספת", 8),
+               ("מיזוג שתי שורות ממוינות לשורה ממוינת אחת: השוואת המספרים הנוכחיים וקידום הקטן מביניהם, זיהוי סוף שורה לפי `\n`", 14),
+               ("העתקת שארית השורה הארוכה יותר וכתיבת `\n` בסוף כל שורה ממוזגת", 6),
+               ("העתקת השורות הנותרות מהקובץ הארוך יותר בלי שורות ריקות או תווים חסרים, וסגירת הקבצים", 8)),
+    rubricSource="ai-draft",
+    pitfalls=["להחזיר את שני הקבצים תו אחד אחורה אחרי הלולאה (כמו בפתרון הרשמי המקורי): קובץ שלא נקרא או שהגיע ל-EOF חוזר ל-`\n` הקודם, ו-`outfile` מקבל שורות ריקות.",
+              "לשכוח שתנאי כמו `fgetc(in1) != EOF && fgetc(in2) != EOF` צורך תו מהקובץ, ולא להחזיר אותו (תו ראשון חסר בשורה).",
+              "לזהות סוף שורה רק לפי `fscanf`, שמדלג על `\n` כרווח לבן, וכך למזג שורות שלמות זו לתוך זו."],
+    steps=[
+        step("numeric", prompt="מריצים את הפתרון הרשמי **המקורי** (עם `fseek(in1, -1, SEEK_CUR); fseek(in2, -1, SEEK_CUR);` אחרי הלולאה) על קבצי הדוגמה. כמה שורות ריקות יש ב-`outfile`?",
+             answer=1, tol=0,
+             explain="`in2` נגמר, ולכן `fseek(in2, -1, SEEK_CUR)` מחזיר אותו אל ה-`\n` האחרון שלו, ו-`copy_file(in2, out)` מעתיק אותו כשורה ריקה בסוף הקובץ (ריצה אמיתית: 1)."),
+        step("fillblank", prompt="השלימו את השורה החסרה בפתרון המתוקן: מתי צריך להחזיר את `in1` תו אחד אחורה אחרי לולאת המיזוג?",
+             code=True, lines=S1_fb, blankIndex=S1_bl,
+             options=opts("if (!feof(in1))", "if (!feof(in2))", "if (feof(in1))", "while (!feof(in1))"),
+             correctId="a",
+             explain="אם `in1` לא הגיע ל-EOF, הלולאה נעצרה כי `in2` נגמר, ומ-`in1` כבר נקרא התו הראשון של השורה הבאה. `!feof(in2)` ו-`feof(in1)` לא מחזירים אותו בדוגמה, ולכן התו `4` נעלם מהשורה האחרונה, ו-`while` לא נעצר לעולם כי `fseek` לא מעלה את דגל ה-EOF (ריצה אמיתית)."),
+        step("findbug", prompt="בגרסה הבאה של הפתרון המתוקן שורה אחת שונתה, והשורות הממוזגות כבר אינן ממוינות. מצאו אותה.",
+             code=True, lines=S1_bug, bugIndex=S1_bi,
+             explain="`num1 > num2` במקום `num1 < num2`: בכל צעד נכתב המספר הגדול מבין השניים, ולכן השורה הממוזגת אינה ממוינת (בדוגמה השורה הראשונה מתחילה ב-`9` במקום ב-`3`)."),
+    ],
+    stepsSource="ai-draft")
+
 
 S2 = lines_of(code_of(Q2_SOL))
 S2_bug, S2_bi = swap1(S2, "if ( (cmp = strcmp(person_arr[i].last_name, person_arr[i - 1].last_name)) < 0 )",
