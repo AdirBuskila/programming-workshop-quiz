@@ -1,0 +1,70 @@
+{
+ "examCode": "22B-A",
+ "refuter": "claude",
+ "method": "own derivation recorded first (blind, from verify_strip output); independent clang runs and random/brute-force harnesses in tools/verify/22B-A/refute_*",
+ "derivations": {
+  "q4a": "e (loop runs 6 times, prints 1 2 3 4 5 5: after the last number the trailing space keeps feof false, the 6th fscanf fails and x keeps 5)",
+  "q4b": "c (pointer to a pointer to a function returning double)",
+  "q4c": "e in strict C (malloc(0) may return NULL or a unique pointer: implementation-defined); b on glibc/MSVC/clang-Windows (non-NULL returned: 000001A7E3AD1DA0)",
+  "q4d": "a (only the pointer changes)",
+  "q5": "x (z=121, (z^1)-z=-1, pow(-1,242)=1, 120)"
+ },
+ "transcription": "Q4 options and the loop transcription match the page image; Q5 matches",
+ "items": {
+  "1": {
+   "solution": "agree (7 cases incl. times=1,2, empty base, empty middle)",
+   "rubric": "agree (12+6+12+10=40)",
+   "pitfalls": "agree",
+   "steps": [
+    "agree 8",
+    "agree 9",
+    "agree fillblank a unique (b gives ab-ab, c and d give ab-ab-ab-ab, wrong output; c and d are the same effect, and they also overrun the 9-byte buffer, but the wrong output is observable independent of the overrun)",
+    "agree order (only the claimed permutation of the 4 blocks passes)",
+    "agree findbug idx 9 (single line diff, ab-ab--)"
+   ]
+  },
+  "2": {
+   "solution": "agree (both versions, 28 cases each incl. 9994+18, 999+1, 99999+1, random)",
+   "rubric": "agree (10+8+10+12=40)",
+   "pitfalls": "agree",
+   "steps": [
+    "agree 1",
+    "agree choice a (b is impossible with a by-value head, c and d give wrong numbers)",
+    "agree fillblank a unique (b, c, d wrong on the growth cases)",
+    "agree order (only the claimed permutation of 5 blocks passes)",
+    "agree findbug idx 25 (single line diff; division by zero crash on 9994+18)"
+   ]
+  },
+  "3": {
+   "solution": "agree (24 cases vs my reference incl. missing-file and no-match)",
+   "rubric": "agree (8+10+10+12=40)",
+   "pitfalls": "agree",
+   "steps": [
+    "agree 3",
+    "agree 40 (padding assumption is stated in the prompt; holds on all common ABIs)",
+    "agree fillblank a unique (b, c, d all produce wrong size or content)",
+    "agree findbug idx 26 (single line diff; empty trailing record on the equal-price case)"
+   ]
+  },
+  "4a": {"key": "agree e", "explanation": "agree"},
+  "4b": {"key": "agree c", "explanation": "agree"},
+  "4c": {
+   "key": "disagree: key b ('p points somewhere') holds on glibc, MSVC and clang/Windows, but the C standard makes malloc(0) implementation-defined (NULL or a unique pointer), so b and c are both possible; strictly the answer is e. The explanation says malloc(0) 'does not return NULL' as a fact and never mentions implementation-defined behaviour",
+   "explanation": "disagree (states platform behaviour as a rule)"
+  },
+  "4d": {"key": "agree a", "explanation": "agree"},
+  "5": {
+   "solution": "agree x",
+   "rubric": "agree (2+3+3+2=10)",
+   "pitfalls": "agree; pitfall 1 is loose: believing (z^1)-z is +1 still gives pow=1 and the right output x (only 0 would change it)",
+   "steps": ["agree 121", "agree -1", "agree 1", "agree x"]
+  }
+ },
+ "counts": {
+  "agree": "all code solutions, every numeric value, every fillblank/findbug/order index, mcq keys 4a, 4b, 4d",
+  "disagree": 1,
+  "disagreeList": ["Q4c key b is implementation-defined (malloc(0)), not stated"],
+  "unclear": 0,
+  "flags": ["Q5 pitfall 1 weak", "Q1 fillblank c and d are the same observable effect"]
+ }
+}

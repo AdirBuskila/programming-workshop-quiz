@@ -1,0 +1,70 @@
+{
+ "examCode": "23B-B",
+ "refuter": "claude",
+ "method": "own derivation recorded first (blind, from verify_strip output); independent clang runs and random/brute-force harnesses in tools/verify/23B-B/refute_*",
+ "derivations": {
+  "q4": "p1 Print1: 20, bbb, aaa / p2 Print1: 20, bbb, aaa / p1 Print2: 20, bbb, Zaa / p2 Print2: 20, Zbb, Zaa / p1 Print3: 20, bbb, ZXa / p2 Print3: 222, ZXb, ZXa",
+  "q5a": "d ('0' is 48). Note c prints NULL with %d, which is undefined behaviour in C (NULL is (void*)0); clang/x64 prints 0",
+  "q5b": "f (f and (*f) are the same call)",
+  "q6": "^^ (s[2] = '^'^'^' = 0 ends the string)"
+ },
+ "transcription": "no mismatches found on the checked items (Q6 array, Q5a options); the exam page images for the other items were not needed to resolve any divergence",
+ "items": {
+  "1": {
+   "solution": "agree (n = 1..14, m = 2..11 against my own Josephus reference, 0 mismatches; example 3 6 1 5 2 8 4 7)",
+   "rubric": "agree (6+10+12+8+4=40)",
+   "pitfalls": "agree",
+   "steps": [
+    "agree numeric 1 (order 2 4 6 8 3 7 5 1)",
+    "agree choice a (lst = 2, tmp = 3)",
+    "agree fillblank a unique (b, c, d all crash with an access violation on 1..8, m=2 and m=3)",
+    "agree findbug idx 8 (single line diff; order 4 8 5 2 1 3 7 6)"
+   ]
+  },
+  "2": {
+   "solution": "agree (60 random files + the example, incl. empty file and missing file)",
+   "rubric": "agree (8+10+10+12=40)",
+   "pitfalls": "agree",
+   "steps": [
+    "agree numeric 3",
+    "agree numeric 100 (sizeof(film)=20 with padding, as the prompt says)",
+    "agree fillblank a unique (b, c, d wrong sizes/contents)",
+    "agree findbug idx 27 (single line diff; A346-f missing, empty record at the end)"
+   ]
+  },
+  "3": {
+   "solution": "agree (8 sentences incl. empty, only separators, empty separator set; sentence unchanged)",
+   "rubric": "agree (10+8+12+10=40)",
+   "pitfalls": "agree",
+   "steps": [
+    "agree numeric 3",
+    "agree fillblank a unique (b and d crash, c drops the first character and fails on 6 of 8 inputs; it passes the 'Why?!' example only because that sentence starts with a space)",
+    "agree order (all 720 permutations of the 6 blocks tried; only the claimed one passes)",
+    "agree findbug idx 17 (single line diff; Wh / That' / wh)"
+   ]
+  },
+  "4": {
+   "solution": "agree (compiled output identical to the claimed six lines)",
+   "rubric": "agree (2+3+3+2=10)",
+   "pitfalls": "agree",
+   "steps": ["agree a", "agree a", "agree a", "agree order"]
+  },
+  "5a": {
+   "key": "agree d",
+   "explanation": "agree on the key; minor: (3) says NULL 'is a constant 0', but printing NULL with %d is undefined behaviour in C (prints 0 on x64 clang), and (6) calls EOF an 'ASCII code' (EOF is an implementation-defined negative int, -1 here). Not platform-flagged, does not change the key"
+  },
+  "5b": {"key": "agree f", "explanation": "agree"},
+  "6": {
+   "solution": "agree ^^",
+   "rubric": "agree (4+3+3=10)",
+   "pitfalls": "agree",
+   "steps": ["agree 4", "agree 0", "agree ^^"]
+  }
+ },
+ "counts": {
+  "agree": "all keys, all numeric values, every code solution, every fillblank/findbug/order index",
+  "disagree": 0,
+  "unclear": 0,
+  "flags": ["Q5a explanation: NULL with %d is UB, EOF is not an ASCII code (key unaffected)"]
+ }
+}

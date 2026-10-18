@@ -1,0 +1,75 @@
+{
+ "examCode": "21B-A",
+ "refuter": "claude",
+ "method": "own derivation recorded first (blind, from verify_strip output); independent clang runs and brute-force/random harnesses in tools/verify/21B-A/refute_*",
+ "derivations": {
+  "q4a": "c (enum constants get their values automatically; locals, pointers, for-variable and malloc memory are not initialized)",
+  "q4b": "a (positive int: zero fill on every platform)",
+  "q4c": "e (a static array that is a field of a struct passed by value is copied)",
+  "q4d": "d (static int x is zero-initialized and outlives the call)",
+  "q5": "11 (10 chars + implicit terminator; clang prints 11, with %d given a size_t)"
+ },
+ "transcription": "Q5 bonus matches the page image (sizeof\"|0\\0/00\\0/0|\"); Q4d option (3) matches",
+ "items": {
+  "1": {
+   "solution": "agree (random + edge brute force vs my own reference: sorted-by-first=1 / by-last=2 / else 0, 0 mismatches over 127 cases; example returns 2)",
+   "rubric": "agree (10+12+6+6+6=40)",
+   "pitfalls": "agree",
+   "steps": [
+    "agree numeric 1",
+    "disagree on the explanation only: fillblank key a is unique, but distractor b (<= 0) ALSO returns 2 on the example matrix, so the explain sentence 'the example returns 2 only with < 0' is false. b fails only on equal last names (e.g. (B,A),(A,A) returns 0 instead of 1/2 expected). The distractor is valid, the explain text is wrong",
+    "agree order (the only passing permutation is the claimed one; 6 permutations tried)",
+    "agree findbug idx 4 (single line diff; returns 0 on Aaron Zed / Ben Yoni / Carl Xavi)"
+   ]
+  },
+  "2": {
+   "solution": "agree (48 cases incl. one-item lists and both common-in-head positions: closed cycle, size |A|+|B|-1, common once, both internal orders kept; example gives 5 3 1 2 8 7)",
+   "rubric": "agree (10+10+14+6=40)",
+   "pitfalls": "disagree on pitfall 1: 'with a one-item list the search with a previous item gets stuck' is not reproduced. Without the special case a one-item L1 still merges correctly; a one-item L2 gives a use-after-free and a wrong list (length 4 instead of 3 on [1,5,2]+[5]), no hang. The pitfall (skipping the one-item case breaks) is real, the stated mechanism is wrong",
+   "steps": [
+    "agree numeric 6",
+    "disagree numeric 3 (non-unique): the problem statement says it does not matter which original list lies 'after' the common number, so 5,8,7,3,1,2 is a valid merged list too (my checker accepts both A-then-B and B-then-A). 3 is true only for the official code. First divergence: the value after 5 may be 3 or 8",
+    "agree fillblank a unique (b, c, d leave the cycle open/broken on 7 of the first 12 cases, the rest go through the one-item special case)",
+    "agree findbug idx 8 (single line diff, 5 elements, 8 lost)"
+   ]
+  },
+  "3": {
+   "solution": "agree on logic, but PLATFORM/FILE-FORMAT DEPENDENT and not stated: it passes 26/26 on this Windows clang runtime only when the input file has CRLF line ends; with LF-only files the ftell/fseek pair goes wrong (Windows text-mode ftell) and the example HANGS or crashes (13/26 pass). On Linux it works for LF and fails for CRLF ('\\r' never equals '\\n'). Also 'char ch' compared with EOF assumes signed char",
+   "rubric": "agree (8+12+8+12=40)",
+   "pitfalls": "agree",
+   "steps": [
+    "agree numeric 9",
+    "agree numeric 1",
+    "agree fillblank a unique (rewind gives wrong rows after row 0, start_row-1 crashes) under CRLF input; under LF input on Windows even a is wrong, see solution note",
+    "agree findbug idx 28 (single line diff; on CRLF input output 4 7 7 7 3 3 0 0 0 as claimed; on LF input on Windows it hangs instead)"
+   ]
+  },
+  "4a": {"key": "agree c", "explanation": "agree (explanation thin but correct)"},
+  "4b": {"key": "agree a (explanation 'by the rules of C' says nothing, correct for positive int on every platform)"},
+  "4c": {"key": "agree e", "explanation": "agree"},
+  "4d": {"key": "agree d (x = 0 then 1 and 2 on the next call)", "explanation": "agree"},
+  "5": {
+   "solution": "agree 11",
+   "rubric": "agree (4+3+3=10)",
+   "pitfalls": "agree",
+   "steps": [
+    "agree 2",
+    "agree 10",
+    "agree 11 (note: printf %d with a size_t argument is undefined behaviour on 64-bit targets; prints 11 on x64 little-endian clang, not stated)"
+   ]
+  }
+ },
+ "counts": {
+  "agree": "all keys, all numeric values, every code solution on logic, every fillblank/findbug/order index",
+  "disagree": 4,
+  "disagreeList": ["Q1 step1 explain", "Q2 pitfall 1", "Q2 step1 non-unique", "Q3 solution/steps platform (CRLF) not stated"],
+  "unclear": 0,
+  "flags": [
+   "Q1 step1 (fillblank) explain is false for distractor b",
+   "Q2 pitfall 1 mechanism wrong",
+   "Q2 step1 numeric 3 not unique under the problem statement",
+   "Q3 solution and steps depend on CRLF / text-mode ftell, not stated",
+   "Q5 %d with size_t is UB, not stated"
+  ]
+ }
+}

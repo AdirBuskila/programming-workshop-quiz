@@ -1,0 +1,73 @@
+{
+ "examCode": "22B-B",
+ "refuter": "claude",
+ "method": "own derivation recorded first (blind, from verify_strip output); independent clang runs and random/brute-force harnesses in tools/verify/22B-B/refute_*",
+ "derivations": {
+  "q4a": "b (global is not a C keyword)",
+  "q4b": "d (1 1 4 5 7 9, compiled)",
+  "q4c": "e (all four statements are true)",
+  "q4d": "d on typical platforms (write to a string literal: segfault on clang/Windows), but undefined behaviour, not guaranteed",
+  "q5": "-1 on clang/Windows (strcmp returned -1; -1&-1|1 = -1). On glibc without constant folding strcmp returns -38 and the result would be -37"
+ },
+ "transcription": "Q5 bonus expression matches the page image. Note: the exam strings contain \\$ (markdown escape for $); inside the inline code spans of steps 0 and 4 a reader may see a literal backslash and count 14 characters instead of 13",
+ "items": {
+  "1": {
+   "solution": "agree (195 strings incl. empty, even/odd, digit/non-digit middle: counts and return value match my reference)",
+   "rubric": "agree (6+10+12+12=40)",
+   "pitfalls": "agree",
+   "steps": [
+    "agree numeric 7",
+    "agree choice a (-1)",
+    "agree fillblank a unique (b, c, d each fail: b on 'A' counts the middle char, c on 'aB' skips a char, d on 'A'; none fails on the three example strings, they need other inputs)",
+    "agree order (only the claimed permutation passes 40 test strings)",
+    "agree findbug idx 4 (single line diff, 3 instead of 2)"
+   ]
+  },
+  "2": {
+   "solution": "agree (45 symmetric matrices incl. the example: 15 indirect pairs, each pair once, no direct friends; size 1 returns NULL/0). Note: the NULL/0 for 'no pairs' depends on realloc(p, 0) returning NULL (true for clang/MSVC runtime and glibc, undefined in C23, non-NULL on some libcs); not stated",
+   "rubric": "agree (8+10+14+8=40)",
+   "pitfalls": "agree (pitfall 3 is loose: it mixes N*N allocation with a wrong *new_size)",
+   "steps": [
+    "agree 15",
+    "agree 28",
+    "agree fillblank a unique (b, c, d all produce wrong lists on the example and random matrices)",
+    "agree findbug idx 8 (single line diff; 0 pairs on the example, 3 on a triangle as claimed)"
+   ]
+  },
+  "3": {
+   "solution": "agree (30 random + example cases vs my reference, NULL on missing file or no match)",
+   "rubric": "agree (6+8+10+10+6=40)",
+   "pitfalls": "agree",
+   "steps": [
+    "agree 3",
+    "agree 10000",
+    "agree fillblank a unique (b, c, d each break or empty the list on most inputs)",
+    "agree findbug idx 11 (single line diff, [10000|2009] only)"
+   ]
+  },
+  "4a": {"key": "agree b", "explanation": "agree"},
+  "4b": {"key": "agree d (clang output 1 1 4 5 7 9)", "explanation": "agree"},
+  "4c": {"key": "agree e", "explanation": "agree (explanation 'by the rules of C' is empty but correct)"},
+  "4d": {
+   "key": "disagree on wording only: d (runtime error) is the usual result (clang/Windows segfault) but writing to a string literal is undefined behaviour; with -fwritable-strings or old compilers it succeeds and a/b/c-style outcomes appear. Neither the key nor the explanation ('changing a constant string causes a runtime error') says it is platform dependent / UB",
+   "explanation": "disagree (states it as a guarantee)"
+  },
+  "5": {
+   "solution": "disagree on wording only: -1 is correct for this runtime but strcmp only promises a negative value. glibc at -O0 returns the byte difference (-38) and gives -37. The solution, the rubric and the first pitfalls present -1 as certain; only step 2 says 'assuming strcmp returns -1'. The key must say the answer is platform dependent",
+   "rubric": "agree (2+2+3+3=10) but R1 says strcmp is -1, same caveat",
+   "pitfalls": "agree",
+   "steps": [
+    "agree choice a (sign is negative everywhere)",
+    "agree numeric 1",
+    "agree numeric -1 (explicitly conditional on strcmp returning -1, good)"
+   ]
+  }
+ },
+ "counts": {
+  "agree": "all code solutions on logic, every numeric value, every fillblank/findbug/order index, all mcq letters (b, d, e, d)",
+  "disagree": 2,
+  "disagreeList": ["Q4d key/explanation: UB / platform dependent not stated", "Q5 solution: strcmp -1 is platform dependent, only step 2 says so"],
+  "unclear": 0,
+  "flags": ["Q2 NULL-for-no-pairs relies on realloc(p,0)", "\\$ shown with a backslash inside code spans may mislead the length count"]
+ }
+}
