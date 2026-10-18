@@ -183,7 +183,9 @@ int **even_sums_odd_numbers (int A[][COLS], int rows, int cols, int **S,
     *S = (int *)realloc(*S, *prows*sizeof(int));
     return B;
 }
-```"""
+```
+
+**הערה:** הפתרון הרשמי בודק אי-זוגיות עם `A[i][j]%2 == 1` וסוכם `odd_count += A[i][j]%2`. בשאלה מדובר במספרים שלמים בלי הגבלת סימן, ואצל מספר אי-זוגי שלילי `%2` נותן `-1` ולא `1`: הוא לא נספר ולא מועתק, ו-`odd_count` נפגע (למשל השורה `{-3,-5,2,4,6,8}` נפסלת). התיקון: לבדוק `A[i][j]%2 != 0` (ולספור `odd_count += A[i][j]%2 != 0`). על מטריצת הדוגמה, שכל איבריה אינם שליליים, שתי הגרסאות נותנות אותה תוצאה. בנוסף, כשאף שורה לא נבחרת, `realloc(B, 0)` מוגדר-מימוש (C17) ואינו מוגדר ב-C23; במהדרים הנפוצים מתקבל `NULL`."""
 
 # ---------------------------------------------------------------- Q4 (16 pts, four items)
 Q4_INTRO = "בחר את התשובה הנכונה **ונמק** בכל אחד מהסעיפים הבאים (חובה לרשום את הבחירה והנימוק במחברת). שאלה 4, 16 נק' בסך הכול.\n"
@@ -333,7 +335,7 @@ add(1,
                ("כל שורה מסתיימת ב-`'\\n'`", 4),
                ("`str[0]` נכתבת אחרונה, כשורה מספר `n` (`n+'0'`)", 6),
                ("סגירת הקובץ", 2)),
-    rubricSource="ai-draft",
+    rubricSource="ai-verified",
     pitfalls=["לכתוב את המחרוזת כולה (`str[i]`) ולא מהתו השני: בתחילת השורה יופיעו שתי ספרות, החדשה והישנה.",
               "לשכוח את `n+'0'` או לכתוב `n` ולא `n+'0'`: נכתב תו בקרה במקום הספרה.",
               "לכתוב את `str[0]` ראשונה ולא אחרונה, כך שההיסט המחזורי לא מתקבל."],
@@ -353,7 +355,7 @@ add(1,
              code=True, lines=S1_bug, bugIndex=S1_bi,
              explain="`fputc(n, fptr)` כותבת את התו שקודו `n` (תו בקרה) ולא את הספרה. צריך `n+'0'`."),
     ],
-    stepsSource="ai-draft")
+    stepsSource="ai-verified")
 
 # ---- Q2: list_of_lists_to_list
 S2 = lines_of(code_of(Q2_SOL))
@@ -367,7 +369,7 @@ add(2,
                ("איפוס `data` של האיבר החדש ל-0 ואז צבירת כל איברי הרשימה הפנימית אליו", 8),
                ("סיום הרשימה: `curr_ptr->next = NULL`", 3),
                ("מחיקת איבר הדמה (`free`) והחזרת האיבר הראשון האמיתי", 3)),
-    rubricSource="ai-draft",
+    rubricSource="ai-verified",
     pitfalls=["לדלג על רשימה פנימית ריקה ולא ליצור לה איבר ב-`R`, כך שמספר האיברים ב-`R` קטן ממספר הרשימות.",
               "לא לאפס את `data` של האיבר החדש (`malloc` לא מאפס) ולצבור על ערך זבל.",
               "לשכוח `next = NULL` בסוף, או להחזיר את איבר הדמה עצמו."],
@@ -388,13 +390,16 @@ add(2,
              code=True, lines=S2_bug, bugIndex=S2_bi,
              explain="`=` במקום `+=`: כל איבר ברשימה הפנימית דורס את הקודם, ולכן נשאר רק האיבר האחרון ולא הסכום."),
     ],
-    stepsSource="ai-draft")
+    stepsSource="ai-verified")
 
 # ---- Q3: even_sums_odd_numbers
 S3 = lines_of(code_of(Q3_SOL))
+# the official `%2` / `%2 == 1` fail on negative odd numbers: the steps use the correct test (`%2 != 0`)
+S3 = [ln.replace("odd_count += A[i][j]%2;", "odd_count += A[i][j]%2 != 0;").replace("if (A[i][j]%2 == 1)", "if (A[i][j]%2 != 0)") for ln in S3]
+assert sum("%2 != 0" in ln for ln in S3) == 2
 S3_ord = blocks(S3, "int **even_sums_odd_numbers (int A[][COLS], int rows, int cols, int **S,", "*prows = 0;",
                 "for (i=0; i<rows; i++)", "B = (int **)realloc(B, *prows*sizeof(int *));")
-S3_bug, S3_bi = swap1(S3, "odd_count += A[i][j]%2;", "odd_count += 1;")
+S3_bug, S3_bi = swap1(S3, "odd_count += A[i][j]%2 != 0;", "odd_count += 1;")
 S3_fb, S3_bl = blank(S3, "if (sum%2 == 0 && odd_count>0)")
 
 add(3,
@@ -404,7 +409,7 @@ add(3,
                ("הקצאת שורה ב-`B` בגודל מספר האי-זוגיים, והעתקת האי-זוגיים בלבד לפי הסדר המקורי", 8),
                ("עדכון `S` ו-`*prows`", 2),
                ("כיווץ `B` ו-`S` (`realloc`) לגודל האמיתי והחזרת `B`", 2)),
-    rubricSource="ai-draft",
+    rubricSource="ai-verified",
     pitfalls=["לבדוק רק שהסכום זוגי: שורה שכולה זוגית (כמו השורה האחרונה בדוגמה) תיכנס ל-`B` כשורה ריקה.",
               "להעתיק גם איברים זוגיים, או לשכוח לאפס `sum`, `odd_count`, `k` בין שורות.",
               "לא להעביר את `S` ו-`*prows` by reference (מצביע-למצביע), כך שהקורא לא מקבל את המערך והגודל."],
@@ -427,14 +432,14 @@ add(3,
              code=True, lines=S3_bug, bugIndex=S3_bi,
              explain="`odd_count += 1` סופר כל איבר, לא רק אי-זוגי, ולכן `odd_count>0` תמיד נכון ושורה 4 נכנסת (ריצה אמיתית: `*prows` יוצא 4)."),
     ],
-    stepsSource="ai-draft")
+    stepsSource="ai-verified")
 
 add(5,
     rubric=rub(("`sizeof\"sizeof\"[i]` הוא `sizeof` של התו `\"sizeof\"[i]` (ולא של כל המחרוזת)", 3),
                ("גודל תו הוא 1 בית, ולכן תנאי הלולאה הוא `i < 1`", 2),
                ("הלולאה רצה רק עבור `i = 0`", 3),
                ("מודפס `1`", 2)),
-    rubricSource="ai-draft",
+    rubricSource="ai-verified",
     pitfalls=["לקרוא את הביטוי כגודל המחרוזת כולה (7 בתים, כולל `\\0`) ולחשוב שהלולאה רצה 7 פעמים.",
               "לשכוח ש-`sizeof` היא אופרטור שחל על הביטוי `\"sizeof\"[i]`, ולא על `\"sizeof\"`."],
     steps=[
@@ -445,7 +450,7 @@ add(5,
         step("text", prompt="מה הפלט של התוכנית?", accept=["1"], normalize="none",
              explain="באיטרציה היחידה מודפס הערך `1` (ריצה אמיתית: `1`)."),
     ],
-    stepsSource="ai-draft")
+    stepsSource="ai-verified")
 
 
 exam = {

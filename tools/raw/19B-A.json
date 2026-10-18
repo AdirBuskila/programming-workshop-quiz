@@ -43,7 +43,7 @@
      "points": 2
     }
    ],
-   "rubricSource": "ai-draft",
+   "rubricSource": "ai-verified",
    "pitfalls": [
     "לכתוב את המחרוזת כולה (`str[i]`) ולא מהתו השני: בתחילת השורה יופיעו שתי ספרות, החדשה והישנה.",
     "לשכוח את `n+'0'` או לכתוב `n` ולא `n+'0'`: נכתב תו בקרה במקום הספרה.",
@@ -166,7 +166,7 @@
      "explain": "`fputc(n, fptr)` כותבת את התו שקודו `n` (תו בקרה) ולא את הספרה. צריך `n+'0'`."
     }
    ],
-   "stepsSource": "ai-draft"
+   "stepsSource": "ai-verified"
   },
   {
    "num": 2,
@@ -201,7 +201,7 @@
      "points": 3
     }
    ],
-   "rubricSource": "ai-draft",
+   "rubricSource": "ai-verified",
    "pitfalls": [
     "לדלג על רשימה פנימית ריקה ולא ליצור לה איבר ב-`R`, כך שמספר האיברים ב-`R` קטן ממספר הרשימות.",
     "לא לאפס את `data` של האיבר החדש (`malloc` לא מאפס) ולצבור על ערך זבל.",
@@ -342,14 +342,14 @@
      "explain": "`=` במקום `+=`: כל איבר ברשימה הפנימית דורס את הקודם, ולכן נשאר רק האיבר האחרון ולא הסכום."
     }
    ],
-   "stepsSource": "ai-draft"
+   "stepsSource": "ai-verified"
   },
   {
    "num": 3,
    "kind": "code",
    "topic": "dynamic_arrays_2d",
    "question": "כתוב פונקציה אשר מקבלת **מערך דו-ממדי סטטי** (לא דינאמי) `A` של מספרים שלמים בעל `rows` שורות ו-`cols` עמודות.\nהמספר הפיסי של העמודות יינתן ע\"י קבוע בשם `COLS`. יש להגדיר אותו לפני הפונקציה.\n\nעל הפונקציה ליצור מערך דו-ממדי דינאמי `B` אשר יהיה מורכב אך ורק מהשורות של `A` שסכומי האיברים שלהן הם מספרים זוגיים. עם זאת רק איברים אי-זוגיים מועתקים מ-`A` ל-`B`.\nיש לשמור את סדר השורות מעותקות מ-`A` ל-`B` וגם את סדר האיברים מעותקים מ-`A` ל-`B` בכל שורה.\nאם סכום האיברים בשורה של `A` הוא מספר זוגי אבל גם כל האיברים בשורה הם זוגיים אז לא להעתיק את השורה מ-`A` ל-`B`.\n\nהפונקציה תחזיר את הכתובת של מערך `B` ותעביר by reference את מספר השורות בתוכו. בנוסף הפונקציה תעביר by reference מערך דינאמי `S` המורכב מגדלי השורות של מערך `B`. איבר מס' `i` של מערך `S` יהיה שווה לגודל שורה מס' `i` של `B`.\n\nניתן להניח שיש בזיכרון מספיק מקום להקצאות.\n\n**דוגמא:**\n`A`:\n```\n20 14 10 13 33 80  sum=170\n40 10 55 11 12 13  sum=141\n15 16 17 18 19 21  sum=106\n41 43 53 41 17 15  sum=210\n10 20 30 40 50 62  sum=212\n```\n`B`:\n```\n13 33\n15 17 19 21\n41 43 53 41 17 15\n```\n`S`:\n```\n2\n4\n6\n```\nהפונקציה גם תעביר by reference 3 כמספר השורות במערך `B`.",
-   "solution": "```c\n#define COLS 6 //example\n\nint **even_sums_odd_numbers (int A[][COLS], int rows, int cols, int **S,\n                             int *prows)\n{\n    int i, j, k, sum, odd_count, **B;\n    *prows = 0;\n    B = (int **)calloc(rows, sizeof(int *));\n    *S = (int *)calloc(rows, sizeof(int));\n    for (i=0; i<rows; i++)\n    {\n        sum = odd_count = k = 0;\n        for (j=0; j<cols; j++)\n        {\n            sum += A[i][j];\n            odd_count += A[i][j]%2;\n        }\n        if (sum%2 == 0 && odd_count>0)\n        {\n            B[*prows] = (int *)calloc(odd_count, sizeof(int));\n            for (j=0; j<cols; j++)\n                if (A[i][j]%2 == 1)\n                    B[*prows][k++] = A[i][j];\n            (*S)[*prows] = odd_count;\n            (*prows)++;\n        }\n    }\n    B = (int **)realloc(B, *prows*sizeof(int *));\n    *S = (int *)realloc(*S, *prows*sizeof(int));\n    return B;\n}\n```",
+   "solution": "```c\n#define COLS 6 //example\n\nint **even_sums_odd_numbers (int A[][COLS], int rows, int cols, int **S,\n                             int *prows)\n{\n    int i, j, k, sum, odd_count, **B;\n    *prows = 0;\n    B = (int **)calloc(rows, sizeof(int *));\n    *S = (int *)calloc(rows, sizeof(int));\n    for (i=0; i<rows; i++)\n    {\n        sum = odd_count = k = 0;\n        for (j=0; j<cols; j++)\n        {\n            sum += A[i][j];\n            odd_count += A[i][j]%2;\n        }\n        if (sum%2 == 0 && odd_count>0)\n        {\n            B[*prows] = (int *)calloc(odd_count, sizeof(int));\n            for (j=0; j<cols; j++)\n                if (A[i][j]%2 == 1)\n                    B[*prows][k++] = A[i][j];\n            (*S)[*prows] = odd_count;\n            (*prows)++;\n        }\n    }\n    B = (int **)realloc(B, *prows*sizeof(int *));\n    *S = (int *)realloc(*S, *prows*sizeof(int));\n    return B;\n}\n```\n\n**הערה:** הפתרון הרשמי בודק אי-זוגיות עם `A[i][j]%2 == 1` וסוכם `odd_count += A[i][j]%2`. בשאלה מדובר במספרים שלמים בלי הגבלת סימן, ואצל מספר אי-זוגי שלילי `%2` נותן `-1` ולא `1`: הוא לא נספר ולא מועתק, ו-`odd_count` נפגע (למשל השורה `{-3,-5,2,4,6,8}` נפסלת). התיקון: לבדוק `A[i][j]%2 != 0` (ולספור `odd_count += A[i][j]%2 != 0`). על מטריצת הדוגמה, שכל איבריה אינם שליליים, שתי הגרסאות נותנות אותה תוצאה. בנוסף, כשאף שורה לא נבחרת, `realloc(B, 0)` מוגדר-מימוש (C17) ואינו מוגדר ב-C23; במהדרים הנפוצים מתקבל `NULL`.",
    "solutionSource": "official-pdf",
    "official": true,
    "confidence": "high",
@@ -380,7 +380,7 @@
      "points": 2
     }
    ],
-   "rubricSource": "ai-draft",
+   "rubricSource": "ai-verified",
    "pitfalls": [
     "לבדוק רק שהסכום זוגי: שורה שכולה זוגית (כמו השורה האחרונה בדוגמה) תיכנס ל-`B` כשורה ריקה.",
     "להעתיק גם איברים זוגיים, או לשכוח לאפס `sum`, `odd_count`, `k` בין שורות.",
@@ -441,13 +441,13 @@
       "        for (j=0; j<cols; j++)",
       "        {",
       "            sum += A[i][j];",
-      "            odd_count += A[i][j]%2;",
+      "            odd_count += A[i][j]%2 != 0;",
       "        }",
       "        ___",
       "        {",
       "            B[*prows] = (int *)calloc(odd_count, sizeof(int));",
       "            for (j=0; j<cols; j++)",
-      "                if (A[i][j]%2 == 1)",
+      "                if (A[i][j]%2 != 0)",
       "                    B[*prows][k++] = A[i][j];",
       "            (*S)[*prows] = odd_count;",
       "            (*prows)++;",
@@ -492,7 +492,7 @@
       "#define COLS 6 //example",
       "int **even_sums_odd_numbers (int A[][COLS], int rows, int cols, int **S,\n                             int *prows)\n{\n    int i, j, k, sum, odd_count, **B;",
       "    *prows = 0;\n    B = (int **)calloc(rows, sizeof(int *));\n    *S = (int *)calloc(rows, sizeof(int));",
-      "    for (i=0; i<rows; i++)\n    {\n        sum = odd_count = k = 0;\n        for (j=0; j<cols; j++)\n        {\n            sum += A[i][j];\n            odd_count += A[i][j]%2;\n        }\n        if (sum%2 == 0 && odd_count>0)\n        {\n            B[*prows] = (int *)calloc(odd_count, sizeof(int));\n            for (j=0; j<cols; j++)\n                if (A[i][j]%2 == 1)\n                    B[*prows][k++] = A[i][j];\n            (*S)[*prows] = odd_count;\n            (*prows)++;\n        }\n    }",
+      "    for (i=0; i<rows; i++)\n    {\n        sum = odd_count = k = 0;\n        for (j=0; j<cols; j++)\n        {\n            sum += A[i][j];\n            odd_count += A[i][j]%2 != 0;\n        }\n        if (sum%2 == 0 && odd_count>0)\n        {\n            B[*prows] = (int *)calloc(odd_count, sizeof(int));\n            for (j=0; j<cols; j++)\n                if (A[i][j]%2 != 0)\n                    B[*prows][k++] = A[i][j];\n            (*S)[*prows] = odd_count;\n            (*prows)++;\n        }\n    }",
       "    B = (int **)realloc(B, *prows*sizeof(int *));\n    *S = (int *)realloc(*S, *prows*sizeof(int));\n    return B;\n}"
      ],
      "explain": "הקבוע לפני הפונקציה, אחריו הכנת `B`, `S` ו-`*prows`, אחר כך הלולאה על השורות, ורק בסוף כיווץ המערכים והחזרה."
@@ -522,7 +522,7 @@
       "        {",
       "            B[*prows] = (int *)calloc(odd_count, sizeof(int));",
       "            for (j=0; j<cols; j++)",
-      "                if (A[i][j]%2 == 1)",
+      "                if (A[i][j]%2 != 0)",
       "                    B[*prows][k++] = A[i][j];",
       "            (*S)[*prows] = odd_count;",
       "            (*prows)++;",
@@ -537,7 +537,7 @@
      "explain": "`odd_count += 1` סופר כל איבר, לא רק אי-זוגי, ולכן `odd_count>0` תמיד נכון ושורה 4 נכנסת (ריצה אמיתית: `*prows` יוצא 4)."
     }
    ],
-   "stepsSource": "ai-draft"
+   "stepsSource": "ai-verified"
   },
   {
    "num": 4,
@@ -699,7 +699,7 @@
      "points": 2
     }
    ],
-   "rubricSource": "ai-draft",
+   "rubricSource": "ai-verified",
    "pitfalls": [
     "לקרוא את הביטוי כגודל המחרוזת כולה (7 בתים, כולל `\\0`) ולחשוב שהלולאה רצה 7 פעמים.",
     "לשכוח ש-`sizeof` היא אופרטור שחל על הביטוי `\"sizeof\"[i]`, ולא על `\"sizeof\"`."
@@ -729,7 +729,7 @@
      "explain": "באיטרציה היחידה מודפס הערך `1` (ריצה אמיתית: `1`)."
     }
    ],
-   "stepsSource": "ai-draft"
+   "stepsSource": "ai-verified"
   }
  ]
 }

@@ -40,7 +40,7 @@
      "points": 6
     }
    ],
-   "rubricSource": "ai-draft",
+   "rubricSource": "ai-verified",
    "pitfalls": [
     "לחשב את מספר הספרות של מספר שלילי בלי ערך מוחלט, כך ש-`-78` נספר כספרה אחת.",
     "להשתמש ב-`malloc` במקום ב-`calloc` ולהשאיר ב-`L[m]` ערך לא מאותחל כשאין מספרים בעלי `m+1` ספרות (צריך `NULL`).",
@@ -144,7 +144,7 @@
      "explain": "בלי `abs`, הערך השלילי אינו גדול מ-9 והלולאה לא רצה: `-78` נספר כספרה אחת (ריצה אמיתית: `-78` ו-`-185` ב-`L[0]`)."
     }
    ],
-   "stepsSource": "ai-draft"
+   "stepsSource": "ai-verified"
   },
   {
    "num": 2,
@@ -175,7 +175,7 @@
      "points": 4
     }
    ],
-   "rubricSource": "ai-draft",
+   "rubricSource": "ai-verified",
    "pitfalls": [
     "להקצות את `F` בגודל `rows × cols` או לשכוח את תוספת 2 בכל מימד.",
     "להעתיק ל-`F[i][j]` במקום ל-`F[i+1][j+1]`, כך שהמסגרת לא נוצרת ותוכן `M` מוזז.",
@@ -272,14 +272,14 @@
      "explain": "`j < cols - 1` מדלג על העמודה האחרונה (ריצה אמיתית: העמודה `4, 8, 12` יצאה 0)."
     }
    ],
-   "stepsSource": "ai-draft"
+   "stepsSource": "ai-verified"
   },
   {
    "num": 3,
    "kind": "code",
    "topic": "files",
    "question": "**שימו לב:** שאלה זו היא חלופה לשאלה 2 (יש לענות על שאלה אחת מתוך שתיים).\n\nכתבו פונקציה עם החתימה `void processFiles(const char* inputFilename, const char* outputFilename)` אשר מקבלת שמות שני קבצי טקסט (קובץ קלט וקובץ פלט בהתאמה). קובץ הקלט מורכב משורות של תווים שרירותיים.\nעל הפונקציה למצוא שורות בקובץ הקלט שמורכבות רק מאותיות (באנגלית) ובנוסף מכילות אותיות שונות זו מזו בלבד. יש להתייחס אל אותיות קטנות וגדולות בטקסט באותו האופן (כך שלמשל `'a'` וגם `'A'` יחשבו כאותה אות).\nהפונקציה תשמור את השורות הנ\"ל בקובץ הפלט כך שסדר האותיות בכל שורה יהיה הפוך.\nניתן להניח שאורך כל שורה בקובץ הקלט אינו עולה על 99 תווים (לא כולל `'\\n'`). יש להשתמש במחרוזת עזר.\n\n**דוגמא:**\n\nקובץ הקלט:\n```\nabc#xyz\ntable\nAlisa\nWalla\nMichael\n```\nקובץ הפלט:\n```\nelbat\nleahciM\n```\nיש לכתוב ולהשתמש בפונקציית עזר `void reverseString(char* str)` להפיכת סדר התווים במחרוזת.\nיש לכתוב ולהשתמש בפונקציית עזר יעילה `int hasUniqueLetters(const char* str)` שבודקת האם המחרוזת מכילה רק אותיות והאם כל האותיות במחרוזת שונות. הפונקציה תחזיר 1 אם שני התנאים מתקיימים ו-0 אחרת.\nאפשר להשתמש במערך עזר.\nבמידה ויהיה צורך בהקצאת זיכרון דינאמי, ניתן להניח שיש בזיכרון מספיק מקום להקצאה.",
-   "solution": "```c\nvoid reverseString(char* str)\n{\n       int i = 0, j = strlen(str) - 1;\n       char temp;\n       for (; i < j; i++, j--)\n       {\n              temp = str[i];\n              str[i] = str[j];\n              str[j] = temp;\n       }\n}\n\nint hasUniqueLetters(const char* str)\n{\n       char temp[26] = { 0 }; //counters of 26 english letters\n       int i, index;\n       for (i = 0; str[i] != '\\0'; i++)\n       {\n              if (!isalpha(str[i]))\n                     return 0;\n              index = tolower(str[i]) - 'a';\n              if (temp[index] > 0)\n                     return 0;\n              temp[index]++;\n       }\n       return 1;\n}\n\nvoid processFiles(const char* inputFilename, const char* outputFilename)\n{\n       char str[101];\n       FILE* fin = fopen(inputFilename, \"r\"), *fout = fopen(outputFilename, \"w\");\n       if (!fin || !fout)\n              exit(1);\n       while (fgets(str, 101, fin)) //together with '\\n' and '\\0': 99+1+1=101\n       {\n              str[strlen(str) - 1] = '\\0'; //removing '\\n'\n              if (hasUniqueLetters(str))\n              {\n                     reverseString(str);\n                     fprintf(fout, \"%s\\n\", str);\n              } //if\n       }  //while\n       fclose(fin);\n       fclose(fout);\n}\n```",
+   "solution": "```c\nvoid reverseString(char* str)\n{\n       int i = 0, j = strlen(str) - 1;\n       char temp;\n       for (; i < j; i++, j--)\n       {\n              temp = str[i];\n              str[i] = str[j];\n              str[j] = temp;\n       }\n}\n\nint hasUniqueLetters(const char* str)\n{\n       char temp[26] = { 0 }; //counters of 26 english letters\n       int i, index;\n       for (i = 0; str[i] != '\\0'; i++)\n       {\n              if (!isalpha(str[i]))\n                     return 0;\n              index = tolower(str[i]) - 'a';\n              if (temp[index] > 0)\n                     return 0;\n              temp[index]++;\n       }\n       return 1;\n}\n\nvoid processFiles(const char* inputFilename, const char* outputFilename)\n{\n       char str[101];\n       FILE* fin = fopen(inputFilename, \"r\"), *fout = fopen(outputFilename, \"w\");\n       if (!fin || !fout)\n              exit(1);\n       while (fgets(str, 101, fin)) //together with '\\n' and '\\0': 99+1+1=101\n       {\n              str[strlen(str) - 1] = '\\0'; //removing '\\n'\n              if (hasUniqueLetters(str))\n              {\n                     reverseString(str);\n                     fprintf(fout, \"%s\\n\", str);\n              } //if\n       }  //while\n       fclose(fin);\n       fclose(fout);\n}\n```\n\n**הערה:** הפתרון מניח שכל שורה, גם האחרונה, מסתיימת ב-`'\\n'`. אם השורה האחרונה בקובץ הקלט אינה מסתיימת ב-`'\\n'`, ההוראה `str[strlen(str) - 1] = '\\0'` מוחקת את התו האחרון של המילה עצמה (למשל `abc` ללא שורה חדשה נכתבת כ-`ba`). בנוסף, שורה ריקה נחשבת כמורכבת מאותיות שונות ונכתבת לפלט כשורה ריקה. תיקון: למחוק את התו האחרון רק אם הוא `'\\n'`.",
    "solutionSource": "official-pdf",
    "official": true,
    "confidence": "high",
@@ -306,7 +306,7 @@
      "points": 6
     }
    ],
-   "rubricSource": "ai-draft",
+   "rubricSource": "ai-verified",
    "pitfalls": [
     "לשכוח להסיר את `'\\n'` לפני `hasUniqueLetters`: התו אינו אות, והפונקציה דוחה כל שורה.",
     "להתייחס ל-`A` ול-`a` כאותיות שונות: `Alisa` נכנסת לפלט בטעות.",
@@ -427,7 +427,7 @@
      "explain": "`j = strlen(str)` מצביע על תו הסיום, ולכן הוא מוחלף עם התו הראשון והמחרוזת הופכת לריקה (ריצה אמיתית: שורות ריקות)."
     }
    ],
-   "stepsSource": "ai-draft"
+   "stepsSource": "ai-verified"
   },
   {
    "num": 4,
@@ -457,7 +457,7 @@
      "points": 2
     }
    ],
-   "rubricSource": "ai-draft",
+   "rubricSource": "ai-verified",
    "pitfalls": [
     "לחשוב ש-`x` של `fun` מאותחל ל-1 בכל קריאה, ולהדפיס `2 2` בכל השורות.",
     "לבלבל בין `x`,`y` של `main` לבין אלה של `fun`; הפרמטר `q` מצביע לעתים על `x` או `y` של `main`.",
@@ -520,7 +520,7 @@
      "explain": "ריצה אמיתית: אותן חמש שורות."
     }
    ],
-   "stepsSource": "ai-draft"
+   "stepsSource": "ai-verified"
   },
   {
    "num": 5,
@@ -603,7 +603,7 @@
    "kind": "code",
    "topic": "bit_manipulation",
    "question": "**שאלת בונוס.** מהו הפלט של התוכנית הבאה?\n```c\n#include <stdio.h>\nvoid main()\n{\n    printf(\"%d\", (int)(((long long)1 << (1 << ((1 << (1 << 1)) + 1))) - 1));\n}\n```\nיש לנמק את התשובה.",
-   "solution": "**הפלט:** `-1`\n\n**נימוק:**\nנתחיל מהביטוי הפנימי ביותר.\n`( 1 << 1 )` = `10` בבינארי = 2\n`( 1 << (1 << 1) )` = `1<<2` = `100` בבינארי = 4\n`( (1 << (1 << 1)) + 1 )` = 4+1 = 5\n`( 1 << ((1 << (1 << 1)) + 1) )` = `1<<5` = `100000` בבינארי = 32\n`( (long long)1 << (1 << ((1 << (1 << 1)) + 1)) )` = `(long long)1 << 32` = 2^32 (64 סיביות)\n`( ((long long)1 << (1 << ((1 << (1 << 1)) + 1))) - 1 )` = 2^32 - 1 (64 סיביות)\n`(int)(((long long)1 << (1 << ((1 << (1 << 1)) + 1))) - 1)` = `(int)(2^32 - 1)` = `111…1` בבינארי (32 סיביות)\nהתוצאה היא ייצוג בינארי של -1.",
+   "solution": "**הפלט:** `-1`\n\n**נימוק:**\nנתחיל מהביטוי הפנימי ביותר.\n`( 1 << 1 )` = `10` בבינארי = 2\n`( 1 << (1 << 1) )` = `1<<2` = `100` בבינארי = 4\n`( (1 << (1 << 1)) + 1 )` = 4+1 = 5\n`( 1 << ((1 << (1 << 1)) + 1) )` = `1<<5` = `100000` בבינארי = 32\n`( (long long)1 << (1 << ((1 << (1 << 1)) + 1)) )` = `(long long)1 << 32` = 2^32 (64 סיביות)\n`( ((long long)1 << (1 << ((1 << (1 << 1)) + 1))) - 1 )` = 2^32 - 1 (64 סיביות)\n`(int)(((long long)1 << (1 << ((1 << (1 << 1)) + 1))) - 1)` = `(int)(2^32 - 1)` = `111…1` בבינארי (32 סיביות)\nהתוצאה היא ייצוג בינארי של -1.\n\n**הערה:** התוצאה `-1` תלויה בפלטפורמה: היא מניחה ש-`int` הוא בן 32 סיביות (כך שהערך `4294967295` אינו נכנס ב-`int`), והמרה של ערך שאינו נכנס ב-`int` לטיפוס `int` היא מוגדרת-מימוש בתקן C. במהדרים הנפוצים, שמייצגים מספרים בשיטת המשלים ל-2, ההמרה פשוט חותכת ל-32 הסיביות התחתונות ומתקבל `-1`.",
    "solutionSource": "official-pdf",
    "official": true,
    "confidence": "high",
@@ -622,7 +622,7 @@
      "points": 3
     }
    ],
-   "rubricSource": "ai-draft",
+   "rubricSource": "ai-verified",
    "pitfalls": [
     "לחשב `1 << 32` ב-`int` (שמוגבל ל-32 סיביות) ולהגיע להתנהגות לא מוגדרת; ההמרה ל-`long long` קודמת להזזה.",
     "לחשוב שהתוצאה היא `4294967295`, ולשכוח שההמרה ל-`int` והדפסה עם `%d` נותנות `-1`."
@@ -657,7 +657,7 @@
      "explain": "32 הסיביות התחתונות כולן 1, שזה `-1` בייצוג משלים ל-2 (ריצה אמיתית: -1)."
     }
    ],
-   "stepsSource": "ai-draft"
+   "stepsSource": "ai-verified"
   }
  ]
 }

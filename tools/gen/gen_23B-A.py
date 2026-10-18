@@ -148,7 +148,9 @@ void sortedRowsCols(int** ar, int m, int n, int** ar_s_rows, int* num_s_rows, in
        *ar_s_rows = (int*)realloc(*ar_s_rows, *num_s_rows * sizeof(int));
        *ar_s_cols = (int*)realloc(*ar_s_cols, *num_s_cols * sizeof(int));
 }
-```"""
+```
+
+**הערה:** כשאין אף שורה (או עמודה) ממוינת, גודל ההקצאה החדש הוא 0, והפתרון מסתמך על כך ש-`realloc(p, 0)` מחזיר `NULL`. זה תלוי במימוש: ב-C17 התוצאה מוגדרת-מימוש (במהדרים הנפוצים כמו glibc ו-MSVC מתקבל `NULL`, אך ספריות אחרות מחזירות מצביע ייחודי), וב-C23 ההתנהגות אינה מוגדרת. כדי להבטיח `NULL` בכל מימוש אפשר לבדוק את הגודל, ולשחרר עם `free` ולהציב `NULL` כשהוא 0."""
 
 # ---------------------------------------------------------------- Q3
 Q3_INTRO = r"""**שימו לב:** שאלה זו היא חלופה לשאלה 2 (יש לענות על שאלה אחת מתוך שתיים).
@@ -175,7 +177,9 @@ char* nextWord(char* sentence, char* separators, char* word)
               i++;
        return sentence[i] ? sentence + i : NULL;
 }
-```"""
+```
+
+**הערה:** השורה `word[i++] = sentence[i];` מהפתרון הרשמי משתמשת ב-`i` ומשנה אותו באותו ביטוי בלי נקודת רצף ביניהם, ולכן לפי תקן C ההתנהגות שלה אינה מוגדרת (התוצאה תלויה בסדר שבו המהדר מעריך את שני האגפים). במהדרים הנפוצים מתקבל הערך הצפוי, אבל כדאי לכתוב את השקול המוגדר היטב: `word[i] = sentence[i]; i++;` (בגוף לולאה עם סוגריים מסולסלים)."""
 
 Q3B_TEXT = r"""**סעיף ב (15 נק').**
 כתבו פונקציה עם החתימה `int breakSentence(char * sentence, char * separators, char * file_name)` אשר מקבלת אותן מחרוזות `sentence` ו-`separators` שבסעיף א' וגם מחרוזת `file_name` המהווה שם של קובץ טקסט.
@@ -422,7 +426,7 @@ add(1,
                ("הקצאת מערך עזר מאופס בגודל `max_power+1` וסכימת המקדמים לפי חזקה: `arr[power] += coefficient`", 14),
                ("בניית הרשימה החדשה מהמערך: איבר `Item` חדש רק לכל מקדם שונה מ-0, והכנסה לראש הרשימה במעבר מחזקה קטנה לגדולה כדי שהרשימה תהיה ממוינת בסדר יורד", 12),
                ("שחרור מערך העזר והחזרת הרשימה (`NULL` לרשימה ריקה או כשכל המקדמים מתאפסים)", 6)),
-    rubricSource="ai-draft",
+    rubricSource="ai-verified",
     pitfalls=["להקצות את מערך העזר בגודל `n` (מספר האיברים) ולא `max_power+1`, או להשתמש ב-`malloc` בלי איפוס.",
               "לכלול ברשימה החדשה מונומים שהמקדם הסופי שלהם 0 (למשל `(3,6)` ו-`(-3,6)` שמתבטלים).",
               "להכניס לסוף הרשימה או לעבור על המערך מהחזקה הגדולה לקטנה, ולקבל רשימה ממוינת בסדר עולה."],
@@ -447,7 +451,7 @@ add(1,
          "lines": b1, "bugIndex": i1,
          "explain": "התנאי `> 0` מדלג על מקדם שלילי; הנכון הוא `!= 0` (ריצה אמיתית: נשארים רק `(8,4)` ו-`(7.5,3)`)."},
     ],
-    stepsSource="ai-draft")
+    stepsSource="ai-verified")
 
 # Q2 -- sortedRowsCols
 FA2 = func_lines(Q2_SOL, "int arrSorted")
@@ -464,7 +468,7 @@ add(2,
                ("הקצאת שני מערכים בגודל המרבי (`m` ו-`n`) ואיפוס הגדלים", 8),
                ("מעבר על כל השורות והעמודות, שימוש בפונקציות העזר ואיסוף האינדקסים בסדר", 10),
                ("כיווץ המערכים לגודל המדויק עם `realloc`, כך שמערך ריק הוא `NULL` וגודלו 0", 6)),
-    rubricSource="ai-draft",
+    rubricSource="ai-verified",
     pitfalls=["לבדוק מיון חלש (`a[i] < a[i-1]` במקום `<=`) ולקבל שורות עם ערכים שווים כמו `25 73 84 84`.",
               "לבדוק עמודה בסדר עולה במקום יורד, או לעבור על העמודה עם מספר העמודות במקום מספר השורות.",
               "לא לכווץ את המערכים, ולהשאיר בהם תאים מיותרים ולא מאופסים כשחלק מהשורות אינן ממוינות."],
@@ -489,10 +493,14 @@ add(2,
          "lines": b2, "bugIndex": i2,
          "explain": "`<` במקום `<=` מקבל שני ערכים שווים (`84 84`) כאילו הם עולים ממש; בריצה אמיתית מתקבל `0 1 3 4` במקום `0 1 3`."},
     ],
-    stepsSource="ai-draft")
+    stepsSource="ai-verified")
 
 # Q3 -- parts a, b, c (nextWord, breakSentence, countWordOccur)
 FN3A = func_lines(Q3A_SOL, "char* nextWord")
+# the official `word[i++] = sentence[i];` is UB (unsequenced): the steps use the well-defined equivalent
+_k = [n for n, ln in enumerate(FN3A) if ln.strip() == "word[i++] = sentence[i];"]
+assert len(_k) == 1
+FN3A[_k[0]:_k[0] + 1] = ["       {", "              word[i] = sentence[i];", "              i++;", "       }"]
 B3A = ["int i = 0;",
        "while ( sentence[i] && !strchr(separators, sentence[i]) ) { word[i] = sentence[i]; i++; }",
        "word[i] = '\\0';",
@@ -505,7 +513,7 @@ add(3, "א",
                ("סיום `word` ב-`'\\0'`", 3),
                ("דילוג על כל המפרידים שאחרי המילה", 3),
                ("החזרת מצביע לתחילת המילה הבאה, או `NULL` כשאין מילה נוספת", 3)),
-    rubricSource="ai-draft",
+    rubricSource="ai-verified",
     pitfalls=["לעצור רק ברווח ולא בכל אחד מהמפרידים (למשל `Why?!` תועתק כולה).",
               "לדלג על מפריד אחד בלבד, ולהחזיר מצביע שמצביע על מפריד נוסף.",
               "להחזיר מצביע לסוף המחרוזת במקום `NULL` כשהמשפט נגמר, ולגרום ללולאה אינסופית אצל הקורא."],
@@ -530,7 +538,7 @@ add(3, "א",
          "lines": b3a, "bugIndex": i3a,
          "explain": "`return sentence + i;` מחזירה תמיד מצביע (גם לסוף המחרוזת) ולכן הקורא לא מזהה את סוף המשפט (ריצה אמיתית: התוכנית ממשיכה לקבל מצביע שאינו `NULL`)."},
     ],
-    stepsSource="ai-draft")
+    stepsSource="ai-verified")
 
 FN3B = func_lines(Q3B_SOL, "int breakSentence")
 B3B = ["FILE* fptr = fopen(file_name, \"w\"); char* word; int count = 0; if (!fptr) return -1;",
@@ -546,7 +554,7 @@ add(3, "ב",
                ("לולאה שקוראת ל-`nextWord`, כותבת כל מילה לשורה נפרדת וסופרת", 5),
                ("טיפול במילה האחרונה אחרי הלולאה (כש-`nextWord` מחזירה `NULL`), ובמשפט ריק שבו אין מילה", 3),
                ("שחרור המערך, סגירת הקובץ והחזרת כמות המילים", 2)),
-    rubricSource="ai-draft",
+    rubricSource="ai-verified",
     pitfalls=["לשכוח את המילה האחרונה: `nextWord` מחזירה `NULL` כשהיא כבר העתיקה את המילה האחרונה ל-`word`, והלולאה נגמרת לפניה.",
               "לכתוב מילה ריקה לקובץ כשהמשפט ריק, בלי לבדוק `*word`.",
               "לכתוב מילים בלי `'\\n'` ולקבל שורה אחת בקובץ."],
@@ -570,7 +578,7 @@ add(3, "ב",
          "lines": b3b, "bugIndex": i3b,
          "explain": "הפורמט `\"%s\"` בלי `'\\n'` בתוך הלולאה כותב את המילים ברצף (ריצה אמיתית: הקובץ הוא שורה אחת, `ButwhyThat'swhy`, במקום ארבע שורות)."},
     ],
-    stepsSource="ai-draft")
+    stepsSource="ai-verified")
 
 FN3C = func_lines(Q3C_SOL, "int countWordOccur")
 B3C = ["char* word; int count = 0; word = (char*)malloc(strlen(sentence) + 1);",
@@ -584,7 +592,7 @@ add(3, "ג",
                ("לולאה על המילים עם `nextWord` והשוואת כל מילה ל-`query` עם `strcmp` (ולא השוואת מצביעים)", 4),
                ("בדיקת המילה האחרונה אחרי הלולאה", 3),
                ("שחרור והחזרת המונה", 1)),
-    rubricSource="ai-draft",
+    rubricSource="ai-verified",
     pitfalls=["להשוות `word == query` (כתובות) במקום `strcmp`.",
               "לשכוח את המילה האחרונה שנשארה ב-`word` אחרי שהלולאה נגמרה.",
               "לספור מילים שמכילות את `query` כתת-מחרוזת, באמצעות `strstr`."],
@@ -608,7 +616,7 @@ add(3, "ג",
          "lines": b3c, "bugIndex": i3c,
          "explain": "בבדיקת המילה האחרונה `!= 0` סופר אותה רק כשהיא שונה מ-`query` (ריצה אמיתית: 2)."},
     ],
-    stepsSource="ai-draft")
+    stepsSource="ai-verified")
 
 # Q4 -- globals and parameters (values from running q4.c)
 Q4_OUT = ["x=20,y=5", "x=30,y=10", "x=15,y=10"]
@@ -617,7 +625,7 @@ add(4,
                ("`f1(20)`: הפרמטר `x` מסתיר את הגלובלי, `y` גלובלי, והפלט `x=20,y=5`", 3),
                ("`f2(y)`: הפרמטר `y` (עותק של 10) מסתיר את הגלובלי, ו-`x` גלובלי 30, והפלט `x=30,y=10`", 3),
                ("הפלט ב-`main`: `x=15,y=10`, כי ההשמה ב-`f2` שינתה את `x` הגלובלי ל-15, וההשמה ב-`f1` שינתה את `y` הגלובלי ל-10", 2)),
-    rubricSource="ai-draft",
+    rubricSource="ai-verified",
     pitfalls=["לחשוב ש-`x = y = 10` ב-`f1` משנה את `x` הגלובלי: הוא משנה את הפרמטר `x`, ורק את `y` הגלובלי.",
               "לחשוב ש-`x = y = 15` ב-`f2` משנה את `y` הגלובלי: הוא משנה רק את הפרמטר `y` ואת `x` הגלובלי.",
               "להדפיס `x=30` בשורה האחרונה בלי לשים לב ש-`f2` שינתה את `x` הגלובלי."],
@@ -637,14 +645,14 @@ add(4,
         {"type": "order", "prompt": "סדרו את שלוש שורות הפלט של התוכנית, מהראשונה לאחרונה.", "code": True, "lines": Q4_OUT,
          "explain": "ריצה אמיתית: אותן שלוש שורות."},
     ],
-    stepsSource="ai-draft")
+    stepsSource="ai-verified")
 
 # Q6 -- bonus: "puts" - strlen("strlen") + sizeof "sizeof"
 add(6,
     rubric=rub(("`strlen(\"strlen\")` שווה 6", 3),
                ("`sizeof\"sizeof\"` שווה 7 (שבעה תווים כולל התו האפסי)", 3),
                ("המחרוזת הקבועה היא כתובת: `\"puts\" - 6 + 7` שקול ל-`\"puts\" + 1`, ולכן `puts` מדפיסה `uts`", 4)),
-    rubricSource="ai-draft",
+    rubricSource="ai-verified",
     pitfalls=["לחשוב ש-`sizeof\"sizeof\"` שווה 6 ולשכוח את התו האפסי, ולקבל `puts`.",
               "לנסות לחסר מספר ממחרוזת כערך מספרי, במקום לראות בה כתובת של התו הראשון."],
     steps=[
@@ -664,7 +672,7 @@ add(6,
          "accept": ["uts"], "normalize": "none",
          "explain": "`puts(\"puts\" + 1)` מדפיסה את `uts` (ריצה אמיתית: `uts`)."},
     ],
-    stepsSource="ai-draft")
+    stepsSource="ai-verified")
 
 
 exam = {

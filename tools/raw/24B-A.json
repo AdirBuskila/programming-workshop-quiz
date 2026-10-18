@@ -36,7 +36,7 @@
      "points": 6
     }
    ],
-   "rubricSource": "ai-draft",
+   "rubricSource": "ai-verified",
    "pitfalls": [
     "להשוות ספרה מול ספרה בלי לבדוק קודם את האורכים, ולהחליט לפי הספרה הראשונה: `9,9,9,9` מול `1,0,0,0,0` נותן `1` במקום `-1`.",
     "לעצור בהבדל הראשון בספרות ולהחזיר תשובה גם כשהרשימות באורכים שונים, או להמשיך לעבור על רשימה שהסתיימה ולגשת ל-`NULL`.",
@@ -164,14 +164,14 @@
      "explain": "`<=` במקום `<` מחזיר `-1` גם כשהספרות שוות, ולכן הלולאה נעצרת בספרה הראשונה (ריצה אמיתית: -1 במקום 1)."
     }
    ],
-   "stepsSource": "ai-draft"
+   "stepsSource": "ai-verified"
   },
   {
    "num": 2,
    "kind": "code",
    "topic": "dynamic_arrays_2d",
    "question": "**שימו לב:** בחלק זה יש לענות על שאלה אחת מתוך שתיים (שאלה 2 או שאלה 3).\n\nנתונה הגדרה הבאה של המבנה:\n```c\ntypedef struct {\n        int size;\n        int * ptr;\n} dyn_array;\n```\nהמייצג מערך דינאמי של מספרים שלמים, כאשר `size` הוא גודל המערך ו-`ptr` הוא מצביע לתחילת המערך.\n\nכתבו פונקציה עם החתימה `dyn_array * divNumbers(int * A, int sz, int n)` אשר מקבלת מערך `A` של מספרים שלמים עם גודלו `sz` וגם מספר שלם חיובי `n`, אשר מחשבת ומוצאת ב-`A` את כל המספרים המתחלקים ללא שארית ב-`2,3,4,…n`.\nעל הפונקציה ליצור מערך דינאמי `B` עם `n-1` איברים מטיפוס `dyn_aray` כך ששדה `ptr` של `B[0]` יצביע למערך של איברי `A` המתחלקים ב-2, שדה `ptr` של `B[1]` יצביע למערך של איברי `A` המתחלקים ב-3, וכן הלאה. שדה `ptr` של `B[n-2]` יצביע למערך של איברי `A` המתחלקים ב-`n`. אם אף איבר של `A` לא מתחלק ב-`i` (`2≤i≤n`), שדות `size` ו-`ptr` של `B[i-2]` יהיו שווים ל-0 ול-`NULL` בהתאמה.\nהפונקציה תחזיר את הכתובת של תחילת המערך `B`.\n\n**דוגמא:** עבור `A={15, 49, -8, 6, -25, 9, 10, -58, 1, 77}` ו-`n=5` הפונקציה תיצור את המערך הבא (באיור: `B[0]` בגודל 4 ומצביע ל-`-8, 6, 10, -58`; `B[1]` בגודל 3 ומצביע ל-`15, 6, 9`; `B[2]` בגודל 1 ומצביע ל-`-8`; `B[3]` בגודל 3 ומצביע ל-`15, -25, 10`).\n\nניתן להניח שיש בזיכרון מספיק מקום להקצאה.",
-   "solution": "```c\ndyn_array* divNumbers(int* A, int sz, int n)\n{\n       int i, j, k;\n       dyn_array* B = (dyn_array*)calloc(n - 1, sizeof(dyn_array)); //array of structs\n       for (i = 2; i <= n; i++)\n       {\n              k = 0;\n              B[i - 2].ptr = (int*)calloc(sz, sizeof(int)); //maximum: all elements of initial array\n              for (j = 0; j < sz; j++)\n                     if (A[j] % i == 0)\n                            B[i - 2].ptr[k++] = A[j]; //new appropriate element is found\n              B[i - 2].ptr = (int*)realloc(B[i - 2].ptr, k * sizeof(int)); //k is real number of appropriate elements\n              B[i - 2].size = k;\n       }\n       return B;\n}\n```",
+   "solution": "```c\ndyn_array* divNumbers(int* A, int sz, int n)\n{\n       int i, j, k;\n       dyn_array* B = (dyn_array*)calloc(n - 1, sizeof(dyn_array)); //array of structs\n       for (i = 2; i <= n; i++)\n       {\n              k = 0;\n              B[i - 2].ptr = (int*)calloc(sz, sizeof(int)); //maximum: all elements of initial array\n              for (j = 0; j < sz; j++)\n                     if (A[j] % i == 0)\n                            B[i - 2].ptr[k++] = A[j]; //new appropriate element is found\n              B[i - 2].ptr = (int*)realloc(B[i - 2].ptr, k * sizeof(int)); //k is real number of appropriate elements\n              B[i - 2].size = k;\n       }\n       return B;\n}\n```\n\n**הערה:** כשאין אף איבר מתחלק (`k == 0`) הפתרון מסתמך על כך ש-`realloc(p, 0)` מחזיר `NULL`. זה תלוי במימוש: ב-C17 התוצאה מוגדרת-מימוש (ייתכן `NULL`, וייתכן מצביע ייחודי שאסור להשתמש בו), וב-C23 ההתנהגות אינה מוגדרת. במהדרים הנפוצים (glibc, MSVC) מתקבל `NULL`, ולכן הפתרון עובד שם. כדי להבטיח את הדרישה (`size == 0`, `ptr == NULL`) בכל מימוש אפשר לבדוק `k == 0` ואז לשחרר עם `free` ולהציב `NULL`, ולהשתמש ב-`realloc` רק כש-`k > 0`.",
    "solutionSource": "official-pdf",
    "official": true,
    "confidence": "high",
@@ -195,7 +195,7 @@
      "points": 8
     }
    ],
-   "rubricSource": "ai-draft",
+   "rubricSource": "ai-verified",
    "pitfalls": [
     "לכתוב `B[i].ptr` במקום `B[i - 2].ptr`: המחלק `i` מתחיל ב-2 והאינדקס ב-0.",
     "לשכוח לעדכן את `size`, או לא לצמצם את המערך לגודל האמיתי, כך שיש בו תאים לא מאותחלים.",
@@ -301,7 +301,7 @@
      "explain": "הלולאה מתחילה מ-`j = 1` ומדלגת על `A[0]` (ריצה אמיתית: `B[1]` הוא `6, 9` במקום `15, 6, 9`)."
     }
    ],
-   "stepsSource": "ai-draft"
+   "stepsSource": "ai-verified"
   },
   {
    "num": 3,
@@ -336,7 +336,7 @@
      "points": 6
     }
    ],
-   "rubricSource": "ai-draft",
+   "rubricSource": "ai-verified",
    "pitfalls": [
     "לקרוא את כל הקובץ למחרוזת, בניגוד לדרישה, או לא להשתמש ב-`fseek` ו-`ftell`.",
     "לחזור אחורה בצעד שגוי: אחרי קריאה מימין צריך `-1` כדי לחזור למקום, ועוד `-2` כדי לקרוא את התו שמשמאל לתו הנוכחי (במקום `-1` בלבד).",
@@ -512,7 +512,7 @@
      "explain": "`<= 0` פוסל גם מצב שבו מיקום 0 עדיין נגיש (התו הראשון בקובץ), ולכן `yte` מחזירה 0 במקום 1 (ריצה אמיתית). הבדיקה הנכונה היא `< 0`."
     }
    ],
-   "stepsSource": "ai-draft"
+   "stepsSource": "ai-verified"
   },
   {
    "num": 4,
@@ -542,7 +542,7 @@
      "points": 3
     }
    ],
-   "rubricSource": "ai-draft",
+   "rubricSource": "ai-verified",
    "pitfalls": [
     "לבלבל בין המשתנים המקומיים `x`,`y` של `blabla` לבין המשתנים של `main`: ההשמות המקומיות אינן משפיעות על `main`.",
     "לחשוב ש-`swap` מחליפה את `x` ו-`y`: `b` הוא עותק, ולכן רק `*a` משתנה.",
@@ -583,7 +583,7 @@
      "explain": "ריצה אמיתית: אותן ארבע שורות."
     }
    ],
-   "stepsSource": "ai-draft"
+   "stepsSource": "ai-verified"
   },
   {
    "num": 5,
@@ -690,7 +690,7 @@
      "points": 3
     }
    ],
-   "rubricSource": "ai-draft",
+   "rubricSource": "ai-verified",
    "pitfalls": [
     "לחשוב ש-`fgets` עם גודל 2 קוראת שני תווים, ולהדפיס `12` או `1234`.",
     "לשכוח שהקריאה בתנאי הלולאה צורכת תו שלא מודפס, ולהדפיס `1234`."
@@ -720,7 +720,7 @@
      "explain": "מודפסים התווים השני והרביעי (ריצה אמיתית: `24`)."
     }
    ],
-   "stepsSource": "ai-draft"
+   "stepsSource": "ai-verified"
   }
  ]
 }

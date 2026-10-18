@@ -21,7 +21,7 @@ build_full = lambda lines: PRE + helpers + "\n".join(lines) + DRV
 build_body = lambda blocks: PRE + helpers + "void removeExtraSpaces(node** head)\n{\n" + "\n".join(blocks) + "\n}\n" + DRV
 it = Item(C, 1, None, build_full, [fn])
 print(it.ref[1])
-it.fill("תנאי הלולאה"); it.bug("רווח שנמצא בסוף"); it.order("הפקודות", build=build_body)
+it.fill("תנאי הלולאה"); it.bug("רווח שנמצא בסוף"); it.order("הבלוקים", build=build_body)
 ok &= it.finish()
 
 # ---- Q2

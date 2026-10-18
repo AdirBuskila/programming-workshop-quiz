@@ -36,7 +36,7 @@
      "points": 8
     }
    ],
-   "rubricSource": "ai-draft",
+   "rubricSource": "ai-verified",
    "pitfalls": [
     "להניח שהראש לא משתנה ולקבל `node*` במקום `node**`, או לגשת ל-`(*head)->value` כשהרשימה כבר ריקה (קריסה ברשימה שכולה רווחים).",
     "להתקדם ב-`prev` גם אחרי מחיקה, ואז לדלג על איבר או להשאיר שני רווחים רצופים.",
@@ -59,7 +59,7 @@
     },
     {
      "type": "fillblank",
-     "prompt": "השלימו את תנאי הלולאה שמוחקת את הרווחים שבתחילת הרשימה.",
+     "prompt": "השלימו את תנאי הלולאה שמוחקת את הרווחים שבתחילת הרשימה.\nבשלב הזה משתמשים בשתי פונקציות עזר, שמוגדרות כמו בפתרון: `deleteHead(node** head)` מוחקת את הראש ומקדמת את `*head`, ו-`deleteNext(node* pos)` מוחקת את האיבר שאחרי `pos`.\n```c\nvoid deleteHead(node** head)\n{\n       node* temp = *head;\n       *head = temp->next;\n       free(temp);\n}\n\nvoid deleteNext(node* pos)\n{\n       node* temp = pos->next;\n       pos->next = temp->next;\n       free(temp);\n}\n```",
      "code": true,
      "lines": [
       "void removeExtraSpaces(node** head)",
@@ -109,19 +109,18 @@
     },
     {
      "type": "order",
-     "prompt": "סדרו את הפקודות של `removeExtraSpaces` (כל שורה היא בלוק לוגי אחד).",
+     "prompt": "סדרו את הבלוקים של `removeExtraSpaces` (כל שורה היא בלוק לוגי אחד).\nבשלב הזה משתמשים בשתי פונקציות עזר, שמוגדרות כמו בפתרון: `deleteHead(node** head)` מוחקת את הראש ומקדמת את `*head`, ו-`deleteNext(node* pos)` מוחקת את האיבר שאחרי `pos`.\n```c\nvoid deleteHead(node** head)\n{\n       node* temp = *head;\n       *head = temp->next;\n       free(temp);\n}\n\nvoid deleteNext(node* pos)\n{\n       node* temp = pos->next;\n       pos->next = temp->next;\n       free(temp);\n}\n```",
      "code": true,
      "lines": [
-      "while (*head && (*head)->value == ' ') deleteHead(head);",
-      "if (*head == NULL) return;",
+      "while (*head && (*head)->value == ' ') deleteHead(head); if (*head == NULL) return;",
       "node* curr, *prev = *head; curr = prev->next;",
       "while (curr) { if (curr->value == ' ' && (!curr->next || curr->next->value == ' ')) deleteNext(prev); else prev = curr; curr = prev->next; }"
      ],
-     "explain": "קודם מחיקת הרווחים מההתחלה, אז חזרה אם הרשימה ריקה, אחר כך הצהרה ואתחול של `prev` ו-`curr`, ולבסוף הלולאה הראשית. כל החלפה של שני בלוקים נכשלת בבנייה, קורסת או מחזירה פלט שונה (נבדק בריצה)."
+     "explain": "קודם מוחקים את הרווחים מההתחלה ויוצאים אם הרשימה התרוקנה (בלוק אחד), אחר כך מצהירים ומאתחלים את `prev` ו-`curr` (הם נשענים על `*head` שאינו `NULL`), ולבסוף הלולאה הראשית שמשתמשת בהם. כל החלפה של שני בלוקים נכשלת בבנייה או קורסת על רשימה ריקה או שכולה רווחים (נבדק בריצה)."
     },
     {
      "type": "findbug",
-     "prompt": "בגרסה הבאה שורה אחת שונתה, ורווח שנמצא בסוף הרשימה אינו נמחק (למשל אחרי `x` נשאר רווח). מצאו את השורה.",
+     "prompt": "בגרסה הבאה שורה אחת שונתה, ורווח שנמצא בסוף הרשימה אינו נמחק (למשל אחרי `x` נשאר רווח). מצאו את השורה. (`deleteHead` ו-`deleteNext` מוגדרות כמו בפתרון: מחיקת הראש ומחיקת האיבר שאחרי `pos`.)",
      "code": true,
      "lines": [
       "void removeExtraSpaces(node** head)",
@@ -147,7 +146,7 @@
      "explain": "התנאי `curr->next && ...` לא מתקיים באיבר האחרון, ולכן רווח אחרון נשאר (ריצה אמיתית: אחרי `x` נשאר רווח). בפתרון הנכון התנאי הוא `!curr->next || ...`."
     }
    ],
-   "stepsSource": "ai-draft"
+   "stepsSource": "ai-verified"
   },
   {
    "num": 2,
@@ -178,7 +177,7 @@
      "points": 8
     }
    ],
-   "rubricSource": "ai-draft",
+   "rubricSource": "ai-verified",
    "pitfalls": [
     "להקצות לכל שורה `n` תאים במקום גודל השורה במשולש (המשולש אינו מלבני), או לחשב את גודל שורה `i` של המשולש העליון כ-`i+1`.",
     "לשכוח את האיבר שעל האלכסון: `j < i` במקום `j <= i` במשולש התחתון, או `j < n-i-1` במשולש העליון.",
@@ -281,7 +280,7 @@
      "explain": "`j < i` במקום `j <= i` מדלג על התא `A[i][i]` (ריצה אמיתית: האיברים 5, 16, 43, 2 יצאו 0)."
     }
    ],
-   "stepsSource": "ai-draft"
+   "stepsSource": "ai-verified"
   },
   {
    "num": 3,
@@ -315,7 +314,7 @@
      "points": 4
     }
    ],
-   "rubricSource": "ai-draft",
+   "rubricSource": "ai-verified",
    "pitfalls": [
     "לספור כל מופע של `strstr` בלי לבדוק גבולות: `lives`, `alive` ו-`lived` נספרות בטעות והתוצאה גדולה מ-5.",
     "לשכוח שהמילה האחרונה בשורה מסתיימת ב-`'\\n'`, ולהפריד רק לפי רווח: אז `live\\n` לא שווה ל-`live`.",
@@ -430,7 +429,7 @@
      "explain": "`fgets(str, 10, fptr)` קורא עד 9 תווים בכל פעם, ולכן שורות ארוכות נחתכות באמצע מילים (ריצה אמיתית: תוצאה שונה מ-5)."
     }
    ],
-   "stepsSource": "ai-draft"
+   "stepsSource": "ai-verified"
   },
   {
    "num": 4,
@@ -460,7 +459,7 @@
      "points": 3
     }
    ],
-   "rubricSource": "ai-draft",
+   "rubricSource": "ai-verified",
    "pitfalls": [
     "להתייחס לאיגוד כמו למבנה ולהדפיס `3 5` גם לאיגוד, במקום `5 5`.",
     "לחשוב ש-`b.x++` ב-`fun` משנה את `b` של `main` (האיגוד מועבר by value), ולהדפיס `19 19` בשורה האחרונה.",
@@ -523,7 +522,7 @@
      "explain": "המבנה (3 5), האיגוד (5 5), המבנה אחרי ההעתקה (4 4), `fun` (19 19) ו-`main` (18 18); ריצה אמיתית: אותן חמש שורות."
     }
    ],
-   "stepsSource": "ai-draft"
+   "stepsSource": "ai-verified"
   },
   {
    "num": 5,
@@ -635,7 +634,7 @@
      "points": 3
     }
    ],
-   "rubricSource": "ai-draft",
+   "rubricSource": "ai-verified",
    "pitfalls": [
     "לחשוב ש-`c` מקבל את קוד התו, ולהדפיס `979899` (קודי ASCII של `abc`). בגלל הקדימות `c` מקבל את תוצאת ההשוואה.",
     "לחשוב שהפלט מכיל גם 0 בסוף: בתוצאה 0 הלולאה נעצרת לפני ההדפסה."
@@ -665,7 +664,7 @@
      "explain": "הודפס `1` שלוש פעמים (ריצה אמיתית: `111`)."
     }
    ],
-   "stepsSource": "ai-draft"
+   "stepsSource": "ai-verified"
   }
  ]
 }

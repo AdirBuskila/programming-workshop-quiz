@@ -361,8 +361,11 @@ def add(num, part=None, **kw):
 
 # Q1 -- removeExtraSpaces
 F1 = func_lines(Q1_SOL, "void removeExtraSpaces")
-B1 = ["while (*head && (*head)->value == ' ') deleteHead(head);",
-      "if (*head == NULL) return;",
+HLP1 = ("\nבשלב הזה משתמשים בשתי פונקציות עזר, שמוגדרות כמו בפתרון: "
+        "`deleteHead(node** head)` מוחקת את הראש ומקדמת את `*head`, ו-`deleteNext(node* pos)` מוחקת את האיבר שאחרי `pos`.\n"
+        "```c\nvoid deleteHead(node** head)\n{\n       node* temp = *head;\n       *head = temp->next;\n       free(temp);\n}\n\n"
+        "void deleteNext(node* pos)\n{\n       node* temp = pos->next;\n       pos->next = temp->next;\n       free(temp);\n}\n```")
+B1 = ["while (*head && (*head)->value == ' ') deleteHead(head); if (*head == NULL) return;",
       "node* curr, *prev = *head; curr = prev->next;",
       "while (curr) { if (curr->value == ' ' && (!curr->next || curr->next->value == ' ')) deleteNext(prev); else prev = curr; curr = prev->next; }"]
 f1, j1 = blank(F1, "while (*head && (*head)->value == ' ')")
@@ -373,7 +376,7 @@ add(1,
                ("טיפול ברשימה שנהפכה לריקה (כולה רווחים או ריקה מההתחלה): חזרה מהפונקציה כש-`*head` הוא `NULL`", 6),
                ("מעבר על שאר הרשימה עם שני מצביעים `prev` ו-`curr`, ומחיקת רווח שאחריו רווח נוסף או שהוא האיבר האחרון", 14),
                ("שמירה על תקינות המצביעים אחרי מחיקה: `prev` לא מתקדם כשנמחק איבר, ו-`curr` נקרא מחדש מ-`prev->next`", 8)),
-    rubricSource="ai-draft",
+    rubricSource="ai-verified",
     pitfalls=["להניח שהראש לא משתנה ולקבל `node*` במקום `node**`, או לגשת ל-`(*head)->value` כשהרשימה כבר ריקה (קריסה ברשימה שכולה רווחים).",
               "להתקדם ב-`prev` גם אחרי מחיקה, ואז לדלג על איבר או להשאיר שני רווחים רצופים.",
               "לא לבדוק את הרווח האחרון ברשימה: התנאי חייב לכלול גם `curr->next == NULL`, אחרת נשאר רווח בסוף."],
@@ -386,7 +389,7 @@ add(1,
          "prompt": "הרשימה מורכבת מהתווים: רווח, רווח, `a`, רווח, רווח, `b`, רווח, רווח. כמה איברים נשארים ברשימה בסוף הפונקציה?",
          "answer": 3, "tol": 0,
          "explain": "מתקבל `\"a b\"`: שני הרווחים בתחילה נמחקים בלולאה הראשונה, רווח אחד מבין שני הרווחים שבאמצע נמחק, ושני הרווחים בסוף נמחקים (ריצה אמיתית: 3 איברים)."},
-        {"type": "fillblank", "prompt": "השלימו את תנאי הלולאה שמוחקת את הרווחים שבתחילת הרשימה.", "code": True,
+        {"type": "fillblank", "prompt": "השלימו את תנאי הלולאה שמוחקת את הרווחים שבתחילת הרשימה." + HLP1, "code": True,
          "lines": f1, "blankIndex": j1,
          "options": [{"id": "a", "type": "text", "value": "while (*head && (*head)->value == ' ')"},
                      {"id": "b", "type": "text", "value": "while ((*head)->value == ' ')"},
@@ -394,13 +397,13 @@ add(1,
                      {"id": "d", "type": "text", "value": "while (*head && (*head)->value == ' ' && (*head)->next)"}],
          "correctId": "a",
          "explain": "הבדיקה `*head &&` מונעת גישה ל-`NULL` ברשימה שכולה רווחים (ב' קורס עליה), ו-ד' משאיר רווח אחד ברשימה שכולה רווחים. ג' מוחק את האותיות במקום את הרווחים (ריצה אמיתית: כל אחת מהאפשרויות הללו נכשלת)."},
-        {"type": "order", "prompt": "סדרו את הפקודות של `removeExtraSpaces` (כל שורה היא בלוק לוגי אחד).", "code": True, "lines": B1,
-         "explain": "קודם מחיקת הרווחים מההתחלה, אז חזרה אם הרשימה ריקה, אחר כך הצהרה ואתחול של `prev` ו-`curr`, ולבסוף הלולאה הראשית. כל החלפה של שני בלוקים נכשלת בבנייה, קורסת או מחזירה פלט שונה (נבדק בריצה)."},
-        {"type": "findbug", "prompt": "בגרסה הבאה שורה אחת שונתה, ורווח שנמצא בסוף הרשימה אינו נמחק (למשל אחרי `x` נשאר רווח). מצאו את השורה.", "code": True,
+        {"type": "order", "prompt": "סדרו את הבלוקים של `removeExtraSpaces` (כל שורה היא בלוק לוגי אחד)." + HLP1, "code": True, "lines": B1,
+         "explain": "קודם מוחקים את הרווחים מההתחלה ויוצאים אם הרשימה התרוקנה (בלוק אחד), אחר כך מצהירים ומאתחלים את `prev` ו-`curr` (הם נשענים על `*head` שאינו `NULL`), ולבסוף הלולאה הראשית שמשתמשת בהם. כל החלפה של שני בלוקים נכשלת בבנייה או קורסת על רשימה ריקה או שכולה רווחים (נבדק בריצה)."},
+        {"type": "findbug", "prompt": "בגרסה הבאה שורה אחת שונתה, ורווח שנמצא בסוף הרשימה אינו נמחק (למשל אחרי `x` נשאר רווח). מצאו את השורה. (`deleteHead` ו-`deleteNext` מוגדרות כמו בפתרון: מחיקת הראש ומחיקת האיבר שאחרי `pos`.)", "code": True,
          "lines": b1, "bugIndex": i1,
          "explain": "התנאי `curr->next && ...` לא מתקיים באיבר האחרון, ולכן רווח אחרון נשאר (ריצה אמיתית: אחרי `x` נשאר רווח). בפתרון הנכון התנאי הוא `!curr->next || ...`."},
     ],
-    stepsSource="ai-draft")
+    stepsSource="ai-verified")
 
 # Q2 -- triangles
 F2 = func_lines(Q2_SOL, "void triangles")
@@ -411,7 +414,7 @@ add(2,
                ("המשולש התחתון: שורה `i` מוקצית בגודל `i+1` ומועתקים אליה `A[i][0..i]`", 10),
                ("המשולש העליון: שורה `i` מוקצית בגודל `n-i` ומועתקים אליה `A[i][0..n-i-1]`", 14),
                ("העברה by reference: `*tr_low = low` ו-`*tr_up = up`", 8)),
-    rubricSource="ai-draft",
+    rubricSource="ai-verified",
     pitfalls=["להקצות לכל שורה `n` תאים במקום גודל השורה במשולש (המשולש אינו מלבני), או לחשב את גודל שורה `i` של המשולש העליון כ-`i+1`.",
               "לשכוח את האיבר שעל האלכסון: `j < i` במקום `j <= i` במשולש התחתון, או `j < n-i-1` במשולש העליון.",
               "לכתוב `tr_low = low` במקום `*tr_low = low`, כך שהמערך לא מגיע לפונקציה הקוראת."],
@@ -436,7 +439,7 @@ add(2,
          "lines": b2, "bugIndex": i2,
          "explain": "`j < i` במקום `j <= i` מדלג על התא `A[i][i]` (ריצה אמיתית: האיברים 5, 16, 43, 2 יצאו 0)."},
     ],
-    stepsSource="ai-draft")
+    stepsSource="ai-verified")
 
 # Q3 -- wordAppearanceNum (steps follow the second version of the official solution)
 F3 = func_lines(Q3_SOL.split("**גרסה 2:**")[1], "int wordAppearanceNum")
@@ -452,7 +455,7 @@ add(3,
                ("פירוק כל שורה למילים לפי רווח ותו שורה חדשה (`strtok` עם `\" \\n\"`) או בדיקת גבולות המילה בחיפוש `strstr`", 14),
                ("השוואת כל מילה שלמה ל-`word` וספירה; מילה שהיא תת-מחרוזת של מילה אחרת (`lives`, `alive`) לא נספרת", 8),
                ("סגירת הקובץ והחזרת הספירה", 4)),
-    rubricSource="ai-draft",
+    rubricSource="ai-verified",
     pitfalls=["לספור כל מופע של `strstr` בלי לבדוק גבולות: `lives`, `alive` ו-`lived` נספרות בטעות והתוצאה גדולה מ-5.",
               "לשכוח שהמילה האחרונה בשורה מסתיימת ב-`'\\n'`, ולהפריד רק לפי רווח: אז `live\\n` לא שווה ל-`live`.",
               "להחזיר 0 או לקרוא מ-`NULL` כשהקובץ לא נפתח, במקום להחזיר `-1`."],
@@ -479,7 +482,7 @@ add(3,
          "lines": b3, "bugIndex": i3,
          "explain": "`fgets(str, 10, fptr)` קורא עד 9 תווים בכל פעם, ולכן שורות ארוכות נחתכות באמצע מילים (ריצה אמיתית: תוצאה שונה מ-5)."},
     ],
-    stepsSource="ai-draft")
+    stepsSource="ai-verified")
 
 # Q4 -- union output (values from running the program, tools/verify/25B-A/q4.c)
 Q4_OUT = ["3 5", "5 5", "4 4", "19 19", "18 18"]
@@ -488,7 +491,7 @@ add(4,
                ("שתי השורות הראשונות: `3 5` למבנה ו-`5 5` לאיגוד", 2),
                ("השורה השלישית `4 4`: ההשמה האחרונה לאיגוד (4) נכנסת לשני השדות של המבנה", 2),
                ("העברת האיגוד לפונקציה by value: בתוך `fun` מודפס `19 19` ובחזרה ל-`main` נשאר `18 18`", 3)),
-    rubricSource="ai-draft",
+    rubricSource="ai-verified",
     pitfalls=["להתייחס לאיגוד כמו למבנה ולהדפיס `3 5` גם לאיגוד, במקום `5 5`.",
               "לחשוב ש-`b.x++` ב-`fun` משנה את `b` של `main` (האיגוד מועבר by value), ולהדפיס `19 19` בשורה האחרונה.",
               "לשכוח שאחרי `b.x = 15; b.y = 18;` שני השדות שווים ל-18, ולכן `b.x++` נותן 19 בשני השדות."],
@@ -510,14 +513,14 @@ add(4,
          "lines": Q4_OUT,
          "explain": "המבנה (3 5), האיגוד (5 5), המבנה אחרי ההעתקה (4 4), `fun` (19 19) ו-`main` (18 18); ריצה אמיתית: אותן חמש שורות."},
     ],
-    stepsSource="ai-draft")
+    stepsSource="ai-verified")
 
 # Q6 -- bonus: c = fgetc(fptr) != EOF (precedence), file "abc"
 add(6,
     rubric=rub(("זיהוי סדר הקדימות: ההשוואה `!=` מתבצעת לפני ההשמה, כך ש-`c = (fgetc(fptr) != EOF)`", 4),
                ("`c` שווה ל-1 בכל אחד משלושת התווים, ו-`printf(\"%d\", c)` מדפיס `1`", 3),
                ("בסוף הקובץ ההשוואה נותנת 0, הלולאה נעצרת, והפלט הסופי `111`", 3)),
-    rubricSource="ai-draft",
+    rubricSource="ai-verified",
     pitfalls=["לחשוב ש-`c` מקבל את קוד התו, ולהדפיס `979899` (קודי ASCII של `abc`). בגלל הקדימות `c` מקבל את תוצאת ההשוואה.",
               "לחשוב שהפלט מכיל גם 0 בסוף: בתוצאה 0 הלולאה נעצרת לפני ההדפסה."],
     steps=[
@@ -533,7 +536,7 @@ add(6,
          "accept": ["111"], "normalize": "none",
          "explain": "הודפס `1` שלוש פעמים (ריצה אמיתית: `111`)."},
     ],
-    stepsSource="ai-draft")
+    stepsSource="ai-verified")
 
 
 exam = {

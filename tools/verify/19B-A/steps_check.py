@@ -79,6 +79,18 @@ it = S.Item(CODE, 3, None, lambda L: PRE3 + "\n".join(L) + MAIN3, orders)
 assert it.ref == S.run(PRE3 + "\n".join(ref) + MAIN3)
 it.order("סדרו"); ok &= it.finish()
 
+# negative odd numbers: the shipped (corrected, `%2 != 0`) lines keep row {-3,-5,2,4,6,8}; the official `%2 == 1` text drops it
+MAINNEG = r'''
+int main(void){int A[2][COLS]={{-3,-5,2,4,6,8},{-1,-1,2,2,2,2}};
+ int*S=NULL,rows=-1;int**B=even_sums_odd_numbers(A,2,6,&S,&rows);
+ printf("prows=%d\n",rows);for(int i=0;i<rows;i++){printf("S=%d:",S[i]);for(int j=0;j<S[i];j++)printf(" %d",B[i][j]);printf("\n");}return 0;}
+'''
+fixed = S.run(PRE3 + "\n".join(ref) + MAINNEG)
+official = S.run(PRE3 + "\n".join(l.replace("%2 != 0;", "%2;").replace("if (A[i][j]%2 != 0)", "if (A[i][j]%2 == 1)") for l in ref) + MAINNEG)
+print("negatives fixed:", fixed, "official:", official)
+assert fixed[1] == "prows=2\nS=2: -3 -5\nS=2: -1 -1\n", fixed
+assert official[1] != fixed[1], official
+
 # ---------------- Q5
 r = S.run(r'''#include <stdio.h>
 int main(){int i,cnt=0;

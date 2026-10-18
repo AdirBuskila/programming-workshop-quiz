@@ -42,7 +42,7 @@
      "points": 6
     }
    ],
-   "rubricSource": "ai-draft",
+   "rubricSource": "ai-verified",
    "pitfalls": [
     "להקצות את מערך העזר בגודל `n` (מספר האיברים) ולא `max_power+1`, או להשתמש ב-`malloc` בלי איפוס.",
     "לכלול ברשימה החדשה מונומים שהמקדם הסופי שלהם 0 (למשל `(3,6)` ו-`(-3,6)` שמתבטלים).",
@@ -180,14 +180,14 @@
      "explain": "התנאי `> 0` מדלג על מקדם שלילי; הנכון הוא `!= 0` (ריצה אמיתית: נשארים רק `(8,4)` ו-`(7.5,3)`)."
     }
    ],
-   "stepsSource": "ai-draft"
+   "stepsSource": "ai-verified"
   },
   {
    "num": 2,
    "kind": "code",
    "topic": "dynamic_arrays_2d",
    "question": "**שימו לב:** בחלק זה יש לענות על שאלה אחת מתוך שתיים (שאלה 2 או שאלה 3).\n\nכתבו פונקציה **יעילה** בשם `sortedRowsCols` המקבלת מערך דו-ממדי דינאמי `ar` של מספרים שלמים בעל `m` שורות ו-`n` עמודות.\nעל הפונקציה ליצור שני מערכים חד-ממדיים. אחד מהם (בשם `ar_s_rows`) יהיה מורכב ממספרי השורות במערך הדו-ממדי ממוינות בסדר עולה ממש והשני (בשם `ar_s_cols`) יהיה מורכב ממספרי העמודות ממוינות בסדר יורד ממש.\nהפונקציה תעביר by reference את המערכים החדשים ואת הגדלים שלהם. במידה ומערך נוצר ריק, הפונקציה תעביר `NULL` ככתובתו ו-0 כגודלו.\n\n**לדוגמא:** עבור המערך `ar` (משמאל לימין, מלמעלה למטה)\n```\n10  13  56  99\n23  57  59  93\n36  19  74  89\n30  75  80  85\n25  73  84  84\n```\nהפונקציה תעביר מערך `ar_s_rows`: `{0,1,3}` עם גודלו 3 ומערך `ar_s_cols`: `{3}` עם גודלו 1.\n\nהחתימה של הפונקציה `sortedRowsCols` תהיה:\n```c\nvoid sortedRowsCols(int **ar, int m, int n,\nint **ar_s_rows, int *num_s_rows, int **ar_s_cols, int *num_s_cols)\n```\nלבדיקה האם השורה ממוינת יש להשתמש בפונקציית עזר `int arrSorted(int *a, int n)` המקבלת את השורה כמערך `a` בגודל `n`. הפונקציה תחזיר 1 אם המערך ממוין בסדר עולה ממש ו-0 אחרת.\nלבדיקה האם העמודה ממוינת יש להשתמש בפונקציית עזר `columnSorted`. הפונקציה תקבל מערך דו-ממדי `ar`, מספר שורותיו `m`, ומספר העמודה הנבדקת `col`. על הפונקציה להחזיר 1 אם העמודה ממוינת בסדר יורד ממש ו-0 אחרת. חתימת הפונקציה תהיה `int columnSorted(int **ar, int m, int col)`.\n\nניתן להניח שיש בזיכרון מספיק מקום להקצאה.",
-   "solution": "```c\nint arrSorted(int* a, int n)\n{\n       int i;\n       for (i = 1; i < n; i++)\n              if (a[i] <= a[i - 1])\n                     return 0;\n       return 1;\n}\n\nint columnSorted(int** ar, int m, int col)\n{\n       int i;\n       for (i = 1; i < m; i++)\n              if (ar[i][col] >= ar[i - 1][col])\n                     return 0;\n       return 1;\n}\n\nvoid sortedRowsCols(int** ar, int m, int n, int** ar_s_rows, int* num_s_rows, int** ar_s_cols, int* num_s_cols)\n{\n       int i, j;\n       *num_s_rows = *num_s_cols = 0;\n       *ar_s_rows = (int*)calloc(m, sizeof(int)); // max size - number of rows\n       *ar_s_cols = (int*)calloc(n, sizeof(int)); // max size - number of columns\n       for (i = 0; i < m; i++)\n              if (arrSorted(ar[i], n))\n                     (*ar_s_rows)[(*num_s_rows)++] = i;\n       for (j = 0; j < n; j++)\n              if (columnSorted(ar, m, j))\n                     (*ar_s_cols)[(*num_s_cols)++] = j;\n       *ar_s_rows = (int*)realloc(*ar_s_rows, *num_s_rows * sizeof(int));\n       *ar_s_cols = (int*)realloc(*ar_s_cols, *num_s_cols * sizeof(int));\n}\n```",
+   "solution": "```c\nint arrSorted(int* a, int n)\n{\n       int i;\n       for (i = 1; i < n; i++)\n              if (a[i] <= a[i - 1])\n                     return 0;\n       return 1;\n}\n\nint columnSorted(int** ar, int m, int col)\n{\n       int i;\n       for (i = 1; i < m; i++)\n              if (ar[i][col] >= ar[i - 1][col])\n                     return 0;\n       return 1;\n}\n\nvoid sortedRowsCols(int** ar, int m, int n, int** ar_s_rows, int* num_s_rows, int** ar_s_cols, int* num_s_cols)\n{\n       int i, j;\n       *num_s_rows = *num_s_cols = 0;\n       *ar_s_rows = (int*)calloc(m, sizeof(int)); // max size - number of rows\n       *ar_s_cols = (int*)calloc(n, sizeof(int)); // max size - number of columns\n       for (i = 0; i < m; i++)\n              if (arrSorted(ar[i], n))\n                     (*ar_s_rows)[(*num_s_rows)++] = i;\n       for (j = 0; j < n; j++)\n              if (columnSorted(ar, m, j))\n                     (*ar_s_cols)[(*num_s_cols)++] = j;\n       *ar_s_rows = (int*)realloc(*ar_s_rows, *num_s_rows * sizeof(int));\n       *ar_s_cols = (int*)realloc(*ar_s_cols, *num_s_cols * sizeof(int));\n}\n```\n\n**הערה:** כשאין אף שורה (או עמודה) ממוינת, גודל ההקצאה החדש הוא 0, והפתרון מסתמך על כך ש-`realloc(p, 0)` מחזיר `NULL`. זה תלוי במימוש: ב-C17 התוצאה מוגדרת-מימוש (במהדרים הנפוצים כמו glibc ו-MSVC מתקבל `NULL`, אך ספריות אחרות מחזירות מצביע ייחודי), וב-C23 ההתנהגות אינה מוגדרת. כדי להבטיח `NULL` בכל מימוש אפשר לבדוק את הגודל, ולשחרר עם `free` ולהציב `NULL` כשהוא 0.",
    "solutionSource": "official-pdf",
    "official": true,
    "confidence": "high",
@@ -214,7 +214,7 @@
      "points": 6
     }
    ],
-   "rubricSource": "ai-draft",
+   "rubricSource": "ai-verified",
    "pitfalls": [
     "לבדוק מיון חלש (`a[i] < a[i-1]` במקום `<=`) ולקבל שורות עם ערכים שווים כמו `25 73 84 84`.",
     "לבדוק עמודה בסדר עולה במקום יורד, או לעבור על העמודה עם מספר העמודות במקום מספר השורות.",
@@ -304,14 +304,14 @@
      "explain": "`<` במקום `<=` מקבל שני ערכים שווים (`84 84`) כאילו הם עולים ממש; בריצה אמיתית מתקבל `0 1 3 4` במקום `0 1 3`."
     }
    ],
-   "stepsSource": "ai-draft"
+   "stepsSource": "ai-verified"
   },
   {
    "num": 3,
    "kind": "code",
    "topic": "strings",
    "question": "**סעיף א (15 נק').**\nכתבו פונקציה עם החתימה `char * nextWord(char * sentence, char * separators, char * word)` אשר מקבלת מחרוזת `sentence` המהווה את המשפט ומחרוזת `separators` המורכבת מכל המפרידים שעשויים להופיע במשפט.\nעל הפונקציה לעדכן את `word` להיות המחרוזת המכילה העתק של המילה הראשונה ב-`sentence` המוגדרת עד למפריד הראשון (ניתן להניח שגודל של מערך `word` יהיה מספיק).\nהפונקציה תחזיר מצביע לתחילת המילה הבאה ב-`sentence` או `NULL` אם המשפט לא מכיל מילים נוספות.\n\nלדוגמא: עבור `sentence = \"Why?! That's why.\"` ו-`separators = \"? !.\"` תוכן של `word` יהיה `\"Why\"` והפונקציה תחזיר מצביע לתת-מחרוזת `\"That's why.\"` מתוך `sentence`.",
-   "solution": "```c\nchar* nextWord(char* sentence, char* separators, char* word)\n{\n       int i = 0;\n       while ( sentence[i] && !strchr(separators, sentence[i]) ) // scan word\n              word[i++] = sentence[i];\n       word[i] = '\\0';\n       while (sentence[i] && strchr(separators, sentence[i])) // scan separators\n              i++;\n       return sentence[i] ? sentence + i : NULL;\n}\n```",
+   "solution": "```c\nchar* nextWord(char* sentence, char* separators, char* word)\n{\n       int i = 0;\n       while ( sentence[i] && !strchr(separators, sentence[i]) ) // scan word\n              word[i++] = sentence[i];\n       word[i] = '\\0';\n       while (sentence[i] && strchr(separators, sentence[i])) // scan separators\n              i++;\n       return sentence[i] ? sentence + i : NULL;\n}\n```\n\n**הערה:** השורה `word[i++] = sentence[i];` מהפתרון הרשמי משתמשת ב-`i` ומשנה אותו באותו ביטוי בלי נקודת רצף ביניהם, ולכן לפי תקן C ההתנהגות שלה אינה מוגדרת (התוצאה תלויה בסדר שבו המהדר מעריך את שני האגפים). במהדרים הנפוצים מתקבל הערך הצפוי, אבל כדאי לכתוב את השקול המוגדר היטב: `word[i] = sentence[i]; i++;` (בגוף לולאה עם סוגריים מסולסלים).",
    "solutionSource": "official-pdf",
    "official": true,
    "confidence": "high",
@@ -336,7 +336,7 @@
      "points": 3
     }
    ],
-   "rubricSource": "ai-draft",
+   "rubricSource": "ai-verified",
    "pitfalls": [
     "לעצור רק ברווח ולא בכל אחד מהמפרידים (למשל `Why?!` תועתק כולה).",
     "לדלג על מפריד אחד בלבד, ולהחזיר מצביע שמצביע על מפריד נוסף.",
@@ -387,7 +387,10 @@
       "{",
       "       int i = 0;",
       "___",
-      "              word[i++] = sentence[i];",
+      "       {",
+      "              word[i] = sentence[i];",
+      "              i++;",
+      "       }",
       "       word[i] = '\\0';",
       "       while (sentence[i] && strchr(separators, sentence[i]))",
       "              i++;",
@@ -442,18 +445,21 @@
       "{",
       "       int i = 0;",
       "       while ( sentence[i] && !strchr(separators, sentence[i]) )",
-      "              word[i++] = sentence[i];",
+      "       {",
+      "              word[i] = sentence[i];",
+      "              i++;",
+      "       }",
       "       word[i] = '\\0';",
       "       while (sentence[i] && strchr(separators, sentence[i]))",
       "              i++;",
       "       return sentence + i;",
       "}"
      ],
-     "bugIndex": 8,
+     "bugIndex": 11,
      "explain": "`return sentence + i;` מחזירה תמיד מצביע (גם לסוף המחרוזת) ולכן הקורא לא מזהה את סוף המשפט (ריצה אמיתית: התוכנית ממשיכה לקבל מצביע שאינו `NULL`)."
     }
    ],
-   "stepsSource": "ai-draft"
+   "stepsSource": "ai-verified"
   },
   {
    "num": 3,
@@ -489,7 +495,7 @@
      "points": 2
     }
    ],
-   "rubricSource": "ai-draft",
+   "rubricSource": "ai-verified",
    "pitfalls": [
     "לשכוח את המילה האחרונה: `nextWord` מחזירה `NULL` כשהיא כבר העתיקה את המילה האחרונה ל-`word`, והלולאה נגמרת לפניה.",
     "לכתוב מילה ריקה לקובץ כשהמשפט ריק, בלי לבדוק `*word`.",
@@ -609,7 +615,7 @@
      "explain": "הפורמט `\"%s\"` בלי `'\\n'` בתוך הלולאה כותב את המילים ברצף (ריצה אמיתית: הקובץ הוא שורה אחת, `ButwhyThat'swhy`, במקום ארבע שורות)."
     }
    ],
-   "stepsSource": "ai-draft"
+   "stepsSource": "ai-verified"
   },
   {
    "num": 3,
@@ -641,7 +647,7 @@
      "points": 1
     }
    ],
-   "rubricSource": "ai-draft",
+   "rubricSource": "ai-verified",
    "pitfalls": [
     "להשוות `word == query` (כתובות) במקום `strcmp`.",
     "לשכוח את המילה האחרונה שנשארה ב-`word` אחרי שהלולאה נגמרה.",
@@ -742,7 +748,7 @@
      "explain": "בבדיקת המילה האחרונה `!= 0` סופר אותה רק כשהיא שונה מ-`query` (ריצה אמיתית: 2)."
     }
    ],
-   "stepsSource": "ai-draft"
+   "stepsSource": "ai-verified"
   },
   {
    "num": 4,
@@ -772,7 +778,7 @@
      "points": 2
     }
    ],
-   "rubricSource": "ai-draft",
+   "rubricSource": "ai-verified",
    "pitfalls": [
     "לחשוב ש-`x = y = 10` ב-`f1` משנה את `x` הגלובלי: הוא משנה את הפרמטר `x`, ורק את `y` הגלובלי.",
     "לחשוב ש-`x = y = 15` ב-`f2` משנה את `y` הגלובלי: הוא משנה רק את הפרמטר `y` ואת `x` הגלובלי.",
@@ -812,7 +818,7 @@
      "explain": "ריצה אמיתית: אותן שלוש שורות."
     }
    ],
-   "stepsSource": "ai-draft"
+   "stepsSource": "ai-verified"
   },
   {
    "num": 5,
@@ -919,7 +925,7 @@
      "points": 4
     }
    ],
-   "rubricSource": "ai-draft",
+   "rubricSource": "ai-verified",
    "pitfalls": [
     "לחשוב ש-`sizeof\"sizeof\"` שווה 6 ולשכוח את התו האפסי, ולקבל `puts`.",
     "לנסות לחסר מספר ממחרוזת כערך מספרי, במקום לראות בה כתובת של התו הראשון."
@@ -956,7 +962,7 @@
      "explain": "`puts(\"puts\" + 1)` מדפיסה את `uts` (ריצה אמיתית: `uts`)."
     }
    ],
-   "stepsSource": "ai-draft"
+   "stepsSource": "ai-verified"
   }
  ]
 }
