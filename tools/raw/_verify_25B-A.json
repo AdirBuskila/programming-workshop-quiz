@@ -1,0 +1,108 @@
+{
+ "examCode": "25B-A",
+ "refuter": "claude",
+ "method": "own derivation recorded first (derivations); independent clang runs and python models in tools/verify/25B-A/refute_* and refute_check.py (shared helper tools/verify/refute_common.py)",
+ "derivations": {
+  "q4": "3 5 / 5 5 / 4 4 / 19 19 / 18 18",
+  "q5a": "444 with 4-byte pointers (b); 888 on 64-bit (no option -> f)",
+  "q5b": "d (48)",
+  "q6": "111"
+ },
+ "items": {
+  "1": {
+   "solution": "agree (exhaustive strings len<=7 over space,a,b plus 300 random; result nodes are reused ones)",
+   "rubric": "agree (12+6+14+8=40)",
+   "pitfalls": "agree",
+   "steps": [
+    "agree numeric 7",
+    "agree numeric 3",
+    "agree fillblank a unique (b crashes on all-space list, c/d wrong output); note: deleteHead/deleteNext are used but not shown in the step",
+    "DISAGREE order: not forced. Permutation (1,2,3,0), i.e. the leading-space deletion block moved to the END, gives identical output on every test (the main loop already removes repeated and trailing spaces, the last while strips the leading ones). First divergence: block 0 vs block 3. Fix: merge blocks 0 and 1 or drop the order step",
+    "agree findbug idx 11 (single line differs, trailing space stays)"
+   ]
+  },
+  "2": {
+   "solution": "agree",
+   "rubric": "agree (8+10+14+8=40)",
+   "pitfalls": "agree",
+   "steps": [
+    "agree 3",
+    "agree 21",
+    "agree fillblank a unique (b,c,d wrong values)",
+    "agree findbug idx 7 (single line differs, diagonal 0)"
+   ]
+  },
+  "3": {
+   "solution": "agree (both versions; 60 random files, edge 99-char line, missing file)",
+   "rubric": "agree (6+8+14+8+4=40)",
+   "pitfalls": "agree",
+   "steps": [
+    "agree 5",
+    "agree 1",
+    "agree fillblank a unique (b gives 4, c/d give 0)",
+    "agree order (only identity passes)",
+    "agree findbug idx 7 (fgets(...,10) cuts words)"
+   ]
+  },
+  "4": {
+   "solution": "agree (clang run)",
+   "rubric": "agree (3+2+2+3=10)",
+   "pitfalls": "agree",
+   "steps": [
+    "agree 5",
+    "agree 4",
+    "agree choice a (18 18)",
+    "agree output order"
+   ]
+  },
+  "5א": {
+   "key": "b under 4-byte pointers; own clang run on 64-bit prints 888 (no matching option, would be f). Key is platform dependent.",
+   "explanation": "agree: it states explicitly that the key assumes 4-byte pointers and that a 64-bit compiler prints 888. Minor: the first sentence asserts 4 bytes as fact, and printing size_t with %d is itself UB on 64-bit"
+  },
+  "5ב": {
+   "key": "agree d (48)",
+   "explanation": "agree"
+  },
+  "6": {
+   "solution": "agree 111",
+   "rubric": "agree (4+3+3=10)",
+   "pitfalls": "agree",
+   "steps": [
+    "agree 1",
+    "agree 3",
+    "agree text 111"
+   ]
+  }
+ },
+ "answers": {
+  "1": {
+   "agrees": false,
+   "confident": true,
+   "note": "order step not forced, see items"
+  },
+  "2": {
+   "agrees": true,
+   "confident": true
+  },
+  "3": {
+   "agrees": true,
+   "confident": true
+  },
+  "4": {
+   "agrees": true,
+   "confident": true
+  },
+  "5a": {
+   "answer": "b",
+   "confident": true
+  },
+  "5b": {
+   "answer": "d",
+   "confident": true
+  },
+  "6": {
+   "agrees": true,
+   "confident": true
+  }
+ }
+}

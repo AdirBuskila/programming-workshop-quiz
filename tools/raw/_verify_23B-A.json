@@ -1,0 +1,141 @@
+{
+ "examCode": "23B-A",
+ "refuter": "claude",
+ "method": "own derivation recorded first (derivations); independent clang runs and python models in tools/verify/23B-A/refute_* and refute_check.py (shared helper tools/verify/refute_common.py)",
+ "derivations": {
+  "q4": "x=20,y=5 / x=30,y=10 / x=15,y=10",
+  "q5a": "b",
+  "q5b": "c",
+  "q6": "uts"
+ },
+ "items": {
+  "1": {
+   "solution": "agree (67 lists incl. cancelling monomials and empty list)",
+   "rubric": "agree (8+14+12+6=40)",
+   "pitfalls": "agree",
+   "steps": [
+    "agree 6",
+    "agree 8",
+    "agree fillblank a unique",
+    "agree order (only identity passes)",
+    "agree findbug idx 20"
+   ]
+  },
+  "2": {
+   "solution": "agree (84 matrices; empty results give size 0 and NULL on this clang/UCRT; realloc(p,0) is implementation-specific)",
+   "rubric": "agree (8+8+8+10+6=40)",
+   "pitfalls": "agree",
+   "steps": [
+    "agree 3",
+    "agree 1",
+    "agree fillblank a unique (option b differs only on a column with equal adjacent values, which the exam example lacks; it fails on my matrices)",
+    "agree order (only identity passes)",
+    "agree findbug idx 4"
+   ]
+  },
+  "3א": {
+   "solution": "agree. Official line `word[i++] = sentence[i];` is unsequenced (UB); clang -O0 and -O2 happen to read the old i. The fillblank and findbug steps reuse this line; the order step uses the UB-free two-statement form",
+   "rubric": "agree (6+3+3+3=15)",
+   "pitfalls": "agree",
+   "steps": [
+    "agree 6",
+    "agree choice a (NULL)",
+    "agree fillblank a unique",
+    "agree order (only identity passes, buffer pre-filled with #)",
+    "agree findbug idx 8"
+   ]
+  },
+  "3ב": {
+   "solution": "agree",
+   "rubric": "agree (3+2+5+3+2=15)",
+   "pitfalls": "agree",
+   "steps": [
+    "agree 3",
+    "agree 4",
+    "agree fillblank a unique (d fails only on one-word sentences)",
+    "agree order (only identity passes)",
+    "agree findbug idx 10"
+   ]
+  },
+  "3ג": {
+   "solution": "agree",
+   "rubric": "agree (2+4+3+1=10)",
+   "pitfalls": "agree",
+   "steps": [
+    "agree 2",
+    "agree 3",
+    "agree fillblank a unique",
+    "agree order (only identity passes)",
+    "agree findbug idx 8"
+   ]
+  },
+  "4": {
+   "solution": "agree",
+   "rubric": "agree (2+3+3+2=10)",
+   "pitfalls": "agree",
+   "steps": [
+    "agree 20",
+    "agree 30",
+    "agree 10",
+    "agree output order"
+   ]
+  },
+  "5א": {
+   "key": "agree b",
+   "explanation": "agree"
+  },
+  "5ב": {
+   "key": "agree c",
+   "explanation": "agree"
+  },
+  "6": {
+   "solution": "agree uts (the intermediate pointer \"puts\"-6 is outside the array: UB in theory, works)",
+   "rubric": "agree (3+3+4=10)",
+   "pitfalls": "agree",
+   "steps": [
+    "agree 6",
+    "agree 7",
+    "agree 1",
+    "agree text uts"
+   ]
+  }
+ },
+ "answers": {
+  "1": {
+   "agrees": true,
+   "confident": true
+  },
+  "2": {
+   "agrees": true,
+   "confident": true
+  },
+  "3a": {
+   "agrees": true,
+   "confident": true
+  },
+  "3b": {
+   "agrees": true,
+   "confident": true
+  },
+  "3c": {
+   "agrees": true,
+   "confident": true
+  },
+  "4": {
+   "agrees": true,
+   "confident": true
+  },
+  "5a": {
+   "answer": "b",
+   "confident": true
+  },
+  "5b": {
+   "answer": "c",
+   "confident": true
+  },
+  "6": {
+   "agrees": true,
+   "confident": true
+  }
+ }
+}

@@ -1,0 +1,108 @@
+{
+ "examCode": "24B-A",
+ "refuter": "claude",
+ "method": "own derivation recorded first (derivations); independent clang runs and python models in tools/verify/24B-A/refute_* and refute_check.py (shared helper tools/verify/refute_common.py)",
+ "derivations": {
+  "q4": "200 400 / 300 300 / 400 200 / 600",
+  "q5a": "d (free of a stack array: UB / runtime error)",
+  "q5b": "b (3^2 = 1)",
+  "q6": "24"
+ },
+ "items": {
+  "1": {
+   "solution": "agree (both versions, 450 pairs incl. 9999 vs 10000)",
+   "rubric": "agree (14+14+6+6=40)",
+   "pitfalls": "agree",
+   "steps": [
+    "agree -1",
+    "agree 1",
+    "agree fillblank a unique (b swaps, c/d wrong on equal lengths)",
+    "agree order (only identity passes)",
+    "agree findbug idx 16 (<= returns -1 on equal first digit)"
+   ]
+  },
+  "2": {
+   "solution": "agree (35 cases; empty results give size 0 and NULL on this clang/UCRT, but realloc(p,0) returning NULL is implementation-specific)",
+   "rubric": "agree (8+12+12+8=40)",
+   "pitfalls": "agree",
+   "steps": [
+    "agree 4",
+    "agree 3",
+    "agree fillblank a unique (b,c wrong; d wrong, crashes on A[j]==0)",
+    "agree order (only identity passes)",
+    "agree findbug idx 8"
+   ]
+  },
+  "3": {
+   "solution": "agree (1776 board/word pairs vs python model). Environment quirk, not an exam error: Windows text-mode ftell/fseek is wrong on files that contain a newline; binary mode reproduces POSIX behaviour",
+   "rubric": "agree (4+8+10+12+6=40)",
+   "pitfalls": "agree",
+   "steps": [
+    "agree choice a (byte, baby yes; gat no)",
+    "agree 4",
+    "agree fillblank a unique (-1,-3,0 fail)",
+    "agree order (only identity passes)",
+    "agree findbug idx 24 (yte fails)"
+   ]
+  },
+  "4": {
+   "solution": "agree",
+   "rubric": "agree (3+2+2+3=10)",
+   "pitfalls": "agree",
+   "steps": [
+    "agree 400",
+    "agree 300",
+    "agree 600",
+    "agree output order"
+   ]
+  },
+  "5א": {
+   "key": "agree d",
+   "explanation": "agree (calls the array static, it is automatic; minor wording; free() on non-heap memory is UB, runtime error is the expected answer)"
+  },
+  "5ב": {
+   "key": "agree b (3^2=1)",
+   "explanation": "agree"
+  },
+  "6": {
+   "solution": "agree 24",
+   "rubric": "agree (3+4+3=10)",
+   "pitfalls": "agree",
+   "steps": [
+    "agree 1",
+    "agree 2",
+    "agree text 24"
+   ]
+  }
+ },
+ "answers": {
+  "1": {
+   "agrees": true,
+   "confident": true
+  },
+  "2": {
+   "agrees": true,
+   "confident": true
+  },
+  "3": {
+   "agrees": true,
+   "confident": true
+  },
+  "4": {
+   "agrees": true,
+   "confident": true
+  },
+  "5a": {
+   "answer": "d",
+   "confident": true
+  },
+  "5b": {
+   "answer": "b",
+   "confident": true
+  },
+  "6": {
+   "agrees": true,
+   "confident": true
+  }
+ }
+}

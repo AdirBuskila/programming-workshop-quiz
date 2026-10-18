@@ -1,0 +1,109 @@
+{
+ "examCode": "24B-B",
+ "refuter": "claude",
+ "method": "own derivation recorded first (derivations); independent clang runs and python models in tools/verify/24B-B/refute_* and refute_check.py (shared helper tools/verify/refute_common.py)",
+ "derivations": {
+  "q4": "2 2 / 4 2 / 2 6 / 8 6 / 8 10",
+  "q5a": "d",
+  "q5b": "c",
+  "q6": "-1 ((int)4294967295: implementation-defined conversion, 32-bit int)"
+ },
+ "items": {
+  "1": {
+   "solution": "agree once int is added to digitsNumber (as printed it does not compile, as the note already says); 46 arrays compared as per-list multisets",
+   "rubric": "agree (8+8+8+10+6=40)",
+   "pitfalls": "agree",
+   "steps": [
+    "agree 3",
+    "agree 5",
+    "agree fillblank a unique",
+    "agree order (only identity passes)",
+    "agree findbug idx 2"
+   ]
+  },
+  "2": {
+   "solution": "agree (20 matrices)",
+   "rubric": "agree (14+14+8+4=40)",
+   "pitfalls": "agree",
+   "steps": [
+    "agree 18",
+    "agree 7",
+    "agree fillblank a unique",
+    "agree order (only identity passes)",
+    "agree findbug idx 6"
+   ]
+  },
+  "3": {
+   "solution": "agree on newline-terminated inputs. Official quirks not covered by the question: a last line without trailing newline loses its last char (abc -> ba); an empty line is written as an empty line",
+   "rubric": "agree (8+12+6+8+6=40)",
+   "pitfalls": "agree",
+   "steps": [
+    "agree 2",
+    "agree choice a (Alisa)",
+    "agree fillblank a unique (b accepts Alisa, c rejects table, d rejects everything)",
+    "agree order (only identity passes; swaps give compile error or wrong output)",
+    "agree findbug idx 2 (empty lines)"
+   ]
+  },
+  "4": {
+   "solution": "agree",
+   "rubric": "agree (3+2+3+2=10)",
+   "pitfalls": "agree",
+   "steps": [
+    "agree 4",
+    "agree choice a (2 6)",
+    "agree 10",
+    "agree output order"
+   ]
+  },
+  "5א": {
+   "key": "agree d",
+   "explanation": "agree"
+  },
+  "5ב": {
+   "key": "agree c (realloc(NULL,n) == malloc(n); option a is wrong because sizeof(int) bytes are allocated)",
+   "explanation": "agree"
+  },
+  "6": {
+   "solution": "agree -1 (needs 32-bit int and two's-complement truncation, implementation-defined; neither the solution nor the steps say so)",
+   "rubric": "agree (4+3+3=10)",
+   "pitfalls": "agree",
+   "steps": [
+    "agree 4",
+    "agree 32",
+    "agree 4294967295",
+    "agree -1"
+   ]
+  }
+ },
+ "answers": {
+  "1": {
+   "agrees": true,
+   "confident": true
+  },
+  "2": {
+   "agrees": true,
+   "confident": true
+  },
+  "3": {
+   "agrees": true,
+   "confident": true
+  },
+  "4": {
+   "agrees": true,
+   "confident": true
+  },
+  "5a": {
+   "answer": "d",
+   "confident": true
+  },
+  "5b": {
+   "answer": "c",
+   "confident": true
+  },
+  "6": {
+   "agrees": true,
+   "confident": true
+  }
+ }
+}
