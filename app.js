@@ -635,7 +635,7 @@ let openLearnAt = null;   // set by initLearn; used by the ?learn= deep link
     const active=toc.querySelector("button.active"); if(active) active.scrollIntoView({block:"nearest"});
     markScrollable();
     fill.style.width = ((idx+1)/data.length*100)+"%";
-    pos.textContent = `${idx+1} / ${data.length}`;
+    pos.innerHTML = `<bdi dir="ltr">${idx+1} / ${data.length}</bdi>`;
     prevB.disabled=idx===0; nextB.disabled=idx===data.length-1;
     window.scrollTo({top:0,behavior:"smooth"}); content.focus({preventScroll:true});
   }

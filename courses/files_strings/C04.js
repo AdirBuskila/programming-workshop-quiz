@@ -2,7 +2,7 @@
 COURSE_LEVEL("files_strings", {
   "id": "C04",
   "order": 4,
-  "icon": "🪤",
+  "icon": "🚧",
   "title": "feof ולולאות קריאה נכונות",
   "goal": "אחרי השלב הזה אפשר להסביר מתי feof נהיית אמת ולכתוב לולאת קריאה שלא רצה פעם אחת יותר מדי.",
   "boss": false,

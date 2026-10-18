@@ -47,7 +47,7 @@ QID = r"[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*-Q\d+[a-z]?"
 HEB = rt.HEB
 
 # Blockquote callouts: leading emoji -> class (CSS colours them), richest signal first.
-CALLOUTS = [("🪤", "trap"), ("🚨", "alarm"), ("⚠️", "warn"), ("⚠", "warn"),
+CALLOUTS = [("🚧", "trap"), ("🚨", "alarm"), ("⚠️", "warn"), ("⚠", "warn"),
             ("🔑", "key"), ("💡", "tip"), ("✅", "yes"), ("❌", "no")]
 
 problems = []

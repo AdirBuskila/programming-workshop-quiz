@@ -1,6 +1,6 @@
 # Learn coverage: programming-workshop
 
-Built from the 68 banked questions (sittings 21B-A, 22B-A, 22B-B, 23B-A, 23B-B, 24B-A, 24B-B, 25B-A, 25B-B). Briefs are in `docs/briefs/` (15 files, 14 topic briefs and one cheat sheet). Every C snippet in the briefs was compiled and, where it has `main`, run with clang; the claimed outputs match.
+Built from the 126 banked questions (all 16 sittings, 19B-A to 25B-B). The QA re-pass of 2026-10-18 added the rows marked (QA). Briefs are in `docs/briefs/` (15 files, 14 topic briefs and one cheat sheet). Every C snippet in the briefs was compiled and, where it has `main`, run with clang; the claimed outputs match.
 
 | Concept | Brief section | Example question ids |
 |---|---|---|
@@ -35,9 +35,14 @@ Built from the 68 banked questions (sittings 21B-A, 22B-A, 22B-B, 23B-A, 23B-B, 
 | Scope shadowing, static local, return of `&static`, reserved words, defaults | 12 | 23B-A-Q4, 24B-B-Q4, 25B-B-Q4, 21B-A-Q4d, 22B-B-Q4a, 21B-A-Q4a |
 | Bit operators, shifts, XOR identities, `(long long)` shift, truncation | 13 | 21B-A-Q4b, 22B-A-Q5, 23B-B-Q6, 24B-A-Q5b, 24B-B-Q6, 25B-A-Q5b |
 | MCQ strategy, justification, "none correct" options | 14 | 21B-A-Q4a, 22B-B-Q4c, 25B-B-Q5a |
+| (QA) `printf` return value, escape sequences and `strlen` of literals | 01 | 21B-B-Q5, 20B-B-Q5 |
+| (QA) Address cast to `long long` and back; which pointer types exist (no pointer to a bit) | 04 | 19S-A-Q5, 20B-B-Q5, 19B-B-Q4a |
+| (QA) Legal and undefined struct operations, struct size >= sum of fields, struct vs union | 08 | 19S-A-Q4a, 19B-B-Q4b, 19S-B-Q4a |
+| (QA) Binary file in a text editor, `fread`/`fwrite` copy between binary files | 09 | 20B-B-Q4d, 21B-B-Q4d |
+| (QA) `const` on pointer-to-pointer declarations, illegal const operations, preprocessor directives | 12 | 19B-A-Q4d, 19S-B-Q4d, 20B-A-Q4c, 19S-A-Q4c, 19S-A-Q4d |
 
 ## Gaps
-- Sittings 19B-A, 19B-B, 19S-A, 19S-B, 20B-A, 20B-B, 21B-B are not in the bank yet (some are still being transcribed). The briefs cover their known families (lists, 2D/dynamic arrays, strings/files, MCQ), but their question ids are not cited. Rebuild with `build_learn.py` after they land to refresh the auto-lists.
+- All 16 sittings are now in the bank. The QA rows above close the concepts no brief taught. Left untaught on purpose: the logic item 20B-A-Q4a (which statement is not a generalisation) and the compiler-message wording of 20B-A-Q4f (compilers differ).
 - Topics `c_basics_output` and `pointer_to_pointer` have no questions tagged in the bank; they are taught as foundations for others.
 - Not covered: the 2019-2022 style MCQ items that are not yet transcribed, and the "american questions" scan (needs OCR).
 - Sources: the image-only student summary PDF was not OCR'd; the briefs are written from the official exam solutions and standard C. Adir's C++/OOP notes and exam collection were deliberately not used.
